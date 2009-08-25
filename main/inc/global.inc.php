@@ -60,44 +60,6 @@ EOM;
 	die($error_message_php_version);
 }
 
-if (!function_exists('mb_strlen'))
-{
-	$error_message_mbstring = <<<EOM
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-		<head>
-			<title>PHP extension "mbstring" has not been installed!</title>
-			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-			<style type="text/css" media="screen, projection">
-				/*<![CDATA[*/
-				@import "main/css/public_admin/default.css";
-				/*]]>*/
-			</style>
-		</head>
-		<body>
-			<div id="header">
-				<div id="header1"><a href="http://www.dokeos.com" target="_blank">Dokeos Homepage</a></div>
-				<div class="clear"></div>
-				<div id="header2">&nbsp;</div>
-				<div id="header3">&nbsp;</div>
-			</div>
-
-			<div style="text-align: center;"><br /><br />
-					The Dokeos system needs PHP extension <strong>mbstring</strong> to be installed.<br />
-					See <a href="http://php.net/manual/en/mbstring.installation.php" target="_blank">http://php.net/manual/en/book.mbstring.php</a> for more information<br /><br />
-			</div>
-
-			<div id="footer">
-				<div class="copyright">Platform <a href="http://www.dokeos.com" target="_blank"> Dokeos </a> &copy; 2009 </div>
-				&nbsp;
-			</div>
-		</body>
-</html>
-EOM;
-	header('Content-Type: text/html; charset=UTF-8');
-	die($error_message_mbstring);
-}
-
 // Determine the directory path where this current file lies
 // This path will be useful to include the other intialisation files
 
@@ -260,8 +222,11 @@ if (empty($charset)) {
 }
 // Preserving the value of the global variable $charset.
 $charset_initial_value = $charset;
-// Initialization of the default encoding that will be used by the string routines.
-api_set_default_encoding($charset);
+
+// Initialization of the multibyte string library.
+api_initialize_string_library();
+// Initialization of the default encoding that will be used by the multibyte string routines.
+api_set_string_library_default_encoding($charset);
 
 /*
 --------------------------------------------
@@ -622,9 +587,6 @@ if ($_course['language'])
 // We need to save the genuine value of this variable and
 // to use it within the function get_lang(...).
 $language_interface_initial_value = $language_interface;
-
-// Initialization the default ICU locale id based in the current interface language.
-api_set_default_locale(api_get_locale_from_language($language_interface));
 
 /*
  * Include all necessary language files
