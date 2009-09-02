@@ -86,37 +86,55 @@ function &_api_get_day_month_names($language = null) {
  */
 
 /**
- * Returns an array of conventions (patterns) of writting personal names for all "known" languages.
- * @return array	Returns the array in the following form: attay('language1 => 'pattern1', ...).
- * @link http://en.wikipedia.org/wiki/Personal_name#Naming_convention
+ * Returns returns person name convention for a given language.
+ * @param string $language	The input language.
+ * @param string $type		The type of the requested convention. It may be 'format' for name order convention or 'sort_by' for name sorting convention.
+ * @return mixed			Depending of the requested type, the returned result may be string or boolean; null is returned on error;
  */
-function &_get_name_conventions() {
+function _api_get_person_name_convention($language, $type) {
 	static $conventions;
+	$language = api_refine_language_id($language);
 	if (!isset($conventions)) {
 		$file = dirname(__FILE__) . '/internationalization_database/name_order_conventions.php';
 		if (file_exists($file)) {
 			$conventions = include ($file);
 		} else {
-			$conventions = array('english' => 'first_name last_name');
+			$conventions = array('english' => array('format' => 'title first_name last_name', 'sort_by' => 'first_name'));
 		}
-		$search = array('first_name', 'last_name');
-		$replacement = array('%f', '%l');
-		foreach ($conventions as $key => &$value) {
-			$value = str_ireplace($search, $replacement, $value);
+		$search = array('first_name', 'last_name', 'title');
+		$replacement = array('%f', '%l', '%t');
+		foreach (array_keys($conventions) as $key) {
+			$conventions[$key]['format'] = _api_validate_person_name_format(_api_clean_person_name(str_replace('%', ' %', str_ireplace($search, $replacement, $conventions[$key]['format']))));
+			$conventions[$key]['sort_by'] = strtolower($conventions[$key]['sort_by']) != 'last_name' ? true : false;
 		}
 	}
-	return $conventions;
+	switch ($type) {
+		case 'format':
+			return is_string($conventions[$language]['format']) ? $conventions[$language]['format'] : '%t %f %l';
+		case 'sort_by':
+			return is_bool($conventions[$language]['sort_by']) ? $conventions[$language]['sort_by'] : true;
+	}
+	return null;
 }
 
 /**
- * Checks whether the input namin convention (a pattern) is valid or not.
- * @param string $convention	The input convention to be verified. 
- * @return bool					Returns TRUE if the pattern is valid, FALSE othewise.
+ * Replaces non-valid formats for person names with the default (English) format.
+ * @param string $format	The input format to be verified. 
+ * @return bool				Returns the same format if is is valid, otherwise returns a valid English format.
  */
-function _api_is_valid_name_convention($convention) {
-	static $cache = array();
-	if (!isset($cache[$convention])) {
-		$cache[$convention] = !empty($convention) && strpos($convention, '%f') !== false && strpos($convention, '%l') !== false;
+function _api_validate_person_name_format($format) {
+	if (empty($format) || strpos($format, '%f') === false || strpos($format, '%l') === false) {
+		return '%t %f %l';
 	}
-	return $cache[$convention];
+	return $format;
+}
+
+/**
+ * Removes leading, trailing and duplicate whitespace and/or commas in a full person name.
+ * Cleaning is needed for the cases when not all parts of the name are available or when the name is constructed using a "dirty" pattern.
+ * @param string $person_name	The input person name.
+ * @return string				Returns cleaned person name.
+ */
+function _api_clean_person_name($person_name) {
+	return preg_replace(array('/\s+/', '/, ,/', '/,+/', '/^[ ,]/', '/[ ,]$/'), array(' ', ', ', ',', '', ''), $person_name);
 }

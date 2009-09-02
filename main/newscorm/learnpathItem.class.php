@@ -431,7 +431,7 @@ class learnpathItem{
     	if($this->debug>1){error_log('New LP - In learnpathItem::get_interactions_count()',0);}
     	$return = 0;
         if ($checkdb) {
-            $tbl = Database::get_course_table(TABLE_LP_VIEW);
+            $tbl = Database::get_course_table(TABLE_LP_ITEM_VIEW);
             $sql = "SELECT id FROM $tbl " .
                     "WHERE lp_item_id = ".$this->db_id." " .
                     "AND   lp_view_id = ".$this->view_id." " .
