@@ -1,0 +1,55 @@
+<?php /*
+for more information: see languages.txt in the lang folder. 
+*/
+$langScormVersion = "versão";
+$langScormRestarted = "Todas as etapas estão agora incompletas";
+$langScormNoNext = "Última sequência. Não existem mais.";
+$langScormNoPrev = "Primeira sequência.";
+$langScormTime = "Tempo";
+$langScormNoOrder = "A ordem é arbitrária; pode clicar em qualquer sequência.";
+$langScormScore = "Resultado";
+$langScormLessonTitle = "Título da lição (sequência)";
+$langScormStatus = "Estado";
+$langScormToEnter = "Para realizar";
+$langScormFirstNeedTo = "necessita primeiro completar";
+$langScormThisStatus = "Esta lição está";
+$langScormClose = "Terminada";
+$langScormRestart = "Recomeçar";
+$langScormCompstatus = "Completa";
+$langScormIncomplete = "Incompleta";
+$langScormPassed = "Aprovado";
+$langScormFailed = "Não aprovado";
+$langScormPrevious = "Anterior";
+$langScormNext = "Seguinte";
+$langScormTitle = "Programa Scorm Dokeos";
+$langScormMystatus = "Ponto da situação";
+$langScormNoItems = "Este conteúdo não contém itens.";
+$langScormNoStatus = "Conteúdo sem estatística";
+$langScormLoggedout = "Sair do Scorm";
+$langScormCloseWindow = "Fechar janela";
+$ScormBrowsed = "Visto";
+$langScormExitFullScreen = "Voltar écrã normal";
+$langScormFullScreen = "Écrã grande";
+$langScormNotAttempted = "Tentativa falhada";
+$langCharset = "Tipo de caracteres";
+$langLocal = "Local";
+$langRemote = "Remoto";
+$langAutodetect = "Detectar automaticamente";
+$langAccomplishedStepsTotal = "Total de etapas completas";
+$langUnknown = "Desconhecido";
+$AreYouSureToDeleteSteps = "Tem a certeza que deseja apagar estas etapas?";
+$Origin = "Origem";
+$Local = "Local";
+$Remote = "Remoto";
+$FileToUpload = "Ficheiro a enviar";
+$ContentMaker = "Criação de conteúdos";
+$ContentProximity = "Situação";
+$UploadLocalFileFromGarbageDir = "Enviar ficheiro a partir da directoria principal/reciclagem";
+$ThisItemIsNotExportable = "Este item, de momento, não é compatível com Scorm. É por isso que não é exportável.";
+$MoveCurrentChapter = "Mover capítulo actual";
+$GenericScorm = "Scorm genérico";
+$UnknownPackageFormat = "O formato do pacote não é reconhecido. Por favor, verifique se o pacote contém erros. Alguns problemas são devidos ao formato do programa ZIP ou à transferência de ficheiros longos. Em caso de dúvida, evite usar ficheiros zipados.";
+$Attempt = "Tentativa";
+$MoveTheCurrentForum = "Mover este fórum";
+$WarningWhenEditingScorm = "Atenção !<br /> Quando altera o conteúdo de uma etapa SCORM, as estatísticas ficam alteradas e a etapa da sequência de aprendizagem inutilizada.";
+?>
