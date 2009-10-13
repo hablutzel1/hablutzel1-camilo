@@ -1,0 +1,22 @@
+<?php /*
+for more information: see languages.txt in the lang folder. 
+*/
+$TermAddNew = "Acrescentar termo";
+$TermName = "Nome do termo";
+$TermDefinition = "Definição do termo";
+$TermDeleted = "Termo eliminado";
+$TermUpdated = "Termo actualizado";
+$TermConfirmDelete = "Deseja mesmo eliminar este termo?";
+$TermAddButton = "Acrescentar este termo";
+$TermUpdateButton = "Actualizar termo";
+$TermEdit = "Editar termo";
+$TermDeleteAction = "Eliminar termo";
+$OrderBy = "Ordenar por";
+$CreationDate = "Data de criação";
+$UpdateDate = "Última modificação";
+$PreSelectedOrder = "Ordenar por selecção";
+$TermAdded = "Termo acrescentado";
+$YouMustEnterATermName = "Deve introduzir um termo";
+$YouMustEnterATermDefinition = "Tem de introduzir a definição do termo";
+$GlossaryManagement  = "Gestão do glossário";
+?>
