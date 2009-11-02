@@ -183,25 +183,26 @@ class GroupManager {
 		}
 
 		$groups = array ();
-		while ($thisGroup = Database::fetch_array($groupList))
-		{
-			if ($thisGroup['category_id'] == VIRTUAL_COURSE_CATEGORY)
-			{
-				$sql = "SELECT title FROM $table_course WHERE code = '".$thisGroup['name']."'";
-				$obj = Database::fetch_object(Database::query($sql,__FILE__,__LINE__));
-				$thisGroup['name'] = $obj->title;
-			}
-			if($thisGroup['session_id']!=0)
-			{
-				$sql_session = 'SELECT name FROM '.Database::get_main_table(TABLE_MAIN_SESSION).' WHERE id='.$thisGroup['session_id'];
-				$rs_session = Database::query($sql_session,__FILE__,__LINE__);
-				if (Database::num_rows($rs_session)>0) {
-					$thisGroup['session_name'] = Database::result($rs_session,0,0);
-				} else {
-					//the session has probably been removed, so the group is now orphaned
+		$thisGroup= array();
+			while ($thisGroup = Database::fetch_array($groupList)) {
+				if ($thisGroup['category_id'] == VIRTUAL_COURSE_CATEGORY)
+				{
+					$sql = "SELECT title FROM $table_course WHERE code = '".$thisGroup['name']."'";
+					$obj = Database::fetch_object(Database::query($sql,__FILE__,__LINE__));
+					$thisGroup['name'] = $obj->title;
 				}
-			}
-			$groups[] = $thisGroup;
+				if($thisGroup['session_id']!=0)
+				{
+					$sql_session = 'SELECT name FROM '.Database::get_main_table(TABLE_MAIN_SESSION).' WHERE id='.$thisGroup['session_id'];
+					$rs_session = Database::query($sql_session,__FILE__,__LINE__);
+					if (Database::num_rows($rs_session)>0) {
+						$thisGroup['session_name'] = Database::result($rs_session,0,0);
+					} else {
+						//the session has probably been removed, so the group is now orphaned
+					}
+				}
+				$groups[] = $thisGroup;
+			
 		}
 		return $groups;
 	}
@@ -809,8 +810,8 @@ class GroupManager {
 					$i--;
 				}
 			}
-			if(count($group_ids)==0)
-				return false;
+			if(count($group_ids)==0){
+				return false;}
 		}
 
 		global $_course;
@@ -819,7 +820,8 @@ class GroupManager {
 		$course_user_table = Database :: get_main_table(TABLE_MAIN_COURSE_USER);
 		$group_table = Database :: get_course_table(TABLE_GROUP);
 		$group_user_table = Database :: get_course_table(TABLE_GROUP_USER);
-		$complete_user_list = CourseManager :: get_real_and_linked_user_list($_course['sysCode']);
+		$session_id = api_get_session_id();
+		$complete_user_list = CourseManager :: get_real_and_linked_user_list($_course['sysCode'], true, $session_id);
         $number_groups_per_user = ($groups_per_user == GROUP_PER_MEMBER_NO_LIMIT ? INFINITE : $groups_per_user);
 		/*
 		 * Retrieve all the groups where enrollment is still allowed
@@ -853,7 +855,7 @@ class GroupManager {
 		}
 		//first sort by user_id to filter out duplicates
 		$complete_user_list = TableSort :: sort_table($complete_user_list, 'user_id');
-		$complete_user_list = self :: filter_duplicates($complete_user_list, "user_id");
+		$complete_user_list = self :: filter_duplicates($complete_user_list, 'user_id');
 		$complete_user_list = self :: filter_only_students($complete_user_list);
 		//now sort by # of group left
 		$complete_user_list = TableSort :: sort_table($complete_user_list, 'number_groups_left', SORT_DESC);
