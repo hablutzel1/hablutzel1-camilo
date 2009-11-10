@@ -1,0 +1,19 @@
+err01	<b>&lt;[[OTHER]]&gt;</b> etiketi bulunamad�.<br><br>Eklemek isterseniz, <b>o_[[OTHER]]</b> �eklinde a��p, <b>c_[[OTHER]]</b> �eklinde kapatabilirsiniz.<br><br> Bu �ekilde etiketler �retirseniz l�tfen daha sonraki HTML2PDF versiyonuna eklenmek �zere bana g�nderin. ( webmaster@spipu.net ).
+err02	��erik 1000 sat�rdan fazla ve gerekenden uzun <br><b>Konu :</b> [[OTHER_0]]<br><b>Geni�lik :</b> [[OTHER_1]]<br><b>Yaz� boyutu :</b> [[OTHER_2]]<br>
+err03	HTML kodu hatal�, etiket birden fazla defa kapat�lm��: <b>&lt;[[OTHER]]&gt;</b>
+err04	HTML kodu hatal�, etiketler gereken d�zen i�inde kapat�lmam��.<br>Durum : <pre>[[OTHER]]</pre>
+err05	HTML kodu hatal�, b�t�n etiketler kapat�lmal�.<br>Durum : <pre>[[OTHER]]</pre>
+err06	Resim dosyas� okunam�yor <b>[[OTHER]]</b>
+err07	TD i�eri�i bir sayfaya s��m�yor
+txt01	HATA n�
+txt02	Dosya :
+txt03	Sat�r :
+pdf01	Dok�man �retilme tarihi [[date_y]]-[[date_m]]-[[date_d]]
+pdf02	Dok�man �retilme tarihi [[date_h]]:[[date_i]]
+pdf03	Dok�man �retilme tarihi [[date_y]]-[[date_m]]-[[date_d]] saati [[date_h]]:[[date_i]]
+pdf04	Sayfa [[current]]/[[nb]]
+pdf05	Adobe Reader 9 gerektirir
+vue01	DOSYA �ST�
+vue02	DOSYA ALTI
+vue03	SAYFA
+vue04	G�r�n�
