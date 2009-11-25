@@ -278,6 +278,8 @@ $langMyTeach = "Habilitações/O que eu sou capaz de ensinar";
 $Agenda = "Agenda";
 $HourShort = "h";
 $PleaseTryAgain = "Por favor, tente novamente !";
+$UplNoFileUploaded = "Não foi enviado nenhum ficheiro.";
+$UplSelectFileFirst = "Por favor, seleccione um ficheiro antes de clicar no botão enviar.";
 $UplNotAZip = "O ficheiro seleccionado não é um ficheiro ZIP.";
 $UplUploadSucceeded = "Envio do ficheiro bem sucedido!";
 $ExportAsCSV = "Exportar para CSV";
@@ -752,4 +754,5 @@ $LastPage = "Última página";
 $Coachs = "Tutores";
 $New = "Novo";
 $YouMustToInstallTheExtensionLDAP = "Necessita de instalar a extensão LDAP";
+$AddAdditionalProfileField = "Adicionar campo de perfil de utilizador";
 ?>

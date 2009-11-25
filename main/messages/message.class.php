@@ -168,8 +168,13 @@ class MessageManager
 		return $message_list;
 	}
 
-	public static function send_message ($receiver_user_id, $title, $content, $file_attachments=array(), $file_comments = '') {
+	public static function send_message ($receiver_user_id, $title, $content, $file_attachments = array(), $file_comments = '', $group_id = 0, $parent_id = 0) {	
         global $charset;
+		$table_message = Database::get_main_table(TABLE_MESSAGE);
+		$group_id = intval($group_id);
+        $receiver_user_id = intval($receiver_user_id);
+        $parent_id = intval($parent_id);
+
         if (is_numeric($receiver_user_id)) {
 			$table_message = Database::get_main_table(TABLE_MESSAGE);
 	        $title = api_convert_encoding($title,$charset,'UTF-8');
@@ -178,7 +183,7 @@ class MessageManager
 			$sql = "SELECT COUNT(*) as count FROM $table_message WHERE user_sender_id = ".api_get_user_id()." AND user_receiver_id='".Database::escape_string($receiver_user_id)."' AND title = '".Database::escape_string($title)."' AND content ='".Database::escape_string($content)."' ";
 			$res_exist = Database::query($sql,__FILE__,__LINE__);
 			$row_exist = Database::fetch_array($res_exist,'ASSOC');
-			if ($row_exist['count'] ==0) {								 		 
+			if ($row_exist['count'] == 0) {								 		 
 				//message in outbox
 				$sql = "INSERT INTO $table_message(user_sender_id, user_receiver_id, msg_status, send_date, title, content ) ".
 						 " VALUES (".
@@ -197,11 +202,10 @@ class MessageManager
 						$o++;	
 					}
 				}
-				
-				//message in inbox
-				$query = "INSERT INTO $table_message(user_sender_id, user_receiver_id, msg_status, send_date, title, content ) ".
+				//message in inbox								 
+				$query = "INSERT INTO $table_message(user_sender_id, user_receiver_id, msg_status, send_date, title, content, group_id, parent_id ) ".
 						 " VALUES (".
-				 		 "'".api_get_user_id()."', '".Database::escape_string($receiver_user_id)."', '1', '".date('Y-m-d H:i:s')."','".Database::escape_string($title)."','".Database::escape_string($content)."'".
+				 		 "'".api_get_user_id()."', '".Database::escape_string($receiver_user_id)."', '1', '".date('Y-m-d H:i:s')."','".Database::escape_string($title)."','".Database::escape_string($content)."','$group_id','$parent_id'".
 				 		 ")";
 				$result = Database::query($query,__FILE__,__LINE__);				
 				$inbox_last_id = Database::insert_id();
@@ -317,8 +321,7 @@ class MessageManager
 
 			$safe_file_comment= Database::escape_string($file_comment);
 			$safe_file_name = Database::escape_string($file_name);
-			$safe_new_file_name = Database::escape_string($new_file_name);
-						
+			$safe_new_file_name = Database::escape_string($new_file_name);						
 			// Storing the attachments if any			
 			$sql="INSERT INTO $tbl_message_attach(filename,comment, path,message_id,size)
 				  VALUES ( '$safe_file_name', '$safe_file_comment', '$safe_new_file_name' , '$message_id', '".$file_attach['size']."' )";
@@ -328,13 +331,20 @@ class MessageManager
 		}	
 	}
 
+	/**
+	 * Delete message attachment file (logicaly updating the row with a suffix _DELETE_id)
+	 * @param  int		message id
+	 * @param  int		message user id (receiver user id or sender user id) 
+	 * @return void
+	 */
 	public static function delete_message_attachment_file($message_id,$message_uid) {
 
+		$message_id = intval($message_id);		
+		$message_uid = intval($message_uid);
 		$table_message_attach = Database::get_main_table(TABLE_MESSAGE_ATTACHMENT);
 		
 		$sql= "SELECT * FROM $table_message_attach WHERE message_id = '$message_id'";
-		$rs	= Database::query($sql,__FILE__,__LINE__);
-		
+		$rs	= Database::query($sql,__FILE__,__LINE__);		
 		$new_paths = array();
 		while ($row = Database::fetch_array($rs)) {
 			$path 		= $row['path'];
@@ -365,6 +375,22 @@ class MessageManager
 		$result = Database::query($query,__FILE__,__LINE__);
 		return $row = Database::fetch_array($result);
 	}
+	
+	public static function get_messages_by_group($group_id) {	 	
+		if ($group_id != strval(intval($group_id))) return false;		
+	 	$table_message = Database::get_main_table(TABLE_MESSAGE);
+	 	$group_id = intval($group_id);	 			
+		$query = "SELECT * FROM $table_message WHERE group_id='$group_id' AND msg_status <> 4 ORDER BY id";		
+		$rs = Database::query($query,__FILE__,__LINE__);		
+		$data = array();
+		if (Database::num_rows($rs) > 0) {
+			while ($row = Database::fetch_array($rs)) {
+				$data[] = $row;
+			}		
+		}
+		return $data;
+	}
+	
 	/**
 	 * Gets information about if exist messages
 	 * @author Isaac FLores Paz <isaac.flores@dokeos.com>
@@ -453,6 +479,10 @@ class MessageManager
 		return $result['number_messages'];
 	}
 	
+	/**
+	 * display message box in the inbox 
+	 * @return void
+	 */
 	public static function show_message_box() {
 		global $charset;
 		
@@ -545,10 +575,13 @@ class MessageManager
 		</TABLE>';
 	}
 	
-	public static function show_message_box_sent () {
-		
-		global $charset;
-		
+	
+	/**
+	 * display message box sent showing it into outbox 
+	 * @return void
+	 */
+	public static function show_message_box_sent () {		
+		global $charset;		
 		$table_message = Database::get_main_table(TABLE_MESSAGE);
 		$tbl_message_attach = Database::get_main_table(TABLE_MESSAGE_ATTACHMENT);
 		
@@ -621,6 +654,7 @@ class MessageManager
 		    </TR>
 		</TABLE>';
 	}
+	
 	/**
 	 * get user id by user email
 	 * @param string $user_email
@@ -637,5 +671,99 @@ class MessageManager
 			return null;
 		}
 	}
+	
+	/**
+	 * display messages for group with nested view 
+	 * @param int group id
+	 * @return void
+	 */
+	public static function display_messages_for_group($group_id) {
+				
+		global $origin;				
+		$rows = self::get_messages_by_group($group_id);		
+		$rows = self::calculate_children($rows);
+		$group_info = GroupPortalManager::get_group_data($group_id);		
+		$count=0;
+						
+		foreach ($rows as $message) {
+			$indent	= $message['indent_cnt']*'20';
+			$user_sender_info = UserManager::get_user_info_by_id($message['user_sender_id']); 
+			if (!empty($message['parent_id'])) {				
+				$message_parent_info = self::get_message_by_id($message['parent_id']);								
+				$user_parent_info = UserManager::get_user_info_by_id($message_parent_info['user_sender_id']);
+				$name_user_parent = api_get_person_name($user_parent_info['firstname'], $user_parent_info['lastname']);
+			}
+			$name=api_get_person_name($user_sender_info['firstname'], $user_sender_info['lastname']);						
+			echo "<div style=\"margin-left: ".$indent."px;padding:5px;border:1pt dotted black\">";
+			echo '<div id="message-title">'.$message['title'].'&nbsp;(&nbsp;'.$message['send_date'].'&nbsp;)&nbsp;</div>';						
+			echo '<div id="message-author">'.get_lang('From').'&nbsp;'.$name.'&nbsp;'.get_lang('ToGroup').'&nbsp;'.(!empty($message['parent_id'])?$name_user_parent:$group_info['name']).'</div>';			
+			echo '<div id="message-content">'.$message['content'].'</div>';
+			echo '<div id="actions">';
+			
+			if (!isset($message['children'])) {
+				echo '<a href="/main/messages/new_message.php?group_id='.$group_id.'&message_id='.$message['id'].'">'.Display::return_icon('forumthread_new.gif',api_xml_http_response_encode(get_lang('Reply'))).'&nbsp;'.api_xml_http_response_encode(get_lang('Reply')).'</a>';
+			}
+			echo '</div>';
+			echo '</div>';
+			$count++;						
+		}
+	}
+	
+	/**
+	 * Add children to messages by id is used for nested view messages  
+	 * @param array  rows of messages 
+	 * @return array new list adding the item children
+	 */	
+	public static function calculate_children($rows) {
+
+		foreach($rows as $row) {
+			$rows_with_children[$row["id"]]=$row;
+			$rows_with_children[$row["parent_id"]]["children"][]=$row["id"];
+		}		
+		$rows=$rows_with_children;
+		$sorted_rows=array(0=>array());
+		self::message_recursive_sort($rows, $sorted_rows);
+		unset($sorted_rows[0]);
+		return $sorted_rows;
+	}
+	
+	/**
+	 * Sort recursively the messages, is used for for nested view messages   
+	 * @param array  original rows of messages
+	 * @param array  list recursive of messages
+	 * @param int   seed for calculate the indent
+	 * @param int   indent for nested view 
+	 * @return void
+	 */	
+	public static function message_recursive_sort($rows, &$messages, $seed=0, $indent=0) {
+		if($seed>0) {
+			$messages[$rows[$seed]["id"]]=$rows[$seed];
+			$messages[$rows[$seed]["id"]]["indent_cnt"]=$indent;
+			$indent++;
+		}	
+		if(isset($rows[$seed]["children"])) {
+			foreach($rows[$seed]["children"] as $child) {
+				self::message_recursive_sort($rows, $messages, $child, $indent);
+			}
+		}
+	}
+	
+	/**
+	 * Get message list by id    
+	 * @param int  message id 
+	 * @return array  
+	 */	
+	public static function get_message_by_id($message_id) {
+		$tbl_message = Database::get_main_table(TABLE_MESSAGE);
+		$message_id = intval($message_id);				
+		$sql = "SELECT * FROM $tbl_message WHERE id = '$message_id'";
+		$res = Database::query($sql, __FILE__, __LINE__);
+		$item = array(); 
+		if (Database::num_rows($res)>0) {
+			$item = Database::fetch_array($res,'ASSOC');
+		}
+		return $item;
+	}
+	
 }
 ?>

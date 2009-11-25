@@ -278,6 +278,8 @@ $langMyTeach = "¿ Qué puedo aprender a otros ?";
 $Agenda = "Axenda";
 $HourShort = "h";
 $PleaseTryAgain = "Por favor, inténtelo otra vez";
+$UplNoFileUploaded = "Nun s\'unvió nengún archivu";
+$UplSelectFileFirst = "Por favor, escueya l\'archivu enantes calcar el botón unviar.";
 $UplNotAZip = "L\'archivu escoyíu nun ye un archivu ZIP.";
 $UplUploadSucceeded = "L\'archivu unvióse";
 $ExportAsCSV = "Esportar a ficheru CSV";
@@ -752,4 +754,5 @@ $LastPage = "Páxina cabera";
 $Coachs = "Tutores";
 $New = "Nuevu";
 $YouMustToInstallTheExtensionLDAP = "Tienes qu\'instalar la estensión LDAP";
+$AddAdditionalProfileField = "Amestar un campu del perfil d\'usuariu";
 ?>
