@@ -1,0 +1,19 @@
+err01	La balise <b>&lt;[[OTHER]]&gt;</b> n'existe pas encore.<br><br>Si vous voulez la rajouter, vous devez cr�er les m�thodes <b>o_[[OTHER]]</b> (pour l'ouverture) et <b>c_[[OTHER]]</b> (pour la fermeture) en suivant le mod�le des balises existantes.<br><br>De plus, si vous cr�ez ces m�thodes, n'h�sitez pas � en faire profiter tout le monde en m'�crivant sur webmaster@spipu.net afin qu'elles se retrouvent dans la prochaine version d'HTML2PDF.
+err02	Phrase de 1000 lignes => trop long<br><b>Phrase :</b> [[OTHER_0]]<br><b>Largeur case :</b> [[OTHER_1]]<br><b>Longueur text :</b> [[OTHER_2]]<br>
+err03	Code HTML non valide, une balise est ferm�e en trop : <b>&lt;[[OTHER]]&gt;</b>
+err04	Code HTML non valide, les balises ne sont pas ferm�es dans le bon ordre.<br>Etat : <pre>[[OTHER]]</pre>
+err05	Code HTML non valide, toutes les balises doivent �tre ferm�es.<br>Etat : <pre>[[OTHER]]</pre>
+err06	Impossible de charger l'image <b>[[OTHER]]</b>
+err07	le contenu d'une balise TD ne rentre pas sur une seule page
+txt01	ERREUR n�
+txt02	Fichier :
+txt03	Ligne :
+pdf01	Document g�n�r� le [[date_d]]/[[date_m]]/[[date_y]]
+pdf02	Document g�n�r� � [[date_h]]:[[date_i]]
+pdf03	Document g�n�r� le [[date_d]]/[[date_m]]/[[date_y]] � [[date_h]]:[[date_i]]
+pdf04	Page [[current]]/[[nb]]
+pdf05	Les formulaires n�cessitent  l'utilisation de Adobe Reader 9
+vue01	HEADER
+vue02	FOOTER
+vue03	PAGE
+vue04	Restitution
