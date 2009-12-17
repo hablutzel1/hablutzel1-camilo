@@ -132,24 +132,24 @@ if ($number_loop != 0) {
 		   		$picture = UserManager::get_user_picture_path_by_id($sender_user_id,'web',false,true);
 		   		$friends_profile = SocialManager::get_picture_user($sender_user_id, $picture['file'], 92);
 		        $user_info	= api_get_user_info($sender_user_id);	        
-		        $title		= get_lang($invitation['title']);
-				$content	= get_lang($invitation['content']);
+		        $title		= api_convert_encoding($invitation['title'],$charset);
+				$content	= api_convert_encoding($invitation['content'],$charset);
 		        $date		= $invitation['send_date'];                  
 		    ?>	   	
 			<table cellspacing="0" border="0">
 			<tbody>
 				<tr>
 					<td class="invitation_image">
-						<a href="profile.php?u=<?=$sender_user_id?>">
+						<a href="profile.php?u=<? echo $sender_user_id; ?>">
 						<img src="<?php echo $friends_profile['file']; ?>" <?php echo $friends_profile['style']; ?> /></a>
 					</td>
 					<td class="info">
-							<a class="profile_link" href="profile.php?u=<?=$sender_user_id?>"><?= api_get_person_name($user_info['firstName'], $user_info['lastName']);?></a>
+							<a class="profile_link" href="profile.php?u=<?php echo $sender_user_id;?>"><? echo api_get_person_name($user_info['firstName'], $user_info['lastName']);?></a>
 							<div>
-							<?= $title.' : '.$content;?>
+							<?php echo $title.' : '.$content;?>
 							</div>
 							<div>
-							<?= get_lang('DateSend').' : '.$date;?>
+							<?php echo get_lang('DateSend').' : '.$date;?>
 							</div> 
 							<div class="buttons">
 		   						<button class="save" name="btn_accepted" type="submit" id="<?php echo "btn_accepted_".$sender_user_id ?>" value="<?php echo get_lang('Accept');?>"onclick="javascript:register_friend(this)">
@@ -177,24 +177,24 @@ if (count($list_get_invitation_sent) > 0 ){
 		   		$friends_profile = SocialManager::get_picture_user($sender_user_id, $picture['file'], 92);
 		        $user_info	= api_get_user_info($sender_user_id);	  
 		              
-		        $title		= get_lang($invitation['title']);
-				$content	= get_lang($invitation['content']);
+		        $title		= api_convert_encoding($invitation['title'], $charset);
+				$content	= api_convert_encoding($invitation['content'],$charset);
 		        $date		= $invitation['send_date'];                  
 		    ?>	   	
 			<table cellspacing="0" border="0">
 			<tbody>
 				<tr>
 					<td class="invitation_image">
-						<a href="profile.php?u=<?=$sender_user_id?>">
+						<a href="profile.php?u=<?php echo $sender_user_id;?>">
 						<img src="<?php echo $friends_profile['file']; ?>" <?php echo $friends_profile['style']; ?> /></a>
 					</td>
 					<td class="info">
-							<a class="profile_link" href="profile.php?u=<?=$sender_user_id?>"><?= api_get_person_name($user_info['firstName'], $user_info['lastName']);?></a>
+							<a class="profile_link" href="profile.php?u=<?php echo $sender_user_id; ?>"><?php echo api_get_person_name($user_info['firstName'], $user_info['lastName']);?></a>
 							<div>
-							<?= $title.' : '.$content;?>
+							<?php echo $title.' : '.$content;?>
 							</div>
 							<div>
-							<?= get_lang('DateSend').' : '.$date;?>
+							<?php echo get_lang('DateSend').' : '.$date;?>
 							</div>		
 					</td>
 				</tr>
