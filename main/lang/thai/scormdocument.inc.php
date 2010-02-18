@@ -1,0 +1,65 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$langChapter = "º··Õè";
+$langDocumentList = "ÃÒÂ¡ÒÃàÍ¡ÊÒÃ";
+$langOrganisationList = "ÃÒÂª×èÍË¹èÇÂ§Ò¹";
+$langEditTOC = "á¡éä¢ÊÒÃºÑ­";
+$langEditDocument = "á¡éä¢àÍ¡ÊÒÃ";
+$langCreateDocument = "ÊÃéÒ§àÍ¡ÊÒÃ";
+$langMissingImagesDetected = "µÃÇšŸºÇèÒ ¢ÒŽÀÒŸ»ÃÐ¡Íº";
+$langPublish = "àŒÂáŸÃè";
+$langScormcontentstudent = "¹Õè€×ÍÃÙ»áººàÍ¡ÊÒÃËÅÑ¡ÊÙµÃµÒÁÁÒµÃ°Ò¹Ê¡ÍÃìÁ. ËÒ¡µéÍ§¡ÒÃà»ÔŽãËé€ÅÔ¡·Õè¹Õè: <input type=button name=scormbutton value=\'Launch it !\' onclick=\'openscorm()\'>";
+$langScormcontent = "¹Õè€×Íà¹×éÍËÒÊ¡ÍÃìÁ €ÅÔ¡à»ÔŽ<br><input type=button name=scormbutton value=\'Launch it !\' onclick=\'openscorm()\'>";
+$langDownloadAndZipEnd = "ä¿ÅìzipäŽéâÍ¹ÂéÒÂáÅÐäŽé€×¹ÊÀÒŸä¿ÅìàŽÔÁãËéáÅéÇ";
+$langZipNoPhp = "ä¿ÅìzipäÁèÊÒÁÒÃ¶ºÃÃšØä¿Åì.php";
+$langGroupForumLink = "¡ÅØèÁÍÀÔ»ÃÒÂ";
+$langGroupSpace = "Ÿ×é¹·Õè¡ÅØèÁ";
+$langNotScormContent = "äÁèãªèä¿Åì .zip µÒÁáººÁÒµÃ°Ò¹Scorm";
+$langNoText = "¡ÃØ³ÒŸÔÁŸìà¹×éÍËÒËÃ×Í¹Óà¢éÒä¿ÅìàÍ¡ÊÒÃhtml¢Í§€Ø³";
+$langNoFileName = "äÁèÁÕª×èÍä¿Åì";
+$langMaxFileSize = "¢¹ÒŽä¿ÅìãË­èÊØŽ€×Í";
+$langFileName = "ª×èÍä¿Åì";
+$langFileError = "ä¿Åì·ÕèšÐâÍ¹ÂéÒÂ¢Öé¹ äÁèÊÁºÙÃ³ì";
+$langDown = "àÅ×èÍ¹Å§";
+$langViMod = "á¡éä¢ãËéÊÒÁÒÃ¶ÁÍ§àËç¹äŽéáÅéÇ";
+$langAddComment = "àŸÔèÁ¢éÍ€ÔŽàËç¹";
+$langImpossible = "äÁèÊÒÁÒÃ¶ŽÓà¹Ô¹¡ÒÃäŽé";
+$langNewDir = "ª×èÍá¿éÁãËÁè";
+$langTo = "¶Ö§";
+$langNoSpace = "¡ÒÃâÍ¹ÂéÒÂä¿Åì¢Öé¹ÃÐººÅéÁàËÅÇ Ÿ×é¹·Õèã¹á¿éÁà¡çº§Ò¹äÁèàŸÕÂ§ŸÍ";
+$langDownloadEnd = "¡ÒÃâÍ¹ÂéÒÂä¿ÅìàÊÃçšàÃÕÂºÃéÍÂ";
+$langFileExists = "äÁèÊÒÁÒÃ¶ŽÓà¹Ô¹¡ÒÃäŽé<br>àŸÃÒÐÁÕ·Õèà¡çºä¿ÅìáÅÐª×èÍ¹ÕéáÅéÇ";
+$langDocCopied = "ÊÓà¹ÒàÍ¡ÊÒÃáÅéÇ";
+$langDocDeleted = "äŽéÅºáŒ¹¡ÒÃàÃÕÂ¹µÒÁáººÁµÃ°Ò¹¢Í§ScormáÅéÇ";
+$langElRen = "à»ÅÕèÂ¹ª×èÍ EI ???";
+$langDirMv = "á¿éÁà¡çº§Ò¹¢Í§àÃÒ";
+$langComMod = "âËÁŽ€ÓÊÑè§?????";
+$langRename = "à»ÅÕèÂ¹ª×èÍ";
+$langCopy = "·ÓÊÓà¹Ò";
+$langNameDir = "ª×èÍá¿éÁà¡çº§Ò¹ãËÁè";
+$langDownloadFile = "âÍ¹ÂéÒÂä¿ÅìzipÇÔªÒ ¢Í§ IMSËÃ×Í Scorm";
+$learning_path_access = "€ÅÔ¡·Õè€ÓÇèÒ \'create learning path\' àŸ×èÍ·Ó¡ÒÃ Åº/á¡éä¢/áÊŽ§/«èÍ¹/ÊÃéÒ§/àŸÔèÁ learning path";
+$langRoot = "root";
+$langBuilder = "µÑÇÊÃéÒ§áŒ¹¡ÒÃàÃÕÂ¹";
+$lang_edit_learnpath = "á¡éä¢ª×èÍ/€ÓÍžÔºÒÂ";
+$lang_add_title_and_desc = "à»ÅÕèÂ¹ª×èÍáÅÐàŸÔèÁ€ÓÍžÔºÒÂ";
+$lang_add_learnpath = "ÊÃéÒ§áŒ¹¡ÒÃàÃÕÂ¹ã¹ÃÐºº";
+$lang_learnpath_added = "äŽéÊÃéÒ§Í§€ì»ÃÐ¡Íº¡ÒÃàÃÕÂ¹ÃÙé¢Í§ÇÔªÒãËÁèàÃÕÂºÃéÍÂáÅéÇ €Ø³ÊÒÁÒÃ¶àŸÔèÁº·àÃÕÂ¹à¢éÒä»äŽé âŽÂ¡ÒÃ€ÅÔ¡·Õèª×èÍÃÒÂ¡ÒÃ¹Ñé¹æ";
+$lang_delete_learnpath = "ÅºáŒ¹¡ÒÃàÃÕÂ¹";
+$lang_learnpath_edited = "äŽéá¡éä¢áŒ¹¡ÒÃàÃÕÂ¹àÃÕÂºÃéÍÂáÅéÇ";
+$lang_learnpath_deleted = "äŽéÅºáŒ¹¡ÒÃàÃÕÂ¹áÅÐË¹èÇÂ¡ÒÃàÃÕÂ¹ÃÙéã¹áŒ¹àÃÕÂºÃéÍÂáÅéÇ";
+$lang_no_publish = "ÂÑ§äÁèãËéŒÙéàÃÕÂ¹ÁÍ§àËç¹";
+$lang_publish = "ŒÙéàÃÕÂ¹ÁÍ§àËç¹äŽé";
+$lang_no_published = "·Ó¡ÒÃ«èÍ¹äÁèãËéŒÙéàÃÕÂ¹ÁÍ§áËç¹ àÃÕÂºÃéÍÂáÅéÇ";
+$lang_published = "ãËéŒÙéàÃÕÂ¹ÊÒÁÒÃ¶à¢éÒä»àÃÕÂ¹äŽéáÅéÇ";
+$lang_description = "€ÓÍžÔºÒÂ";
+$lang_title = "ª×èÍàÃ×èÍ§";
+$langScormBuilder = "µÑÇÊÃéÒ§àÍ¡ÊÒÃµÒÁáººÁÒµÃ°Ò¹Scorm";
+$langCreateDoc = "ÊÃéÒ§àÍ¡ÊÒÃ";
+$langOrganiseDocuments = "šÑŽÃÐººàÍ¡ÊÒÃ";
+$langUncompress = "äÁèºÕºÍÑŽä¿Åì";
+$ExportShort = "Êè§ÍÍ¡ä¿Åì";
+$progress = "€ÇÒÁ¡éÒÇË¹éÒ";
+?>
