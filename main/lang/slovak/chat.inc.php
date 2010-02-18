@@ -1,0 +1,63 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$langOnlineConference = "Konferencia";
+$langWash = "Vy&#269;isti&#357;";
+$langReset = "Retartova&#357;";
+$langSave = "Uloi&#357;";
+$langRefresh = "Obnovi&#357;";
+$langIsNowInYourDocDir = "je teraz uloený vo vaej zloke dokumentov. <br><B>Tento súbor je vidite&#318;ný</B>";
+$langCopyFailed = "Tla&#269; neúspená";
+$langTypeMessage = "Prosím napí&#353;te svoju správu!";
+$langConfirmReset = "Naozaj chcete zmaza&#357; vetky správy?";
+$langHasResetChat = "retartova&#357; Pokec";
+$langNoOnlineConference = "Momentálne nie je iadna konferencia...";
+$langMediaFile = "ivé audio alebo video streaming";
+$langContentFile = "Prezentácia";
+$langListOfParticipants = "Zoznam ú&#269;astníkov";
+$langYourPicture = "Vaa fotografia";
+$langOnlineDescription = "Popis konferencie";
+$langOnlyCheckForImportantQuestion = "Zakrtnite len v prípade dôleitej otázky!";
+$langQuestion = "otázka";
+$langClearList = "Vymaza&#357; správy";
+$langWhiteBoard = "Tabu&#318;a";
+$langTextEditorDefault = "<h2>Textový editor</h2> Z programu Ms-Word® môete vy&#328;a&#357; a sem vloi&#357; text, následne ho upravi&#357;. Ú&#269;astníci budú vae úpravy vidie&#357; naivo.";
+$langStreaming = "Prenos (streaming)";
+$langStreamURL = "Stream URL";
+$langStreamType = "Typ streamingu";
+$langLinkName = "Názov odkazu";
+$langLinkURL = "URL odkaz";
+$langWelcomeToOnlineConf = "Vitajte na <b>Online Konferencii</b>";
+$langNoLinkAvailable = "iadny odkaz";
+$langChat_reset_by = "retartova&#357;  Pokec";
+$OrFile = "Alebo súbor";
+$langCallSent = "Pozvanie na chat hovor bolo poslané. &#268;akám na potvrdenie od váho partnera.";
+$langChatDenied = "Volaný zamietol Vá hovor.";
+$Send = "Posla&#357;";
+$Connected = "Ú&#269;astníci chatu";
+$Think = "Uvaova&#357;";
+$BigGrin = "Ve&#318;ký úsmev";
+$Amazing = "Prekvapujúci";
+$Confused = "Zmätený";
+$Cool = "Úasný";
+$Surprised = "Prekvapený";
+$Hand = "Ahoj";
+$Wink = "murknutie";
+$Neutral = "Neutrálny";
+$Angry = "Nahnevaný";
+$Avid = "Dychtivý";
+$Redface = "Hanbi&#357; sa";
+$Sad = "Smutný";
+$Silence = "Ticho";
+$Silenced = "Ml&#269;anlivý";
+$Smile = "Úsmev";
+$Exclamation = "Prehlásenie";
+$Arrow = "ípka";
+$Question = "Otázka";
+$Idea = "Nápad";
+$AskPermissionSpeak = "Poiada&#357; o povolenie hovori&#357;";
+$GiveTheFloorTo = "";
+$Pause = "Pauza";
+$Stop = "Stop";
+?>
