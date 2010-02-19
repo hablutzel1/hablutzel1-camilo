@@ -1,0 +1,59 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$ResourceAdded = "Zdroj pridaný. Teraz môete ís&#357; spä&#357; do osnovy a prida&#357; &#271;alie zdroje.";
+$LearningPath = "U&#269;ebná osnova";
+$LevelUp = "úrove&#328; vyie";
+$AddIt = "Prida&#357;";
+$MainCategory = "hlavná kategória";
+$lang_delete_added_resources = "Zmaza&#357; pridané zdroje";
+$AddToLinks = "Prida&#357; do odkazov kurzu";
+$DontAdd = "neprida&#357;";
+$lang_show_all_added_resources = "Zobrazi&#357; vetky pridané zdroje";
+$ResourcesAdded = "Zdroje pridané";
+$BackTo = "Spä&#357; do";
+$ExternalResources = "Externé zdroje";
+$CourseResources = "Zdroje kurzu";
+$ExternalLink = "Externý odkaz";
+$DropboxAdd = "Prida&#357; stránku Schránka na dokumenty k tejto kapitole.";
+$AddAssignmentPage = "Prida&#357; stránku Zadania k tejto kapitole.";
+$Exercise = "Testy";
+$Link = "Odkazy";
+$AdValvas = "Oznamy";
+$Document = "Dokument";
+$ShowDelete = "Zobrazi&#357; / Zmaza&#357;";
+$IntroductionText = "Úvodný text";
+$CourseDescription = "Popis kurzu";
+$Groups = "Skupiny";
+$Users = "Pouívatelia";
+$IntroductionTextAdd = "Prida&#357; stránku s úvodným textom do tejto kapitoly.";
+$CourseDescriptionAdd = "Prida&#357; stránku s popisom kurzu do tejto kapitoly.";
+$GroupsAdd = "Prida&#357; stránku Skupiny k tejto kapitole.";
+$UsersAdd = "Prida&#357; stránku Pouívatelia k tejto kapitole.";
+$ExportableCourseResources = "Exportovate&#318;né zdroje kurzu";
+$DokeosRelatedCourseMaterial = "Zdroje kurzu spojené s Chamiloom";
+$LinkTarget = "Cie&#318; odkazu";
+$SameWindow = "V rovnakom okne";
+$NewWindow = "V novom okne";
+$StepDeleted1 = "Tento";
+$StepDeleted2 = "poloka v tomto nástroji bola zmazaná.";
+$Modify = "zmeni&#357;";
+$Chapter = "Kapitola";
+$NoAgendaItems = "Nie sú iadne poloky agendy";
+$AgendaAdd = "Prida&#357; poloku agendy";
+$UserGroupFilter = "Filter skupiny pouívate&#318;a";
+$AgendaSortChronologicallyUp = "Usporiada&#357; agendu chronologicky (vzostupne)";
+$ShowCurrent = "Ukáza&#357; aktuálne poloky agendy";
+$ModifyCalendarItem = "Zmeni&#357; poloku agendy";
+$ItemTitle = "Názov";
+$Detail = "Podrobnosti";
+$EditSuccess = "Úprava bola úspená";
+$AddCalendarItem = "Prida&#357; poloku agendy";
+$AddAnn = "Prida&#357; oznam";
+$ForumAddNewTopic = "Fórum: prida&#357; novú tému";
+$ForumEditTopic = "Fórum: upravi&#357; tému";
+$ExerciseAnswers = "Test: Odpovede";
+$ForumReply = "Fórum: odpove&#271;";
+$AgendaSortChronologicallyDown = "Usporiada&#357; agendu chronologicky (zostupne)";
+?>

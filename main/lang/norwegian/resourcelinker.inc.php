@@ -1,0 +1,59 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$ResourceAdded = "";
+$LearningPath = "Læringssti";
+$LevelUp = "opp et nivå";
+$AddIt = "Legg til";
+$MainCategory = "hoved kategori";
+$lang_delete_added_resources = "Slett tillegg";
+$AddToLinks = "Legg til kursets linker";
+$DontAdd = "ikke legg til";
+$lang_show_all_added_resources = "Vis alle ressurser";
+$ResourcesAdded = "Resursen er lagt til";
+$BackTo = "Tilbake til";
+$ExternalResources = "Eksterne ressurser";
+$CourseResources = "";
+$ExternalLink = "Eksterne linker";
+$DropboxAdd = "";
+$AddAssignmentPage = "";
+$Exercise = "Tester";
+$Link = "Lenke";
+$AdValvas = "";
+$Document = "Dokument";
+$ShowDelete = "Vis / Slett";
+$IntroductionText = "Introduksjonstekst";
+$CourseDescription = "Kursbeskrivelse";
+$Groups = "Grupper";
+$Users = "Brukere";
+$IntroductionTextAdd = "";
+$CourseDescriptionAdd = "";
+$GroupsAdd = "";
+$UsersAdd = "";
+$ExportableCourseResources = "";
+$DokeosRelatedCourseMaterial = "";
+$LinkTarget = "";
+$SameWindow = "I samme vindu";
+$NewWindow = "I et nytt vindu";
+$StepDeleted1 = "Denne";
+$StepDeleted2 = "";
+$Modify = "Modifiser";
+$Chapter = "Kapitell";
+$NoAgendaItems = "";
+$AgendaAdd = "Legg til en kalenderoppføring";
+$UserGroupFilter = "";
+$AgendaSortChronologicallyUp = "";
+$ShowCurrent = "";
+$ModifyCalendarItem = "";
+$ItemTitle = "Tittel";
+$Detail = "Detaljer";
+$EditSuccess = "";
+$AddCalendarItem = "";
+$AddAnn = "";
+$ForumAddNewTopic = "";
+$ForumEditTopic = "";
+$ExerciseAnswers = "";
+$ForumReply = "";
+$AgendaSortChronologicallyDown = "";
+?>
