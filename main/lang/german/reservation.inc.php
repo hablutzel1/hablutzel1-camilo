@@ -1,0 +1,2 @@
+<?php
+$GoTo = "Gehe zu";

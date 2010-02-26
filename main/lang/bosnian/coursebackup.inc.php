@@ -1,0 +1,2 @@
+<?php
+$langSelectOptionForBackup = "sistemas operativos";

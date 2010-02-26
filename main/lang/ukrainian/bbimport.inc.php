@@ -1,0 +1,20 @@
+<?php
+$langViewCourseMaterialImport = "Продивитись матеріал курсу перед його імпортом";
+$langViewExternalLinksImport = "Продивитись зовнішні посилання перед імпортом";
+$langViewForumImport = "Продивитись форум перед імпортом";
+$langImportCourseMaterial = "Імпорт матеріалів курсу (інструмент \"Матеріали курсу\" в Blackboard)";
+$langImportExternalLinks = "Імпорт посилань (інструмент \"Зовнішні посилання\" в Blackboard)";
+$langImportForum = "Імпорт форумів (інструмент \"Дошка дискусій\" в Blackboard)";
+$langToolInfo = "Цей інструмент імпортує курси Blackboard 5.5 (Матеріали курсів, Дошку дискусій та зовнішні посилання)";
+$langToolName = "Імпортувати курси Blackboard";
+$langSelectCoursePackage = "Виберіть пакет курсу";
+$langPackageAlreadySelected = "Ви вже вибрали пакет";
+$langFirstSelectPackage = "Перед імпортом потрібно вибрати пакет та відкрити його.";
+$langCourseToMigrate = "Курс для переносу";
+$langSelectPackage = "Виберіть пакет";
+$langOpenPackageForImporting = "Відкрити цей пакет для імпорту";
+$langInformation = "Інформація про процедуру імпорту";
+$langChooseImportOptions = "Виберіть ваші варіанти імпорту";
+$langCheckWhatIsImported = "Ви можете вибрати перед початком процедури імпорту, що буде імпортовано";
+$langStartImporting = "Початок імпорту";
+$langImport = "Імпорт";

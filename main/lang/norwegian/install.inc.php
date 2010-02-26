@@ -1,0 +1,2 @@
+<?php
+$langEducationManager = "Prosjektadministrator";

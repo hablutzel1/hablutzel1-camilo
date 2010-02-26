@@ -1,0 +1,20 @@
+<?php
+$Inbox = "Postilaatikko";
+$Messages = "Viestit";
+$SendMessage = "Lähetä viesti";
+$NewMessage = "Uusi viesti";
+$ComposeMessage = "Kirjoita viesti";
+$DeleteSelectedMessages = "Poista valitut viestit";
+$SelectAll = "Valitse kaikki";
+$DeselectAll = "Poista kaikki valinnat";
+$ReplyToMessage = "Vastaa tähän viestiin";
+$BackToInbox = "Takaisin postilaatikkoon";
+$MessageSentTo = "Viesti on lähetetty";
+$SendMessageTo = "Kenelle";
+$Myself = "Minulle";
+$From = "Keneltä";
+$To = "Kenelle";
+$Date = "Päivä";
+$ErrorSendingMessage = "Virhe viestin lähetyksessä.";
+$SureYouWantToDeleteSelectedMessages = "Haluatko varmasti poistaa valitut viestit?";
+$SelectedMessagesDeleted = "Valitut viestit on poistettu";

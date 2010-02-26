@@ -1,0 +1,2 @@
+<?php
+$WCAGImage = "Slika";

@@ -1,0 +1,2 @@
+<?php
+$langMyAgenda = "Mans plānotājs";

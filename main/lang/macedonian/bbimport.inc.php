@@ -1,0 +1,20 @@
+<?php
+$langViewCourseMaterialImport = "Приказ на материјалите за курсот кога ќе бидат увезени";
+$langViewExternalLinksImport = "Приказ ма надворешните врски кога ќе бидат увезени";
+$langViewForumImport = "Приказ на форумот кога ќе биде увезен";
+$langImportCourseMaterial = "Увези материјали за курсот (алатка Blackboard \"Материјали за курсеви\"";
+$langImportExternalLinks = "Увези форуми (алатка Blackboard \"Дискусија\")";
+$langImportForum = "Увези форуми (алатка Blackboard \"Дискусија\")";
+$langToolInfo = "Оваа алатка го увезува курсеви од Blackboard 5.5 (Материјали за курсеви, Дискусија и Надворешни врски)";
+$langToolName = "Увези курсеви од Blackboard ";
+$langSelectCoursePackage = "Селектирај пакет на курсеви";
+$langPackageAlreadySelected = "Веќе имате селектирано пакет";
+$langFirstSelectPackage = "Морате прво да селектирате пакет и да го отворите пред да продолжите со увоз";
+$langCourseToMigrate = "Курсеви за селење";
+$langSelectPackage = "Селектирајте пакет";
+$langOpenPackageForImporting = "Отвоти го овој пакет за увоз";
+$langInformation = "Информација за процесот на увезување";
+$langChooseImportOptions = "Изберете ги Вашите опции за увоз";
+$langCheckWhatIsImported = "Можете да проверите за да видите дали ќе биде увезено пред да почне процесот на увезување";
+$langStartImporting = "Почни со увезување";
+$langImport = "Увоз";

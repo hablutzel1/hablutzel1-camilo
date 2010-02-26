@@ -1,0 +1,2 @@
+<?php
+$Tools = "Ohun elo";
