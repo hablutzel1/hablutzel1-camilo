@@ -1,0 +1,60 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$ReceivedFiles = "Получени файлове";
+$SentFiles = "Изпратени файлове";
+$ReceivedTitle = "Заглавие";
+$SentTitle = "Заглавие";
+$Authors = "Автори";
+$Size = "Размер";
+$LastResent = "Последно изпращан на";
+$kB = "kB";
+$Root = "Корен";
+$NoSentFilesHere = "Тук няма <b>изпратени</b> файлове.";
+$NoReceivedFilesHere = "Тук няма <b>получени</b> файлове.";
+$UploadNewFile = "Изпращане на нов файл";
+$AreYouSureToDelete = "Наистина ли искате да изтриете";
+$Feedback = "Коментар";
+$CloseFeedback = "Приключване на коментара";
+$AddNewFeedback = "Добавяне на следващ коментар";
+$DropboxFeedbackStored = "Коментарът е запазен.";
+$AllUsersHaveDeletedTheFileAndWillNotSeeFeedback = "Всички потребители са изтрили файла. Този коментар няма да бъде видян от никого.";
+$FeedbackError = "Коментар - появи се грешка.";
+$PleaseTypeText = "Въведете текст.";
+$YouAreNotAllowedToDownloadThisFile = "Не ви е позволено да свалите този файл.";
+$CheckAtLeastOneFile = "Маркирайте поне един файл.";
+$ReceivedFileDeleted = "Полученият файл е изтрит.";
+$SentFileDeleted = "Изпратеният файл е изтрит.";
+$FilesMoved = "Посочените файлове са преместени.";
+$ReceivedFileMoved = "Полученият файл е преместен.";
+$SentFileMoved = "Изпратеният файл е преместен.";
+$NotMovedError = "Файлът (файловете) не може да се премести (преместят).";
+$AddNewCategory = "Добавяне на категория";
+$EditCategory = "Редактиране на категорията";
+$CategoryName = "Наименование на категорията";
+$ErrorPleaseGiveCategoryName = "Моля, дайте наименование на категорията.";
+$CategoryAlreadyExistsEditIt = "Тази категория вече съществува. Моля, Дайте различно наименование.";
+$CurrentlySeeing = "В момента преглеждате категорията";
+$CategoryStored = "Категорията е запазена.";
+$CategoryModified = "Категорията е променена.";
+$CategoryDeleted = "Категорията е изтрита.";
+$AuthorFieldCannotBeEmpty = "Трябва да се посочи автор.";
+$YouMustSelectAtLeastOneDestinee = "Трябва да се посочи поне един получател.";
+$InvalidUserDetected = "Открит е невалиден потребител.";
+$InvalidGroupDetected = "Открита е невалидна група.";
+$DropboxFileTooBig = "Файлът е твърде голям.";
+$TheFileIsNotUploaded = "Файлът не е качен.";
+$FileUploadSucces = "Файлът е качен.";
+$MailingNonMailingError = "Не може да се презаписва без кореспондиране.";
+$MailingSelectNoOther = "Изпращането не може да бъде осъществено и до други получатели.";
+$MailingJustUploadSelectNoOther = "\"Само качване\" не може да се комбинира с други получатели.";
+$NoFilesHere = "Няма файлове.";
+$NewDropboxFileUploaded = "Нов файл беше изпратен чрез куриера.";
+$NewDropboxFileUploadedContent = "Нов файл беше изпратен чрез куриера за Вашия курс.";
+$langAddEdit = "Добавяне/Редактиране";
+$ErrorNoFilesInFolder = "Папката е празна.";
+$AddComment = "Добавяне на коментар";
+$SentCatgoryDeleted = "Папката е изтрита.";
+$ReceivedCatgoryDeleted = "Папката е изтрита.";
+?>
