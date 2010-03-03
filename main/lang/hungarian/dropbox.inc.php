@@ -1,0 +1,60 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$ReceivedFiles = "Kapott állományok";
+$SentFiles = "Elküldött állományok";
+$ReceivedTitle = "Cím";
+$SentTitle = "Cím";
+$Authors = "Szerzők";
+$Size = "Méret";
+$LastResent = "Utoljára újraküldve";
+$kB = "kB";
+$Root = "Gyökér";
+$NoSentFilesHere = "Nincs megjeleníthető <b>elküldött</b> állomány.";
+$NoReceivedFilesHere = "Nincs megjeleníthető <b>beérkezett</b> állomány.";
+$UploadNewFile = "Új állomány küldése";
+$AreYouSureToDelete = "Biztos benne, hogy törölni szeretné";
+$Feedback = "Értékelés";
+$CloseFeedback = "Értékelés bezárása";
+$AddNewFeedback = "Új értékelés hozzáadása";
+$DropboxFeedbackStored = "Visszacsatolás üzenet eltárolva.";
+$AllUsersHaveDeletedTheFileAndWillNotSeeFeedback = "Minden felhasználó törölte az állományt, ezért senki nem fogja látni a visszacsatolást amit hozzá akar adni.";
+$FeedbackError = "Visszacsatolás hiba";
+$PleaseTypeText = "Kérem, írjon be egy szöveget.";
+$YouAreNotAllowedToDownloadThisFile = "Önnek nincs jogosultsága letölteni ezt az állományt.";
+$CheckAtLeastOneFile = "Jelöljön meg legalább egy állományt.";
+$ReceivedFileDeleted = "A beérkezett állomány törölve.";
+$SentFileDeleted = "Az elküldött állomány törölve.";
+$FilesMoved = "A kijelölt állomány áthelyezve.";
+$ReceivedFileMoved = "A beérkezett állomány áthelyezve.";
+$SentFileMoved = "Az elküldött állomány áthelyezve.";
+$NotMovedError = "Az állomány(oka)t nem lehet áthelyezni.";
+$AddNewCategory = "Új kategória hozzáadása";
+$EditCategory = "Kategória szerkesztése";
+$CategoryName = "Kategória név";
+$ErrorPleaseGiveCategoryName = "Kérem adjon meg egy kategória nevet.";
+$CategoryAlreadyExistsEditIt = "Ez a kategória már létezik, kérem nevezze el másként.";
+$CurrentlySeeing = "Ön jelenleg a következő kategóriát látja:";
+$CategoryStored = "A kategória elmentve.";
+$CategoryModified = "A kategória módosítva.";
+$CategoryDeleted = "A kategória törölve.";
+$AuthorFieldCannotBeEmpty = "A szerző mező nem maradhat üres.";
+$YouMustSelectAtLeastOneDestinee = "Legalább egy végcélt ki kell választania.";
+$InvalidUserDetected = "Érvénytelen felhasználó detektálva.";
+$InvalidGroupDetected = "Érvénytelen csoport detektálva.";
+$DropboxFileTooBig = "A fájlposta állomány mérete túl nagy.";
+$TheFileIsNotUploaded = "Az állomány feltöltése nem sikerült.";
+$FileUploadSucces = "Az állomány sikeresen feltöltve.";
+$MailingNonMailingError = "A Levelezést nem lehet felülírni nem-levelezéssel és fordítva.";
+$MailingSelectNoOther = "A Levélküldést nem lehet kombinálni más címzettekkel";
+$MailingJustUploadSelectNoOther = "A Csak Feltöltés-t nem lehet kombinálni más címzettekkel";
+$NoFilesHere = "Nem tartalmaz állományokat";
+$NewDropboxFileUploaded = "Az új állomány el lett küldve a fájl posta segítségével.";
+$NewDropboxFileUploadedContent = "Az új állomány el lett küldve a kurzusába a Fájl posta segítségével.";
+$langAddEdit = "Hozzáad / szerkeszt";
+$ErrorNoFilesInFolder = "Ez a mappa üres";
+$AddComment = "Hozzászólás elmentése";
+$SentCatgoryDeleted = "A mappa törölve lett";
+$ReceivedCatgoryDeleted = "A mappa törölve lett";
+?>
