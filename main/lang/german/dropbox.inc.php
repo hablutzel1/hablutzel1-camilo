@@ -1,0 +1,60 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$ReceivedFiles = "Empfangene Dateien";
+$SentFiles = "versendete Dateien";
+$ReceivedTitle = "Titel";
+$SentTitle = "Titel";
+$Authors = "Autoren";
+$Size = "Größe";
+$LastResent = "Zuletzt verschickt am";
+$kB = "kB";
+$Root = "Wurzel";
+$NoSentFilesHere = "hier gibt es keine <b>versendeten</b> Dateien zum Ansehen";
+$NoReceivedFilesHere = "Hier gibt es keine <b>empfangene</b> Dateien zur Ansicht";
+$UploadNewFile = "Neue Datei senden";
+$AreYouSureToDelete = "Wollen Sie wirklich löschen";
+$Feedback = "Feedback";
+$CloseFeedback = "Feedback schließen";
+$AddNewFeedback = "Neues Feedback hinzufügen";
+$DropboxFeedbackStored = "Die Feedback Nachricht wurde gespeichert";
+$AllUsersHaveDeletedTheFileAndWillNotSeeFeedback = "Alle Nutzer haben die Datei gelöscht, niemand wird die Feedback Nachricht sehen, die Sie hinzufügen";
+$FeedbackError = "Feedback Fehler";
+$PleaseTypeText = "Bitte Text einfügen";
+$YouAreNotAllowedToDownloadThisFile = "Ihnen fehlt die Erlaubnis zum Download dieser Datei";
+$CheckAtLeastOneFile = "Mindestens eine Datei markieren";
+$ReceivedFileDeleted = "Die empfangene Datei wurde gelöscht";
+$SentFileDeleted = "Die gesendete Datei wurde gelöscht";
+$FilesMoved = "Die ausgewählten Dateien wurden verschoben";
+$ReceivedFileMoved = "Die empfangene Datei wurde verschoben";
+$SentFileMoved = "Die gesendete Datei wurde verschoben";
+$NotMovedError = "Diese Datei(en) kann(können) nicht verschoben werden";
+$AddNewCategory = "Neue Kategorie hinzufügen";
+$EditCategory = "Diese Kategorie bearbeiten";
+$CategoryName = "Name der Kategorie";
+$ErrorPleaseGiveCategoryName = "Bitte einen Namen für Kategorie angeben";
+$CategoryAlreadyExistsEditIt = "Diese Kategorie existiert bereits, bitte einen anderen Namen verwenden";
+$CurrentlySeeing = "Sie befinden sich momentan in der Kategorie";
+$CategoryStored = "Die Kategorie wurde gespeichert";
+$CategoryModified = "Die Kategorie wurde verändert";
+$CategoryDeleted = "Die Kategorie wurde gelöscht";
+$AuthorFieldCannotBeEmpty = "Das Autoren-Feld kann nicht leer sein";
+$YouMustSelectAtLeastOneDestinee = "Sie müssen zumindest einen Empfänger angeben";
+$InvalidUserDetected = "Ungültiger Nutzer entdeckt";
+$InvalidGroupDetected = "Ungültige Gruppe entdeckt";
+$DropboxFileTooBig = "Die Dropbox Datei ist zu groß";
+$TheFileIsNotUploaded = "Die Datei wurde nicht hochgeladen";
+$FileUploadSucces = "Die Datei wurde erfolgreich hochgeladen";
+$MailingNonMailingError = "Mailing kann nicht von Nicht-Mailing (oder umgekehrt) überschrieben werden";
+$MailingSelectNoOther = "Mailing kann nicht mit anderen Empfängern kombiniert werden";
+$MailingJustUploadSelectNoOther = "Hochladen kann nicht mit anderen Empfängern kombiniert werden";
+$NoFilesHere = "Hier gibt es keine Dateien";
+$NewDropboxFileUploaded = "Eine neue Datei wurde im Dropbox Tool gesendet";
+$NewDropboxFileUploadedContent = "Eine neue Datei wurde im Dropbox Tool ihres Kurses gesendet";
+$langAddEdit = "Hinzufügen / Ändern";
+$ErrorNoFilesInFolder = "Dieses Verzeichnis ist leer";
+$AddComment = "Feedback speichern";
+$SentCatgoryDeleted = "Der Ordner wurde gelöscht";
+$ReceivedCatgoryDeleted = "Der Ordner wurde gelöscht";
+?>
