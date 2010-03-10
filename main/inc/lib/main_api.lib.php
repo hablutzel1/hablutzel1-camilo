@@ -257,29 +257,34 @@ require_once dirname(__FILE__).'/internationalization.lib.php';
  * 	The other configuration paramaters have not been changed.
  *
  * 	This is how we can retireve mosth used paths, for common purpose:
- *	api_get_path(WEB_SERVER_ROOT_PATH)			http://www.mychamilo.org/
- *	api_get_path(SYS_SERVER_ROOT_PATH)			/var/www/ - This is the physical folder where the system Chamilo has been placed. It is not always equal to $_SERVER['DOCUMENT_ROOT'].
- * 	api_get_path(WEB_PATH)						http://www.mychamilo.org/chamilo/
- * 	api_get_path(SYS_PATH)						/var/www/chamilo/
- * 	api_get_path(REL_PATH)						/chamilo/
- * 	api_get_path(WEB_COURSE_PATH)				http://www.mychamilo.org/chamilo/courses/
- * 	api_get_path(SYS_COURSE_PATH)				/var/www/chamilo/courses/
- *	api_get_path(REL_COURSE_PATH)				/chamilo/courses/
+
+ *  api_get_path(REL_PATH)						/chamilo/
+ *  api_get_path(REL_COURSE_PATH)				/chamilo/courses/
  * 	api_get_path(REL_CODE_PATH)					/chamilo/main/
- * 	api_get_path(WEB_CODE_PATH)					http://www.mychamilo.org/chamilo/main/
- * 	api_get_path(SYS_CODE_PATH)					/var/www/chamilo/main/
+
+ *	api_get_path(SYS_SERVER_ROOT_PATH)			/var/www/ - This is the physical folder where the system Chamilo has been placed. It is not always equal to $_SERVER['DOCUMENT_ROOT']. 
+ * 	api_get_path(SYS_PATH)						/var/www/chamilo/
+ *  api_get_path(SYS_COURSE_PATH)				/var/www/chamilo/courses/
+ *  api_get_path(SYS_CODE_PATH)					/var/www/chamilo/main/
  * 	api_get_path(SYS_LANG_PATH)					/var/www/chamilo/main/lang/
+ * 
+ *  api_get_path(WEB_SERVER_ROOT_PATH)			http://www.mychamilo.org/
+ *  api_get_path(WEB_PATH)						http://www.mychamilo.org/chamilo/ 
+ *	api_get_path(WEB_COURSE_PATH)				http://www.mychamilo.org/chamilo/courses/
+ * 	api_get_path(WEB_CODE_PATH)					http://www.mychamilo.org/chamilo/main/
+ *	api_get_path(WEB_PLUGIN_PATH)				http://www.mychamilo.org/chamilo/plugin/
+ *  api_get_path(WEB_ARCHIVE_PATH)				http://www.mychamilo.org/chamilo/archive/
  * 	api_get_path(WEB_IMG_PATH)					http://www.mychamilo.org/chamilo/main/img/
  *	api_get_path(WEB_CSS_PATH)					http://www.mychamilo.org/chamilo/main/css/
- * 	api_get_path(GARBAGE_PATH)					Deprecated?
- * 	api_get_path(WEB_PLUGIN_PATH)				http://www.mychamilo.org/chamilo/plugin/
- * 	api_get_path(SYS_PLUGIN_PATH)				/var/www/chamilo/plugin/
- * 	api_get_path(WEB_ARCHIVE_PATH)				http://www.mychamilo.org/chamilo/archive/
+ *	api_get_path(WEB_LIBRARY_PATH)				http://www.mychamilo.org/chamilo/main/inc/lib/
+ *
+ * 	api_get_path(GARBAGE_PATH)					Deprecated? * 	
+ * 
  * 	api_get_path(SYS_ARCHIVE_PATH)				/var/www/chamilo/archive/
- *	api_get_path(INCLUDE_PATH)					/var/www/chamilo/main/inc/
- * 	api_get_path(WEB_LIBRARY_PATH)				http://www.mychamilo.org/chamilo/main/inc/lib/
+ *	api_get_path(INCLUDE_PATH)					/var/www/chamilo/main/inc/ 	
  * 	api_get_path(LIBRARY_PATH)					/var/www/chamilo/main/inc/lib/
  * 	api_get_path(CONFIGURATION_PATH)			/var/www/chamilo/main/inc/conf/
+ *  api_get_path(SYS_PLUGIN_PATH)				/var/www/chamilo/plugin/ 	
  *  api_get_path(SYS_TEST_PATH)					/var/www/chamilo/tests/
  *
  *	This is how we retrieve paths of "registerd" resource files (scripts, players, etc.):
@@ -300,43 +305,42 @@ require_once dirname(__FILE__).'/internationalization.lib.php';
 function api_get_path($path_type, $path = null) {
 
 	static $paths = array(
-		WEB_PATH => '',
-		SYS_PATH => '',
-		REL_PATH => '',
-		WEB_SERVER_ROOT_PATH => '',
-		SYS_SERVER_ROOT_PATH => '',
-		WEB_COURSE_PATH => '',
-		SYS_COURSE_PATH => '',
-		REL_COURSE_PATH => '',
-		REL_CODE_PATH => '',
-		WEB_CODE_PATH => '',
-		SYS_CODE_PATH => '',
-		SYS_LANG_PATH => 'lang/',
-		WEB_IMG_PATH => 'img/',
-		WEB_CSS_PATH => 'css/',
-		GARBAGE_PATH => 'archive/', // Deprecated?
-		SYS_PLUGIN_PATH => 'plugin/',
-		WEB_PLUGIN_PATH => 'plugin/',
-		SYS_ARCHIVE_PATH => 'archive/',
-		WEB_ARCHIVE_PATH => 'archive/',
-		INCLUDE_PATH => 'inc/',
-		LIBRARY_PATH => 'inc/lib/',
-		CONFIGURATION_PATH => 'inc/conf/',
-		WEB_LIBRARY_PATH => 'inc/lib/',
-		WEB_AJAX_PATH => 'inc/ajax/',
-		SYS_TEST_PATH => 'tests/'
+		WEB_PATH 				=> '',
+		SYS_PATH 				=> '',
+		REL_PATH 				=> '',
+		WEB_SERVER_ROOT_PATH 	=> '',
+		SYS_SERVER_ROOT_PATH 	=> '',
+		WEB_COURSE_PATH 		=> '',
+		SYS_COURSE_PATH 		=> '',
+		REL_COURSE_PATH 		=> '',
+		REL_CODE_PATH 			=> '',
+		WEB_CODE_PATH 			=> '',
+		SYS_CODE_PATH 			=> '',
+		SYS_LANG_PATH 			=> 'lang/',
+		WEB_IMG_PATH 			=> 'img/',
+		WEB_CSS_PATH 			=> 'css/',
+		GARBAGE_PATH 			=> 'archive/', // Deprecated?
+		SYS_PLUGIN_PATH 		=> 'plugin/',
+		WEB_PLUGIN_PATH 		=> 'plugin/',
+		SYS_ARCHIVE_PATH 		=> 'archive/',
+		WEB_ARCHIVE_PATH 		=> 'archive/',
+		INCLUDE_PATH 			=> 'inc/',
+		LIBRARY_PATH 			=> 'inc/lib/',
+		CONFIGURATION_PATH		=> 'inc/conf/',
+		WEB_LIBRARY_PATH 		=> 'inc/lib/',
+		WEB_AJAX_PATH			=> 'inc/ajax/',
+		SYS_TEST_PATH 			=> 'tests/'
 	);
 
 	static $resource_paths = array(
-		FLASH_PLAYER_AUDIO => 'inc/lib/mediaplayer/player.swf',
-		FLASH_PLAYER_VIDEO => 'inc/lib/mediaplayer/player.swf',
-		SCRIPT_SWFOBJECT => 'inc/lib/swfobject/swfobject.js',
-		SCRIPT_ASCIIMATHML => 'inc/lib/asciimath/ASCIIMathML.js'
+		FLASH_PLAYER_AUDIO 		=> 'inc/lib/mediaplayer/player.swf',
+		FLASH_PLAYER_VIDEO 		=> 'inc/lib/mediaplayer/player.swf',
+		SCRIPT_SWFOBJECT 		=> 'inc/lib/swfobject/swfobject.js',
+		SCRIPT_ASCIIMATHML 		=> 'inc/lib/asciimath/ASCIIMathML.js'
 	);
 
 	static $is_this_function_initialized;
-
-	static $include_path_sys;
+	//static $include_path_sys; //deprecated
 	static $server_base_web; // No trailing slash.
 	static $server_base_sys; // No trailing slash.
 	static $root_web;
@@ -344,40 +348,38 @@ function api_get_path($path_type, $path = null) {
 	static $root_rel;
 	static $code_folder;
 	static $course_folder;
-
+	
+	//always load root_web modifications for multiple url features	
+	global $_configuration;
+	//default $_configuration['root_web'] configuration 
+	$root_web = $_configuration['root_web'];
+	
+	// Configuration data for already installed system.
+	$root_sys = $_configuration['root_sys'];
+	$load_new_config = false;
+	
+	// To avoid that the api_get_access_url() function fails since global.inc.php also calls the main_api.lib.php
+	if ($path_type == WEB_PATH) { 
+		if (isset($_configuration['access_url']) &&  $_configuration['access_url'] != 1) {
+			//we look into the DB the function api_get_access_url
+			$url_info = api_get_access_url($_configuration['access_url']);			
+			$root_web = $url_info['active'] == 1 ? $url_info['url'] : $_configuration['root_web'];
+			$load_new_config = true;
+		}
+	}
+		
 	if (!$is_this_function_initialized) {
-
 		global $_configuration;
-
 		$include_path_sys = str_replace('\\', '/', realpath(dirname(__FILE__).'/../')).'/';
 
-		//
-		// Configuration data for already installed system.
-		//
-		$root_sys = $_configuration['root_sys'];
-		if (!isset($_configuration['access_url']) || $_configuration['access_url'] == 1 || $_configuration['access_url'] == '') {
-			//by default we call the $_configuration['root_web'] we don't query to the DB
-			//$url_info= api_get_access_url(1);
-			//$root_web = $url_info['url'];
-			if (isset($_configuration['root_web'])) {
-				$root_web = $_configuration['root_web'];
-			}
-			// Ivan: Just a formal note, here $root_web stays unset, reason about this is unknown.
-		} else {
-			//we look into the DB the function api_get_access_url
-			//this funcion have a problem because we can't called to the Database:: functions
-			$url_info = api_get_access_url($_configuration['access_url']);
-			$root_web = $url_info['active'] == 1 ? $url_info['url'] : $_configuration['root_web'];
-		}
-		$root_rel = $_configuration['url_append'];
-		$code_folder = $_configuration['code_append'];
-		$course_folder = $_configuration['course_folder'];
+		$root_rel 		= $_configuration['url_append'];
+		$code_folder 	= $_configuration['code_append'];
+		$course_folder 	= $_configuration['course_folder'];
 
-		//
 		// Support for the installation process.
 		// Developers might use the function api_get_path() directly or indirectly (this is difficult to be traced), at the moment when
 		// configuration has not been created yet. This is why this function should be upgraded to return correct results in this case.
-		//
+
 		if (defined('SYSTEM_INSTALLATION') && SYSTEM_INSTALLATION) {
 			if (($pos = strpos(($requested_page_rel = api_get_self()), 'main/install')) !== false) {
 				$root_rel = substr($requested_page_rel, 0, $pos);
@@ -403,60 +405,98 @@ function api_get_path($path_type, $path = null) {
 		}
 
 		// Dealing with trailing slashes.
-		$root_web = api_add_trailing_slash($root_web);
-		$root_sys = api_add_trailing_slash($root_sys);
-		$root_rel = api_add_trailing_slash($root_rel);
-		$code_folder = api_add_trailing_slash($code_folder);
-		$course_folder = api_add_trailing_slash($course_folder);
+		$root_web 		= api_add_trailing_slash($root_web);
+		$root_sys 		= api_add_trailing_slash($root_sys);		
+		$root_rel	 	= api_add_trailing_slash($root_rel);
+		$code_folder 	= api_add_trailing_slash($code_folder);
+		$course_folder 	= api_add_trailing_slash($course_folder);
 
 		// Web server base and system server base.
 		$server_base_web = preg_replace('@'.$root_rel.'$@', '', $root_web); // No trailing slash.
 		$server_base_sys = preg_replace('@'.$root_rel.'$@', '', $root_sys); // No trailing slash.
 
-		//
 		// Initialization of a table taht contains common-purpose paths.
-		$paths[WEB_PATH] 			= $root_web;
-		$paths[SYS_PATH] 			= $root_sys;
-		$paths[REL_PATH] 			= $root_rel;
-		$paths[WEB_SERVER_ROOT_PATH] = $server_base_web.'/';
-		$paths[SYS_SERVER_ROOT_PATH] = $server_base_sys.'/';
-		$paths[WEB_COURSE_PATH] 	= $root_web.$course_folder;
-		$paths[SYS_COURSE_PATH] 	= $root_sys.$course_folder;
-		$paths[REL_COURSE_PATH] 	= $root_rel.$course_folder;
-		$paths[REL_CODE_PATH] 		= $root_rel.$code_folder;
-		$paths[WEB_CODE_PATH] 		= $root_web.$code_folder;
+		$paths[WEB_PATH] 				= $root_web;
+		$paths[SYS_PATH] 				= $root_sys;
+		$paths[REL_PATH] 				= $root_rel;
+		$paths[WEB_SERVER_ROOT_PATH] 	= $server_base_web.'/';
+		$paths[SYS_SERVER_ROOT_PATH] 	= $server_base_sys.'/';
+		$paths[WEB_COURSE_PATH] 		= $root_web.$course_folder;
+		$paths[SYS_COURSE_PATH] 		= $root_sys.$course_folder;
+		$paths[REL_COURSE_PATH] 		= $root_rel.$course_folder;
+		$paths[REL_CODE_PATH] 			= $root_rel.$code_folder;
+		$paths[WEB_CODE_PATH] 			= $root_web.$code_folder;
 		// Elimination of an obsolete configuration setting.
-		//$paths[SYS_CODE_PATH] = $GLOBALS['clarolineRepositorySys'];
-		$paths[SYS_CODE_PATH] 		= $root_sys.$code_folder;
+		//$paths[SYS_CODE_PATH] 		= $GLOBALS['clarolineRepositorySys'];
+		$paths[SYS_CODE_PATH] 			= $root_sys.$code_folder;
 		//
 		// Now we can switch into api_get_path() "terminology".
-		$paths[SYS_LANG_PATH] 		= $paths[SYS_CODE_PATH].$paths[SYS_LANG_PATH];
-		$paths[WEB_IMG_PATH] 		= $paths[WEB_CODE_PATH].$paths[WEB_IMG_PATH];
+		$paths[SYS_LANG_PATH] 			= $paths[SYS_CODE_PATH].$paths[SYS_LANG_PATH];
+		$paths[SYS_PLUGIN_PATH] 		= $paths[SYS_PATH].$paths[SYS_PLUGIN_PATH];		
+		$paths[SYS_ARCHIVE_PATH] 		= $paths[SYS_PATH].$paths[SYS_ARCHIVE_PATH];
+		$paths[SYS_TEST_PATH] 			= $paths[SYS_PATH].$paths[SYS_TEST_PATH];
+		
+		$paths[GARBAGE_PATH] 			= $paths[SYS_PATH].$paths[GARBAGE_PATH]; // Deprecated?		
+
 		// TODO: This path may depend on the configuration option? To be researched.
 		// Maybe a new constant like WEB_USER_CSS_PATH has to be defined?
-		$paths[WEB_CSS_PATH] 		= $paths[WEB_CODE_PATH].$paths[WEB_CSS_PATH];
-		//
-		$paths[GARBAGE_PATH] 		= $paths[SYS_PATH].$paths[GARBAGE_PATH]; // Deprecated?
-		$paths[SYS_PLUGIN_PATH] 	= $paths[SYS_PATH].$paths[SYS_PLUGIN_PATH];
-		$paths[WEB_PLUGIN_PATH] 	= $paths[WEB_PATH].$paths[WEB_PLUGIN_PATH];
-		$paths[SYS_ARCHIVE_PATH] 	= $paths[SYS_PATH].$paths[SYS_ARCHIVE_PATH];
-		$paths[WEB_ARCHIVE_PATH] 	= $paths[WEB_PATH].$paths[WEB_ARCHIVE_PATH];
-		$paths[SYS_TEST_PATH] 		= $paths[SYS_PATH].$paths[SYS_TEST_PATH];
+		$paths[WEB_CSS_PATH] 			= $paths[WEB_CODE_PATH].$paths[WEB_CSS_PATH];
+		$paths[WEB_IMG_PATH] 			= $paths[WEB_CODE_PATH].$paths[WEB_IMG_PATH];
+		$paths[WEB_LIBRARY_PATH] 		= $paths[WEB_CODE_PATH].$paths[WEB_LIBRARY_PATH];
+		$paths[WEB_AJAX_PATH] 	 		= $paths[WEB_CODE_PATH].$paths[WEB_AJAX_PATH];
+		
+		$paths[WEB_PLUGIN_PATH] 		= $paths[WEB_PATH].$paths[WEB_PLUGIN_PATH];
+		$paths[WEB_ARCHIVE_PATH] 		= $paths[WEB_PATH].$paths[WEB_ARCHIVE_PATH];		
+	
 		// A change as of Chamilo 1.8.6.2
 		// Calculation in the previous way does not rely on configuration settings and in some cases gives unexpected results.
-		//$paths[INCLUDE_PATH] = $include_path_sys; // Old behaviour, Dokeos 1.8.6.1.
-		$paths[INCLUDE_PATH] 		= $paths[SYS_CODE_PATH].$paths[INCLUDE_PATH]; // New behaviour, coherrent with the model, Chamilo 1.8.6.2.
-		//
-		$paths[LIBRARY_PATH] 		= $paths[SYS_CODE_PATH].$paths[LIBRARY_PATH];
-		$paths[CONFIGURATION_PATH] 	= $paths[SYS_CODE_PATH].$paths[CONFIGURATION_PATH];
-		$paths[WEB_LIBRARY_PATH] 	= $paths[WEB_CODE_PATH].$paths[WEB_LIBRARY_PATH];
-		$paths[WEB_AJAX_PATH] 	 	= $paths[WEB_CODE_PATH].$paths[WEB_AJAX_PATH];
+		//$paths[INCLUDE_PATH] 			= $include_path_sys; // Old behaviour, Dokeos 1.8.6.1.
+		$paths[INCLUDE_PATH] 			= $paths[SYS_CODE_PATH].$paths[INCLUDE_PATH]; // New behaviour, coherrent with the model, Chamilo 1.8.6.2.
+		$paths[LIBRARY_PATH] 			= $paths[SYS_CODE_PATH].$paths[LIBRARY_PATH];
+		$paths[CONFIGURATION_PATH] 		= $paths[SYS_CODE_PATH].$paths[CONFIGURATION_PATH];
+
 
 		$is_this_function_initialized = true;
+	} else {
+		if ($load_new_config) {
+			//Redifining variables to work well with the "multiple url" feature
+			
+			//All web paths need to be here 
+			$web_paths = array(
+				WEB_PATH 				=> '',
+				WEB_SERVER_ROOT_PATH	=> '',
+				WEB_COURSE_PATH 		=> '',
+				WEB_CODE_PATH 			=> '',
+				WEB_IMG_PATH 			=> 'img/',
+				WEB_CSS_PATH 			=> 'css/',
+				WEB_PLUGIN_PATH 		=> 'plugin/',
+				WEB_ARCHIVE_PATH 		=> 'archive/',
+				WEB_LIBRARY_PATH 		=> 'inc/lib/',
+				WEB_AJAX_PATH 			=> 'inc/ajax/',
+			);
+			
+			$root_web 		= api_add_trailing_slash($root_web);
+			// Web server base and system server base.
+			$server_base_web = preg_replace('@'.$root_rel.'$@', '', $root_web); // No trailing slash.
+						
+			//redefine root webs
+			$paths[WEB_PATH] 				= $root_web;
+			$paths[WEB_SERVER_ROOT_PATH]	= $server_base_web.'/';		 
+			$paths[WEB_COURSE_PATH] 		= $root_web.$course_folder;
+			$paths[WEB_CODE_PATH] 			= $root_web.$code_folder;
+			$paths[WEB_IMG_PATH] 			= $paths[WEB_CODE_PATH].$web_paths[WEB_IMG_PATH];
+		
+			// Maybe a new constant like WEB_USER_CSS_PATH has to be defined?
+			$paths[WEB_CSS_PATH] 			= $paths[WEB_CODE_PATH].$web_paths[WEB_CSS_PATH];
+			$paths[WEB_PLUGIN_PATH] 		= $paths[WEB_PATH].$web_paths[WEB_PLUGIN_PATH];
+			$paths[WEB_ARCHIVE_PATH] 		= $paths[WEB_PATH].$web_paths[WEB_ARCHIVE_PATH];
+			$paths[WEB_LIBRARY_PATH] 		= $paths[WEB_CODE_PATH].$web_paths[WEB_LIBRARY_PATH];
+			$paths[WEB_AJAX_PATH] 	 		= $paths[WEB_CODE_PATH].$web_paths[WEB_AJAX_PATH];		
+		}
 	}
 
 	// Shallow purification and validation of input parameters.
-
+	
 	$path_type = trim($path_type);
 	$path = trim($path);
 
@@ -465,7 +505,6 @@ function api_get_path($path_type, $path = null) {
 	}
 
 	// Retrieving a common-purpose path.
-
 	if (isset($paths[$path_type])) {
 		return $paths[$path_type];
 	}
@@ -526,18 +565,12 @@ function api_get_path($path_type, $path = null) {
 		$path = preg_replace(VALID_WEB_SERVER_BASE, '/', $path);
 
 	} elseif (strpos($path, $server_base_sys) === 0) {
-
 		$path = preg_replace('@^'.$server_base_sys.'@', '', $path);
-
 	} elseif (strpos($path, '/') === 0) {
-
 		// Leading slash - we assume that this path is semi-absolute (REL),
 		// then path is left without furthes modifications.
-
 	} else {
-
 		return null; // Probably implementation of this case won't be needed.
-
 	}
 
 	// Path now is semi-absolute. It is convenient at this moment repeated slashes to be removed.
@@ -3396,7 +3429,7 @@ function api_get_access_urls($from = 0, $to = 1000000, $order = 'url', $directio
 	$order = Database::escape_string($order);
 	$direction = Database::escape_string($direction);
 	$sql = "SELECT id, url, description, active, created_by, tms FROM $t_au ORDER BY $order $direction LIMIT $to OFFSET $from";
-	$res = Database::query($sql);
+	$res = Database::query($sql);	
 	return Database::store_result($res);
 }
 
@@ -4472,6 +4505,35 @@ function api_get_timezones() {
 }
 
 /**
+ * Returns the timezone to be converted to/from, based on user or admin preferences
+ * 
+ * @return string The timezone chosen
+ * 
+ * 
+ */
+function _api_get_timezone() {
+	global $_user;
+	// First, get the default timezone of the server
+	$to_timezone = date_default_timezone_get();
+	// Second, see if a timezone has been chosen for the platform
+	$timezone_value = api_get_setting('timezone_value', 'timezones');
+	if ($timezone_value != null) {
+		$to_timezone = $timezone_value;
+	}
+	// If allowed by the administrator
+	$use_users_timezone = api_get_setting('use_users_timezone', 'timezones');
+	if ($use_users_timezone == 'true') {
+		// Get the timezone based on user preference, if it exists
+		require_once api_get_path(LIBRARY_PATH).'usermanager.lib.php';
+		$timezone_user = UserManager::get_extra_user_data_by_field($_user['user_id'],'timezone');
+		if ($timezone_user['timezone'] != null) {
+			$to_timezone = $timezone_user['timezone'];
+		}
+	}
+	return $to_timezone;
+}
+
+/**
  * Returns the given date as a DATETIME in UTC timezone. This function should be used before entering any date in the DB.
  *
  * @param mixed The date to be converted (can be a string supported by date() or a timestamp)
@@ -4480,7 +4542,7 @@ function api_get_timezones() {
  * @author Guillaume Viguier <guillaume.viguier@beeznest.com>
  */
 function api_get_utc_datetime($time) {
-	$from_timezone = date_default_timezone_get();
+	$from_timezone = _api_get_timezone();
 	$to_timezone = 'UTC';
 	// If time is a timestamp, convert it to a string
 	if (is_int($time)) {
@@ -4506,30 +4568,13 @@ function api_get_utc_datetime($time) {
  * @author Guillaume Viguier <guillaume.viguier@beeznest.com>
  */
 function api_get_local_time($time, $format=null, $to_timezone=null, $from_timezone=null) {
-	global $_user;
 	// Determining the timezone to be converted from
 	if ($from_timezone === null) {
 		$from_timezone = 'UTC';
 	}
 	// Determining the timezone to be converted to
 	if ($to_timezone === null) {
-		// First, get the default timezone of the server
-		$to_timezone = date_default_timezone_get();
-		// Second, see if a timezone has been chosen for the platform
-		$timezone_value = api_get_setting('timezone_value', 'timezones');
-		if ($timezone_value != null) {
-			$to_timezone = $timezone_value;
-		}
-		// If allowed by the administrator
-		$use_users_timezone = api_get_setting('use_users_timezone', 'timezones');
-		if ($use_users_timezone == 'true') {
-			// Get the timezone based on user preference, if it exists
-			require_once api_get_path(LIBRARY_PATH).'usermanager.lib.php';
-			$timezone_user = UserManager::get_extra_user_data_by_field($_user['user_id'],'timezone');
-			if ($timezone_user['timezone'] != null) {
-				$to_timezone = $timezone_user['timezone'];
-			}
-		}
+		$to_timezone = _api_get_timezone();
 	}
 	// Determine the format
 	$format_null = false;

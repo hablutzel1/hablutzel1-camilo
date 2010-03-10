@@ -326,7 +326,7 @@ $SelectGroupsUsers = "Seleccionar grupos/usuarios";
 $Student = "Estudiante";
 $Teacher = "Profesor";
 $Send2All = "No seleccionó ningún usuario / grupo. Este item será visible por todos los usuarios.";
-$wiki = "Wiki del grupo";
+$Wiki = "Wiki del grupo";
 $Complete = "Completado";
 $Incomplete = "Sin completar";
 $reservation = "reservar";
@@ -811,7 +811,7 @@ $GoToAttendanceCalendar = "Ir al calendario de asistencias para agregar fechas";
 $AttendanceSheet = "Hoja de asistencia";
 $AddDateAndTime = "Agregar fecha y hora";
 $CleanCalendar = "Limpiar calendario";
-$AttendanceCalendarDescription = "Descripción de calendario de asistencia";
+$AttendanceCalendarDescription = "El calendario de asistencia le permite registrar lista de asistencia (una por cada período real que los estudiantes deben asistir). Agregar nueva lista de asistencia aquí.";
 $CalendarList = "Lista de calendario";
 $ThereAreNoRegisteredDatetimeYet = "No hay fecha/hora registrada todavía";
 ?>
