@@ -1,27 +1,5 @@
 <?php // $Id: $
-/*
-==============================================================================
-	Dokeos - elearning and course management software
-
-	Copyright (c) 2008 Dokeos Latinoamerica SAC
-	Copyright (c) 2006 Dokeos SPRL
-	Copyright (c) 2006 Ghent University (UGent)
-	Copyright (c) various contributors
-
-	For a full list of contributors, see "credits.txt".
-	The full license can be read in "license.txt".
-
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
-
-	See the GNU General Public License for more details.
-
-	Contact address: Dokeos, rue du Corbeau, 108, B-1030 Brussels, Belgium
-	Mail: info@dokeos.com
-==============================================================================
-*/
+/* For licensing terms, see /license.txt */
 $language_file[] = 'gradebook';
 //$cidReset= true;
 require_once ('../inc/global.inc.php');
@@ -161,9 +139,9 @@ if (isset ($_GET['import'])) {
 						$result->set_score($importedresult['score']);
 					}
 					if (!empty ($importedresult['date'])) {
-						$result->set_date(strtotime($importedresult['date']));
+						$result->set_date(api_get_utc_datetime($importedresult['date']));
 					} else {
-						$result->set_date(time());
+						$result->set_date(api_get_utc_datetime());
 					}
 					$result->set_evaluation_id($_GET['selecteval']);
 					$result->add();
@@ -199,7 +177,7 @@ if (!$export_result_form->validate()) {
 if ($export_result_form->validate()) {
 	$export= $export_result_form->exportValues();
 	$file_type= $export['file_type'];
-	$filename= 'export_results_' . date('Y-m-d_H-i-s');
+	$filename= 'export_results_' . gmdate('Y-m-d_H-i-s');
 	$results= Result :: load(null, null, Security::remove_XSS($_GET['selecteval']));
 	$data= array (); //when file type is csv, add a header to the output file
 	if ($file_type == 'csv') {
@@ -295,7 +273,7 @@ if ($export_result_form->validate()) {
 		$data['lastname']= $userinfo['lastname'];
 		$data['firstname']= $userinfo['firstname'];
 		$data['score']= $result->get_score();
-		$data['date'] = api_convert_and_format_date($result->get_date(), "%d/%m/%Y %R");
+		$data['date'] = api_format_date($result->get_date(), "%d/%m/%Y %R");
 		$alldata[]= $data;
 	}
 	switch ($file_type) {

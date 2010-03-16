@@ -1,21 +1,5 @@
 <?php
-/*
-    DOKEOS - elearning and course management software
-
-    For a full list of contributors, see documentation/credits.html
-
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
-    See "documentation/licence.html" more details.
-
-    Contact:
-		Dokeos
-		Rue du Corbeau, 108
-		B-1030 Brussels - Belgium
-		info@dokeos.com
-*/
+/* For licensing terms, see /license.txt */
 /**
 *	ExerciseResult class: This class allows to instantiate an object of type ExerciseResult
 *	which allows you to export exercises results in multiple presentation forms
@@ -200,9 +184,9 @@ class GradeBookResult
 	 */
 	public function exportCompleteReportCSV($dato) {
 		//$this->_getGradeBookReporting($document_path,$user_id);
-		$filename = 'gradebook_results_'.date('YmdGis').'.csv';
+		$filename = 'gradebook_results_'.gmdate('YmdGis').'.csv';
 		if (!empty($user_id)) {
-			$filename = 'gradebook_results_user_'.$user_id.'_'.date('YmdGis').'.csv';
+			$filename = 'gradebook_results_user_'.$user_id.'_'.gmdate('YmdGis').'.csv';
 		}
 		$data = '';
 		//build the results
@@ -250,14 +234,14 @@ class GradeBookResult
 	 * @return	boolean		False on error
 	 */
 	public function exportCompleteReportXLS($data) {
-	   	$filename = 'gradebook_results_user_'.date('YmdGis').'.xls';
+	   	$filename = 'gradebook_results_user_'.gmdate('YmdGis').'.xls';
 		//build the results
 		require_once(api_get_path(LIBRARY_PATH).'pear/Spreadsheet_Excel_Writer/Writer.php');
 		$workbook = new Spreadsheet_Excel_Writer();
 		$workbook ->setTempDir(api_get_path(SYS_ARCHIVE_PATH));
 		
 		$workbook->send($filename);
-		$worksheet =& $workbook->addWorksheet('Report '.date('YmdGis'));
+		$worksheet =& $workbook->addWorksheet('Report '.gmdate('YmdGis'));
 		$line = 0;
 		$column = 0; //skip the first column (row titles)
 		//headers
