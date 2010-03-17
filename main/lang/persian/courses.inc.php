@@ -1,0 +1,65 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$lang_already_enrolled = "&#1579;&#1576;&#157";
+$lang_my_personnal_course_list = "&#1604;&#1740;&#1587;&#157";
+$lang_course_enrollment = "دروس\nکاربر";
+$lang_course_not_available = "&#1592;&#1575;&#1607;&#1585;&#1575;&#161";
+$lang_enroll = "ثبت\nنام";
+$lang_enroll_to_a_new_course = "ثبت\nنام در یک درس\nجدید";
+$lang_my_present_course_list = "فهرست\nدروس کنونی من";
+$lang_no_course_to_enroll_in_this_category = "&#1583;&#1585;&#1587;&#174";
+$lang_or_search_from_the_course_code = "یا\nاز طریق کد درس\nجستجو کنید";
+$lang_search = "جستجو";
+$lang_select_course_among_categories = "انتخاب\nدرس در طبقات";
+$lang_select_course_in = "انتخاب\nدرس در";
+$lang_select_course_in_search_results = "انتخابدرس در نتایججستجو";
+$lang_unsubscribe = "ابطال\nثبت نام";
+$lang_back_to_my_home_page = "بازگشت\nبه صفحۀ آغازین\nمن";
+$lang_back_to_my_personnal_course_list = "بازگشت\nبه فهرست دروس\nمن";
+$langTitular = "مسئول";
+$langBackToListOfThisUser = "بازگشت\nبه فهرست دروس";
+$langAdministrationTools = "ابزارهای\nادارۀ محیط\nآموزشی";
+$lang_back_to_parent_category = "بازگشت\nبه طبقۀ مادر";
+$lang_back_to_course_selection = "بازگشت\nبه صفحۀ انتخاب\nدروس";
+$lang_up = "بازگشت\nبه طبقۀ مادر";
+$langCatList = "طبقات";
+$langCourseList = "لیست\nدروس";
+$Subscribe = "ثبت نام";
+$AlreadySubscribed = "ثات نام شده";
+$CourseCategoryStored = "طبقه ایجاد شد";
+$lang_back_to_main_category_list = "بازگشت\nبه فهرست طبقات";
+$langAdded = "اضافه\nشد";
+$langDeleted = "حذف\nشد";
+$langKeeped = "نگه\nداشته شد";
+$langHideAndSubscribeClosed = "پنهان / بسته";
+$langHideAndSubscribeOpen = "پنهان / باز";
+$langShowAndSubscribeOpen = "آشکار / باز";
+$langShowAndSubscribeClosed = "آشکار / بست&#1607";
+$langAdminThisUser = "بازگشت\nبه صفحۀ کاربر";
+$langManage = "مدیریت\nمحیط آموزشی";
+$langEnrollToCourseSuccessful = "شما در درس ثبت نام شدید";
+$langSubCat = "زیر\nطبقات";
+$langUnsubscribeNotAllowed = "اجازه ابطال ثبت نام در این درس داده نشده است";
+$langCourseAdminUnsubscribeNotAllowed = "شما اداره کننده این درس هستید";
+$CourseManagement = "مدیریت دروس و طبقات";
+$SortMyCourses = "انتخاب دروس";
+$SubscribeToCourse = "ثبت نام در دروس";
+$UnsubscribeFromCourse = "ابطال ثبت نام در درس";
+$CreateCourseCategory = "انتخاب یک طبقه درسی";
+$CourseCategoryAbout2bedeleted = "آیا مطمئن هستید که میخواهید این طبقه از دروس را حذف کنید؟ دروس این طبقه به خارج از طبقات درس منتقل خواهند شد";
+$CourseCategories = "طبقات درس";
+$CoursesInCategory = "درس در این طبقه";
+$SearchCourse = "جستجو در میان دروس";
+$UpOneCategory = "یک طبقه به طرف بالا";
+$SearchResultsFor = "نتیجه جستجوی";
+$ConfirmUnsubscribeFromCourse = "آیا واقعاً می خواهید ثابت نام خود در این درس را باطل کنید؟";
+$NoCourseCategory = "هیچ طبقه درسی وجود ندارد";
+$EditCourseCategorySucces = "درس مورد نظر هم اکنون به طبقه مربوطه متصل گردید";
+$SubscribingNotAllowed = "ثبت نام مجاز نمی باشد";
+$CourseSortingDone = "سازماندهی دوباره دروس انجام گردید";
+$ExistingCourseCategories = "طبقات موجود دروس";
+$YouAreNowUnsubscribed = "ثبت نام شما در درس هم اکنون باطل گردید";
+$ViewOpenCourses = "دیدن درس های باز";
+?>
