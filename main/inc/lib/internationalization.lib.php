@@ -3485,11 +3485,12 @@ function api_detect_encoding($string) {
 	if (api_is_valid_utf8($string)) {
 		return 'UTF-8';
 	}
+	// "Broken" UTF-8 texts are to be detected as UTF-8.
 	$result = null;
 	$delta_points_min = LANGUAGE_DETECT_MAX_DELTA;
 	$encodings = api_get_valid_encodings();
-	foreach ($encodings as $encoding) {
-		if (api_is_encoding_supported($encoding) & !api_is_utf8($encoding)) {
+	foreach ($encodings as & $encoding) {
+		if (api_is_encoding_supported($encoding)) {
 			$result_array = & _api_compare_n_grams(_api_generate_n_grams(api_substr($string, 0, LANGUAGE_DETECT_MAX_LENGTH, $encoding), $encoding), $encoding);
 			if (!empty($result_array)) {
 				list($key, $delta_points) = each($result_array);
@@ -3812,6 +3813,7 @@ function & api_str_getcsv(& $string, $delimiter = ',', $enclosure = '"', $escape
  */
 function api_fgetcsv($handle, $length = null, $delimiter = ',', $enclosure = '"', $escape = '\\') {
 	if (($line = is_null($length) ? fgets($handle): fgets($handle, $length)) !== false) {
+		$line = rtrim($line, "\r\n");
 		return api_str_getcsv($line, $delimiter, $enclosure, $escape);
 	}
 	return false;
