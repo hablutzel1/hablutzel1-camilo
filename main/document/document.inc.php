@@ -153,12 +153,11 @@ function create_document_link($www, $title, $path, $filetype, $size, $visibility
 		$tooltip_title_alt = get_lang('SharedFolder').' ('.api_get_person_name($userinfo['firstname'], $userinfo['lastname']).')';
 	}
 
-
+	$current_session_id=api_get_session_id();
 	if (!$show_as_icon) {
 		if ($filetype == 'folder') {
 			if (api_is_allowed_to_edit() || api_is_platform_admin() || api_get_setting('students_download_folders') == 'true') {
 				//filter when I am into shared folder, I can show for donwload only my shared folder
-				$current_session_id=api_get_session_id();
 				if(is_shared_folder($_GET['curdirpath'],$current_session_id))
 				{
 					if (preg_match('/shared_folder\/sf_user_'.api_get_user_id().'$/', urldecode($forcedownload_link))|| preg_match('/shared_folder_session_'.$current_session_id.'\/sf_user_'.api_get_user_id().'$/', urldecode($forcedownload_link)) || api_is_allowed_to_edit() || api_is_platform_admin())
@@ -176,7 +175,7 @@ function create_document_link($www, $title, $path, $filetype, $size, $visibility
 		}
 		return '<a href="'.$url.'" title="'.$tooltip_title_alt.'" target="'.$target.'"'.$visibility_class.' style="float:left">'.$title.'</a>'.$force_download_html;
 	} else {
-		if(preg_match('/shared_folder/', urldecode($url)) && preg_match('/shared_folder$/', urldecode($url))==false){
+		if(preg_match('/shared_folder/', urldecode($url)) && preg_match('/shared_folder$/', urldecode($url))==false && preg_match('/shared_folder_session_'.$current_session_id.'$/', urldecode($url))==false){
 			return '<a href="'.$url.'" title="'.$tooltip_title_alt.'" target="'.$target.'"'.$visibility_class.' style="float:left">'.build_document_icon_tag($filetype, $tooltip_title).Display::return_icon('shared.png', get_lang('ResourceShared'), array('hspace' => '5', 'align' => 'middle', 'height' => 22, 'width' => 22)).'</a>';
 		}
 		else
@@ -288,7 +287,7 @@ function build_edit_icons($curdirpath, $type, $path, $visibility, $id, $is_templ
 			$modify_icons = '<a href="edit_document.php?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;file='.urlencode($path).$req_gid.'&selectcat='.$gradebook_category.'"><img src="../img/edit.gif" border="0" title="'.get_lang('Modify').'" alt="" /></a>';
 		} else {
 			$modify_icons = '<a href="edit_document.php?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;file='.urlencode($path).$req_gid.'"><img src="../img/edit.gif" border="0" title="'.get_lang('Modify').'" alt="" /></a>';
-		}
+		}		
 
         if (in_array($path, array('/audio', '/flash', '/images', '/shared_folder', '/video', '/chat_files', '/certificates'))) {
         	$modify_icons .= '&nbsp;'.Display::return_icon('delete_na.gif',get_lang('ThisFolderCannotBeDeleted'));
@@ -305,7 +304,7 @@ function build_edit_icons($curdirpath, $type, $path, $visibility, $id, $is_templ
 				}
 			}
         }
-
+		
         if ($is_certificate_mode) {
         	$modify_icons .= '&nbsp;<a href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;move='.urlencode($path).$req_gid.'&selectcat='.$gradebook_category.'"><img src="../img/deplacer_fichier.gif" border="0" title="'.get_lang('Move').'" alt="" /></a>';
         	$modify_icons .= '&nbsp;<a href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;'.$visibility_command.'='.$id.$req_gid.'&amp;'.$sort_params.'&selectcat='.$gradebook_category.'"><img src="../img/'.$visibility_icon.'.gif" border="0" title="'.get_lang('Visible').'" alt="" /></a>';
@@ -342,6 +341,13 @@ function build_edit_icons($curdirpath, $type, $path, $visibility, $id, $is_templ
 			$modify_icons .= '&nbsp;<a href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;remove_as_template='.$id.$req_gid.'&amp;'.$sort_params.'"><img src="../img/wizard_gray_small.gif" border="0" title="'.get_lang('RemoveAsTemplate').'" alt=""'.get_lang('RemoveAsTemplate').'" /></a>';
 		}
 	}
+	
+	////////// commented code until implementation is completed (Feature #1768)
+	//if ($type == 'file' && pathinfo($path, PATHINFO_EXTENSION) == 'html') {
+	//	$modify_icons .= '<a href="export_htmldoc2pdf.php?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;file='.urlencode($path).$req_gid.'"><img src="../img/file_pdf_small.gif" border="0" title="'.get_lang('Export2PDF').'" alt="" /></a>';
+	//}
+	////////////
+	
 	return $modify_icons;
 }
 

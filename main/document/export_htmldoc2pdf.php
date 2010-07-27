@@ -1,22 +1,17 @@
 <?php
-/* For licensing terms, see /chamilo_license.txt */
+/* For licensing terms, see /license.txt */
 
-/**
- * Export html to pdf
- * @author Juan Carlos Raña <herodoto@telefonica.net>, initial code, 2009
- * @author Ivan Tcholakov <ivantcholakov@gmail.com>, 2010
- */
-
-require '../inc/global.inc.php';
-
-api_protect_course_script();
-api_block_anonymous_users();
+require_once '../inc/global.inc.php';
 
 define('_MPDF_PATH', api_get_path(LIBRARY_PATH).'mpdf/');
 require_once _MPDF_PATH.'mpdf.php';
 
-$content_pdf = api_html_entity_decode($_POST['contentPDF'], ENT_QUOTES, api_get_system_encoding());
-$title_pdf = api_html_entity_decode($_POST['titlePDF'], ENT_QUOTES, api_get_system_encoding());
+$file = Security::remove_XSS($_GET['file']);
+$filename =basename($file,'.html');
+$filepath = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document/';
+
+$title_pdf = $filename;
+$content_pdf = @file_get_contents($filepath.$file);
 
 $title_pdf = api_utf8_encode($title_pdf, api_get_system_encoding());
 $content_pdf = api_utf8_encode($content_pdf, api_get_system_encoding());
@@ -35,7 +30,6 @@ $html='
 
 mpdf-->'.$content_pdf;
 
-
 $css_file = api_get_path(TO_SYS, WEB_CSS_PATH).api_get_setting('stylesheets').'/print.css';
 if (file_exists($css_file)) {
 	$css = @file_get_contents($css_file);
@@ -43,16 +37,17 @@ if (file_exists($css_file)) {
 	$css = '';
 }
 
+
 $pdf = new mPDF('UTF-8', 'A4', '', '', 30, 20, 27, 25, 16, 13, 'P');
 
 $pdf->directionality = api_get_text_direction();
 
 $pdf->useOnlyCoreFonts = true;
 
-$pdf->SetAuthor('Wiki Chamilo');
+$pdf->SetAuthor('Documents Chamilo');
 $pdf->SetTitle($title_pdf);
-$pdf->SetSubject('Exported from Chamilo Wiki');
-$pdf->SetKeywords('Chamilo Wiki');
+$pdf->SetSubject('Exported from Chamilo Documents');
+$pdf->SetKeywords('Chamilo Documents');
 
 if (!empty($css)) {
 	$pdf->WriteHTML($css, 1);
@@ -62,6 +57,8 @@ if (!empty($css)) {
 }
 
 if (empty($title_pdf)) {
-	$title_pdf = 'Exported from Chamilo Wiki';
+	$title_pdf = 'Exported from Chamilo Documents';
 }
 $pdf->Output(replace_dangerous_char($title_pdf.'.pdf'), 'D');
+
+?>
