@@ -70,7 +70,7 @@ class CourseRequestManager {
         }
         $tutor_name = api_get_person_name($user_info['firstname'], $user_info['lastname'], null, null, $course_language);
 
-        $request_date = date('Y-m-d H:i:s'); // TODO: Use the time-zones way.
+        $request_date = api_get_utc_datetime();
         $status = COURSE_REQUEST_PENDING;
 
         $keys = define_course_keys($wanted_code, '', $_configuration['db_prefix']);
@@ -230,7 +230,7 @@ class CourseRequestManager {
         $id = (int)$id;
 
         // Retrieve request's data
-        $course_request_info = CourseRequestManager::get_course_request_info($id);
+        $course_request_info = self::get_course_request_info($id);
         if (!is_array($course_request_info)) {
             return false;
         }
@@ -317,7 +317,7 @@ class CourseRequestManager {
         $id = (int)$id;
 
         // Retrieve request's data
-        $course_request_info = CourseRequestManager::get_course_request_info($id);
+        $course_request_info = self::get_course_request_info($id);
         if (!is_array($course_request_info)) {
             return false;
         }
@@ -379,7 +379,7 @@ class CourseRequestManager {
         $id = (int)$id;
 
         // Retrieve request's data
-        $course_request_info = CourseRequestManager::get_course_request_info($id);
+        $course_request_info = self::get_course_request_info($id);
         if (!is_array($course_request_info)) {
             return false;
         }
