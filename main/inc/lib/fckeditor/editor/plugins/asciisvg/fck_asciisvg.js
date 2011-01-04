@@ -1,7 +1,7 @@
 /*
  *	Chamilo LMS
  *
- *	Copyright (c) 2010 Ivan Tcholakov <ivantcholakov@gmail.com>
+ *	Copyright (c) 2011 Ivan Tcholakov <ivantcholakov@gmail.com>
  *
  *	License:
  *	GNU Lesser General Public License, Version 3, 29 June 2007
@@ -31,16 +31,19 @@ var notifyIfNoMathML = false ;
 var alertIfNoMathML = false ;
 var notifyIfNoSVG = false ;
 var alertIfNoSVG = false ;
-// Formula translation will be called explicitly in this dialog after it loads.
-//var translateOnLoad = false ;
-var translateOnLoad = true ;
-//
+var translateOnLoad = false ;
+var translateASCIIsvg = false ;
 // Formula tooltips are hard-coded in this dialog, there is no need they to be generated.
 var showasciiformulaonhover = false ;
 // Font size of the formulas in this dialog.
 var mathfontsize = "1.1em" ;
 
-var noSVG = ASnoSVG ; // Temporarily added.
+// Fixing a version difference.
+if ( typeof ASnoSVG != 'undefined' )
+{
+    var noSVG = ASnoSVG ;
+}
+
 var width = 300 ;
 var height = 200 ;
 var alignm = 'middle' ;
@@ -58,40 +61,20 @@ if ( oFakeImage )
         oFakeImage = null ;
 }
 
-function LoadSelection()
-{
-    if ( oEmbed ) {
-        sscr = GetAttribute( oEmbed, 'sscr', '' ).toString() ;
-        width = parseInt( oEmbed.style.width ) ;
-        height = parseInt( oEmbed.style.height ) ;
-        alignm = oEmbed.style.float ;
-        //if ( alignm == 'none' ) {
-        //    alignm = ed.dom.getStyle( el, 'vertical-align' ) ;
-        //}
-    }
-    // ...
-    LoadGraphScript( sscr ) ;
-
-    UpdatePreview() ;
-}
-
-function Ok()
-{
-    // ...
-
-    return true ;
-}
-
 window.onload = function()
 {
     // Translate the dialog box texts.
     oEditor.FCKLanguageManager.TranslatePage( document ) ;
 
-    // Initialization of the script ASCIIMathML.js.
-    //init() ;
+    if ( typeof ASpreprocess != 'undefined' ) // Dealing with version difference.
+    {
+        ASpreprocess() ;
+    }
 
-    // Initialization of the dialog's script.
-    //AsciisvgDialog.init() ;
+    if ( !noSVG )
+    {
+        drawPictures() ;
+    }
 
     // Load the selected element information (if any).
     LoadSelection() ;
@@ -100,6 +83,161 @@ window.onload = function()
 
     // Activate the "OK" button.
     dialog.SetOkButton( true ) ;
+}
+
+function LoadSelection()
+{
+    if ( oEmbed ) {
+        // An existing graph has been selected, reading its data.
+        sscr = GetAttribute( oEmbed, 'sscr', '' ).toString() ;
+        var w = oEmbed.width ;
+        var h = oEmbed.height ;
+        if ( w )
+        {
+            width = parseInt( w );
+        }
+        if ( h )
+        {
+            height = parseInt( h ) ;
+        }
+        if ( oEmbed.style.width ) {
+            width = parseInt( oEmbed.style.width );
+        }
+        if ( oEmbed.style.height ) {
+            height = parseInt( oEmbed.style.height );
+        }
+        if ( oEmbed.style.float )
+        {
+            alignm = oEmbed.style.float ;
+        }
+        if ( alignm == 'none' ) {
+            if ( oEmbed.style.verticalAlign )
+            {
+                alignm = oEmbed.style.verticalAlign ;
+            }
+        }
+    }
+
+    var alignment = 'middle' ;
+    var sa = sscr.split( ',' ) ;
+    GetE( 'xmin' ).value = sa[ 0 ] ;
+    GetE( 'xmax' ).value = sa[ 1 ] ;
+    GetE( 'ymin' ).value = sa[ 2 ] ;
+    GetE( 'ymax' ).value = sa[ 3 ] ;
+    GetE( 'xscl' ).value = sa[ 4 ] ;
+    GetE( 'yscl' ).value = sa[ 5 ] ;
+
+    if ( sa[ 6 ] != 'null' )
+    {
+        GetE( 'labels' ).checked = true ;
+    }
+    else
+    {
+        GetE( 'labels' ).checked = false ;
+    }
+    if ( typeof eval( sa[ 7 ] ) == 'number' )
+    {
+        GetE( 'grid' ).checked = true ;
+    }
+    else
+    {
+        GetE( 'grid' ).checked = false ;
+    }
+
+    GetE( 'gwidth' ).value = sa[ 9 ] ;
+    GetE( 'gheight' ).value = sa[ 10 ] ;
+
+    GetE( 'graphs' ).length = 0 ;
+
+    var inx = 11 ;
+    while ( sa.length > inx + 9 )
+    {
+        var newopt = document.createElement( 'option' ) ;
+
+        if ( sa[ inx ] == 'func' )
+        {
+            newopt.text = 'y=' + sa[ inx + 1 ] ;
+        }
+        else if ( sa[ inx ] == 'polar' )
+        {
+            newopt.text = 'r=' + sa[ inx + 1 ] ;
+        }
+        else if ( sa[inx] == 'param' )
+        {
+            newopt.text = '[x,y]=[' + sa[ inx + 1 ] + ',' + sa[ inx + 2 ] + ']' ;
+        }
+        else if ( sa[inx] == 'slope' )
+        {
+            newopt.text = 'dy/dx=' + sa[ inx + 1 ] ;
+        }
+        newopt.value = sa[inx] + ',' + sa[ inx + 1 ] + ',' + sa[ inx + 2 ] + ',' + sa[ inx + 3 ] + ',' + sa[ inx + 4 ] + ',' + sa[ inx + 5 ] + ',' + sa[ inx + 6 ] + ',' + sa[ inx + 7 ] + ',' + sa[ inx + 8] + ',' + sa[ inx + 9 ] ;
+        var graphs = GetE( 'graphs' ) ;
+        graphs.options[ graphs.options.length ] = newopt ;
+        //GetE( 'graphs' ).add( newopt ) ;
+        inx += 10 ;
+    }
+    if ( inx > 11 ) {
+        LoadEquation() ;
+    }
+
+    switch ( alignment.toLowerCase() )
+    {
+        case 'text-top' : GetE( 'alignment' ).selectedIndex = 0 ; break ;
+        case 'middle' : GetE( 'alignment' ).selectedIndex = 1 ; break ;
+        case 'text-bottom' : GetE( 'alignment' ).selectedIndex = 2 ; break ;
+        case 'left' : GetE( 'alignment' ).selectedIndex = 3 ; break ;
+        case 'right' : GetE( 'alignment' ).selectedIndex = 4 ; break ;
+        default: GetE( 'alignment' ).selectedIndex = 0 ; break ;
+    }
+
+    UpdatePreview() ;
+}
+
+function Ok()
+{
+    FCKUndo.SaveUndoStep() ;
+
+    if ( !oEmbed )
+    {
+        oEmbed = FCK.EditorDocument.createElement( 'EMBED' ) ;
+    }
+    UpdateEmbed( oEmbed );
+
+    if ( !oFakeImage )
+    {
+        oFakeImage	= oEditor.FCKDocumentProcessor_CreateFakeImage( 'FCK__AsciiSvg', oEmbed ) ;
+        oFakeImage.setAttribute( '_fckasciisvg', 'true', 0 ) ;
+        oFakeImage	= FCK.InsertElement( oFakeImage ) ;
+    }
+    else
+    {
+        oFakeImage.width = oEmbed.width ;
+        oFakeImage.height = oEmbed.height ;
+    }
+
+    oEditor.FCKEmbedAndObjectProcessor.RefreshView( oFakeImage, oEmbed ) ;
+
+    return true ;
+}
+
+function UpdateEmbed( e )
+{
+    SetAttribute( e, 'type', 'image/svg+xml' ) ;
+    SetAttribute( e, 'src', FCKConfig.DrawingASCIISVG ) ;
+    SetAttribute( e, 'sscr', sscr ) ;
+    SetAttribute( e, 'width', width ) ;
+    SetAttribute( e, 'height', height ) ;
+    var style = 'width: ' + FCKTools.ConvertHtmlSizeToStyle( width.toString() ) + '; '
+        'height: ' + FCKTools.ConvertHtmlSizeToStyle( height.toString() ) + '; ' ;
+    if ( alignm == 'left' || alignm == 'right' )
+    {
+        style += 'float: ' + alignm + '; vertical-align: middle;' ;
+    }
+    else
+    {
+        style += 'float: none; vertical-align: ' + alignm + ';' ;
+    }
+    SetAttribute( e, 'style' , style ) ;
 }
 
 function UpdatePreview()
@@ -153,24 +291,32 @@ function UpdatePreview()
     sscr = commands ;
     alignm = GetE( 'alignment' ).value ;
 
-    if ( noSVG )
-    {
-        var pvimg = GetE( 'previewimg' ) ;
-        pvimg.src = AScgiloc + '?sscr=' + encodeURIComponent(commands) ;
-        pvimg.style.width = width + 'px' ;
-        pvimg.style.height = height + 'px' ;
-    }
-    else
-    {
+    var preview = FCK.ResizeToFit( width, height, 420, 280 )
+    var widthPreview = preview[ 0 ] ;
+    var heightPreview = preview[ 1 ] ;
+
+    //if ( noSVG )
+    //{
+    //    var pvimg = GetE( 'previewimg' ) ;
+    //    pvimg.src = AScgiloc + '?sscr=' + encodeURIComponent(commands) ;
+    //    pvimg.style.width = width + 'px' ;
+    //    pvimg.style.height = height + 'px' ;
+    //}
+    //else
+    //{
         var pvsvg = GetE( 'previewsvg' ) ;
-        parseShortScript( commands , width , height ) ;
-    }
+        parseShortScript( commands , widthPreview , heightPreview ) ;
+    //}
 }
 
 function UpdateText( id , text )
 {
     var node = GetE( id ) ;
-    node.replaceChild( document.createTextNode( text ) , node.lastChild ) ;
+    try
+    {
+        node.replaceChild( document.createTextNode( text ) , node.lastChild ) ;
+    }
+    catch ( ex ) { }
 }
 
 function UpdateEquationType()
@@ -277,83 +423,6 @@ function LoadEquation()
     }
 }
 
-function LoadGraphScript( text )
-{
-    var alignment = 'middle' ;
-    var sa = text.split( ',' ) ;
-    GetE( 'xmin' ).value = sa[ 0 ] ;
-    GetE( 'xmax' ).value = sa[ 1 ] ;
-    GetE( 'ymin' ).value = sa[ 2 ] ;
-    GetE( 'ymax' ).value = sa[ 3 ] ;
-    GetE( 'xscl' ).value = sa[ 4 ] ;
-    GetE( 'yscl' ).value = sa[ 5 ] ;
-
-    if ( sa[ 6 ] != 'null' )
-    {
-        GetE( 'labels' ).checked = true ;
-    }
-    else
-    {
-        GetE( 'labels' ).checked = false ;
-    }
-    if ( typeof eval( sa[ 7 ] ) == 'number' )
-    {
-        GetE( 'grid' ).checked = true ;
-    }
-    else
-    {
-        GetE( 'grid' ).checked = false ;
-    }
-
-    GetE( 'gwidth' ).value = sa[ 9 ] ;
-    GetE( 'gheight' ).value = sa[ 10 ] ;
-
-    GetE( 'graphs' ).length = 0 ;
-
-    var inx = 11 ;
-    while ( sa.length > inx + 9 )
-    {
-        var newopt = document.createElement( 'option' ) ;
-
-        if ( sa[ inx ] == 'func' )
-        {
-            newopt.text = 'y=' + sa[ inx + 1 ] ;
-        }
-        else if ( sa[ inx ] == 'polar' )
-        {
-            newopt.text = 'r=' + sa[ inx + 1 ] ;
-        }
-        else if ( sa[inx] == 'param' )
-        {
-            newopt.text = '[x,y]=[' + sa[ inx + 1 ] + ',' + sa[ inx + 2 ] + ']' ;
-        }
-        else if ( sa[inx] == 'slope' )
-        {
-            newopt.text = 'dy/dx=' + sa[ inx + 1 ] ;
-        }
-        newopt.value = sa[inx] + ',' + sa[ inx + 1 ] + ',' + sa[ inx + 2 ] + ',' + sa[ inx + 3 ] + ',' + sa[ inx + 4 ] + ',' + sa[ inx + 5 ] + ',' + sa[ inx + 6 ] + ',' + sa[ inx + 7 ] + ',' + sa[ inx + 8] + ',' + sa[ inx + 9 ] ;
-        var graphs = GetE( 'graphs' ) ;
-        graphs.options[ graphs.options.length ] = newopt ;
-        //GetE( 'graphs' ).add( newopt ) ;
-        inx += 10 ;
-    }
-    if ( inx > 11 ) {
-        LoadEquation() ;
-    }
-
-    switch ( alignment.toLowerCase() )
-    {
-        case 'text-top' : GetE( 'alignment' ).selectedIndex = 0 ; break ;
-        case 'middle' : GetE( 'alignment' ).selectedIndex = 1 ; break ;
-        case 'text-bottom' : GetE( 'alignment' ).selectedIndex = 2 ; break ;
-        case 'left' : GetE( 'alignment' ).selectedIndex = 3 ; break ;
-        case 'right' : GetE( 'alignment' ).selectedIndex = 4 ; break ;
-        default: GetE( 'alignment' ).selectedIndex = 0 ; break ;
-    }
-
-    //UpdatePreview() ;
-}
-
 function AddGraph()
 {
     var graphs = GetE( 'graphs' ) ;
@@ -409,7 +478,7 @@ function ReplaceGraph()
     var graphs = GetE( 'graphs' ) ;
     if ( graphs.selectedIndex >= 0 )
     {
-        graphs.options[ graphs.selectedIndex ] = null ;  // Standards compliant.
+        graphs.options[ graphs.selectedIndex ] = null ;
     }
     AddGraph() ;
 }
@@ -425,72 +494,3 @@ function RemoveGraph()
     UpdatePreview() ;
     GetE( 'equation' ).focus() ;
 }
-
-// TODO: To be removed ...
-var AsciisvgDialog =
-{
-    init : function()
-    {
-        //var f = document.forms[ 0 ] ;
-
-        // Get the selected contents as text and place it in the input.
-        /*
-        width = tinyMCEPopup.getWindowArg( 'width' ) ;
-        height = tinyMCEPopup.getWindowArg( 'height' ) ;
-        isnew = tinyMCEPopup.getWindowArg( 'isnew' ) ; // This variable has been eliminated.
-        sscr = tinyMCEPopup.getWindowArg( 'sscr' ) ;
-        alignm = tinyMCEPopup.getWindowArg( 'alignm' ) ;
-        */
-
-        if ( noSVG )
-        {
-            GetE( 'preview' ).innerHTML = '<img id="previewimg" style="width:' + width + 'px; height: ' + height + 'px; vertical-align: middle; float: none;" src="' + AScgiloc + '?sscr=' + encodeURIComponent( sscr ) + '" script=" " />' ;
-        }
-        else
-        {
-            //GetE( 'preview' ).innerHTML = '<embed id="previewsvg" type="image/svg+xml" src="' + FCKConfig.DrawingASCIISVG + '" style="width: 300px; height: 200px; vertical-align: middle; float: none;" sscr="-7.5,7.5,-5,5,1,1,1,1,1,300,200" />' ;
-            GetE( 'previewsvg' ).setAttribute( 'sscr' , sscr );
-        }
-        LoadGraphScript( sscr ) ;
-    } ,
-
-    insert : function()
-    {
-        var ed = tinyMCEPopup.editor ;
-        // Insert the contents from the input into the document.
-        if ( isnew ) // This variable has been eliminated.
-        {
-            if ( alignm == 'left' || alignm == 'right' )
-            {
-                aligntxt = 'vertical-align: middle; float: ' + alignm + ';' ;
-            }
-            else
-            {
-                aligntxt = 'vertical-align: ' + alignm + '; float: none;' ;
-            }
-            tinyMCEPopup.editor.execCommand( 'mceInsertContent', false, '<img style="width: 300px; height: 200px; ' + aligntxt + '" src="' + AScgiloc + '?sscr=' + encodeURIComponent( sscr ) + '" sscr="' + sscr + '" script=" " />') ;
-        }
-        else
-        {
-            el = tinyMCEPopup.editor.selection.getNode() ;
-            ed.dom.setAttrib( el , 'sscr' , sscr ) ;
-            ed.dom.setAttrib( el , 'src' , AScgiloc + '?sscr=' + encodeURIComponent( sscr ) ) ;
-            ed.dom.setAttrib( el , 'width' , width ) ;
-            ed.dom.setAttrib( el , 'height' , height ) ;
-            ed.dom.setStyle( el , 'width' , width + 'px' ) ;
-            ed.dom.setStyle( el , 'height' , height + 'px') ;
-            if ( alignm == 'left' || alignm == 'right' )
-            {
-                ed.dom.setStyle( el , 'float' , alignm ) ;
-                ed.dom.setStyle( el , 'vertical-align' , 'middle' ) ;
-            }
-            else
-            {
-                ed.dom.setStyle( el , 'float' , 'none' ) ;
-                ed.dom.setStyle( el , 'vertical-align' , alignm ) ;
-            }
-        }
-        tinyMCEPopup.close() ;
-    }
-
-} ;
