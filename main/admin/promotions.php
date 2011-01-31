@@ -19,7 +19,11 @@ $this_section = SECTION_PLATFORM_ADMIN;
 api_protect_admin_script();
 
 //Adds the JS needed to use the jqgrid
-$htmlHeadXtra[] = api_get_jqgrid_js();
+$htmlHeadXtra[] = api_get_jquery_ui_js(true);
+// setting breadcrumbs
+$interbreadcrumb[]=array('url' => 'index.php','name' => get_lang('PlatformAdmin'));
+$interbreadcrumb[]=array('url' => 'career_dashboard.php','name' => get_lang('CareersAndPromotions'));
+$interbreadcrumb[]=array('url' => 'promotions.php','name' => get_lang('Promotions'));
 
 // The header.
 Display::display_header($tool_name);
@@ -37,10 +41,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'edit') {
 $url            = api_get_path(WEB_AJAX_PATH).'model.ajax.php?a=get_promotions';
 //The order is important you need to check the model.ajax.php the $column variable
 $columns        = array(get_lang('Name'),get_lang('Career'),get_lang('Description'),get_lang('Actions'));
-$column_model   = array(array('name'=>'name',           'index'=>'name',        'width'=>'80',   'align'=>'left'),
+$column_model   = array(
+                        array('name'=>'name',           'index'=>'name',        'width'=>'80',   'align'=>'left'),
                         array('name'=>'career',         'index'=>'career',      'width'=>'100',  'align'=>'left'),
                         array('name'=>'description',    'index'=>'description', 'width'=>'500',  'align'=>'left'),
-                        array('name'=>'actions',        'index'=>'actions',     'formatter'=>'action_formatter','width'=>'100',  'align'=>'left'),
+                        array('name'=>'actions',        'index'=>'actions',     'width'=>'100',  'align'=>'left','formatter'=>'action_formatter'),
                        );                        
 $extra_params['autowidth'] = 'true'; //use the width of the parent
 //$extra_params['editurl'] = $url; //use the width of the parent
@@ -71,25 +76,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'add') {
     if (api_get_session_id() != 0 && !api_is_allowed_to_session_edit(false, true)) {
         api_not_allowed();
     }
-
-    // Initiate the object
-    $form = new FormValidator('note', 'post', api_get_self().'?action='.Security::remove_XSS($_GET['action']));
-    // Settting the form elements
-    $form->addElement('header', '', get_lang('Add'));
-    $form->addElement('text', 'name', get_lang('name'), array('size' => '95', 'id' => 'name'));
-    
-    $career = new Career();
-    $careers = $career->get_all();
-    $career_list = array();
-    
-    foreach($careers as $item) {        
-        $career_list[$item['id']] = $item['name'];
-    }
-    $form->addElement('select', 'career_id', get_lang('Career'), $career_list);    
-    $form->addElement('html_editor', 'description', get_lang('Description'), null);
-    $form->addElement('style_submit_button', 'submit', get_lang('Add'), 'class="add"');
-    // Setting the rules
-    $form->addRule('name', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');
+    $url = api_get_self().'?action='.Security::remove_XSS($_GET['action']);
+    $form = $promotion->return_form($url, 'add');    
 
     // The validation or display
     if ($form->validate()) {
@@ -112,42 +100,22 @@ if (isset($_GET['action']) && $_GET['action'] == 'add') {
         $form->setConstants(array('sec_token' => $token));
         $form->display();
     }
-}// Action handling: Editing a note
-elseif (isset($_GET['action']) && $_GET['action'] == 'edit' && is_numeric($_GET['id'])) {
-    // Initialize the object
-    //@todo this form should be generated in the class
-    $form = new FormValidator('promotion', 'post', api_get_self().'?action='.Security::remove_XSS($_GET['action']).'&id='.intval($_GET['id']));
-    // Settting the form elements
-    $form->addElement('header', '', get_lang('Modify'));
-    $form->addElement('hidden', 'id',intval($_GET['id']));
-    $form->addElement('text', 'name', get_lang('Name'), array('size' => '100'));
-    $form->addElement('html_editor', 'description', get_lang('description'), null);
-        
-    $career = new Career();
-    $careers = $career->get_all();
-    $career_list = array();    
-    foreach($careers as $item) {        
-        $career_list[$item['id']] = $item['name'];
-    }
-    $form->addElement('select', 'career_id', get_lang('Career'), $career_list);  
-     
-    $form->addElement('style_submit_button', 'submit', get_lang('Modify'), 'class="save"');
-
-    // Setting the defaults
-    $defaults = $promotion->get($_GET['id']);    
-    $form->setDefaults($defaults);
-
-    // Setting the rules
-    $form->addRule('name', '<div class="required">'.get_lang('ThisFieldIsRequired'), 'required');
+} elseif (isset($_GET['action']) && $_GET['action'] == 'edit' && is_numeric($_GET['id'])) {
+    //Editing 
+    $url  = api_get_self().'?action='.Security::remove_XSS($_GET['action']).'&id='.intval($_GET['id']);    
+    $form = $promotion->return_form($url, 'edit');
 
     // The validation or display
     if ($form->validate()) {
         $check = Security::check_token('post');
         if ($check) {
             $values = $form->exportValues();                    
-            $res = $promotion->update($values);
-            if ($res) {
-                Display::display_confirmation_message(get_lang('Updated'));
+            $res    = $promotion->update($values);
+            $promotion->update_all_sessions_status_by_promotion_id($values['id'], $values['status']);    
+            if ($values['status']) {
+                Display::display_confirmation_message(sprintf(get_lang('PromotionXUnarchived'), $values['name']), false);
+            } else {
+                Display::display_confirmation_message(sprintf(get_lang('PromotionXArchived'), $values['name']), false);
             }
         }
         Security::clear_token();
@@ -161,10 +129,8 @@ elseif (isset($_GET['action']) && $_GET['action'] == 'edit' && is_numeric($_GET[
         $form->setConstants(array('sec_token' => $token));
         $form->display();
     }
-}
-
-// Action handling: deleting a note
-elseif (isset($_GET['action']) && $_GET['action'] == 'delete' && is_numeric($_GET['id'])) {
+} elseif (isset($_GET['action']) && $_GET['action'] == 'delete' && is_numeric($_GET['id'])) {
+    // Action handling: deleting an obj
     $res = $promotion->delete($_GET['id']);
     if ($res) {
         Display::display_confirmation_message(get_lang('Deleted'));

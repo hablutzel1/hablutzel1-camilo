@@ -2,7 +2,7 @@
 /* For licensing terms, see /license.txt */
 
 /**
-*	This class provides methods for the notebook management.
+*	This class provides basic methods to implement a CRUD for a new table in the database see examples in: career.lib.php and promotion.lib.php
 *	Include/require it in your code to use its features.
 *	@package chamilo.library
 */
@@ -12,19 +12,19 @@ class Model {
     var $table;
     var $columns;
     
-	public function __construct() {
-        
+	public function __construct() {        
 	}
     
-    public function find() {
-    	
-    }
-    
+    /**
+     * Useful finder
+     */
+    public function find() {    	
+    }    
     
     /**
      * Delets an item
      */
-    function delete($id) {
+    public function delete($id) {
         if (empty($id) or $id != strval(intval($id))) { return false; }
         // Database table definition
         $result = Database :: delete($this->table, array('id = ?' => $id));        
@@ -49,7 +49,7 @@ class Model {
     /**
      * Displays the title + grid
      */
-    function display() { 
+    public function display() { 
     }    
     
 
@@ -57,31 +57,28 @@ class Model {
     /**
      * Gets an element
      */
-    function get($id) {
+    public function get($id) {
         if (empty($id)) { return array(); }     
         $result = Database::select('*',$this->table, array('where'=>array('id = ?'=>intval($id))),'first');
         return $result;
     }
     
-    function get_all() {
-        return $careers = Database::select('*',$this->table);
+    public function get_all() {
+        return Database::select('*',$this->table);
     }
     
     /**
      * Get the count of elements
      */
-    function get_count() {        
+    public function get_count() {        
         $row = Database::select('count(*) as count', $this->table, array(),'first');
         return $row['count'];
     }
         
     /**
-     * a little bit of javascript to display a prettier warning when deleting a note
-     *
-     * @return unknown
-     *
+     * a little bit of javascript to display
      */
-	function javascript() {
+	public function javascript() {
 		
 	}
 
@@ -92,10 +89,14 @@ class Model {
 	 * @return bool
 	 *
 	 */
-	function save($values) {
-        $values = $this->clean_parameters($values);
-        if (!empty($values)) {
-            $id = Database::insert($this->table, $values);        
+	public function save($params) {
+        $params = $this->clean_parameters($params);
+        
+        if (in_array('created_at', $this->columns)) {        	
+            $params['created_at'] = api_get_utc_datetime();
+        }
+        if (!empty($params)) {
+            $id = Database::insert($this->table, $params);        
     		if (is_numeric($id)){
     			return $id;
     		}
@@ -104,23 +105,27 @@ class Model {
 	}
     
     /**
-     * Updates the obj in the database
+     * Updates the obj in the database. The $params['id'] must exist in order to update a record
      *
      * @param array $values
      *
      */
-    function update($values) {
-        $values = $this->clean_parameters($values);
-        if (!empty($values)) {
-            $id = $values['id'];
-            unset($values['id']);
-            $result = Database::update($this->table, $values, array('id = ?'=>$id));        
-            if ($result){
-                return true;
-            }       
+    public function update($params) {
+        $params = $this->clean_parameters($params);
+        if (in_array('updated_at', $this->columns)) {           
+            $params['updated_at'] = api_get_utc_datetime();
+        }
+        
+        if (!empty($params)) {
+            $id = $params['id'];
+            unset($params['id']); //To not overwrite the id 
+            if (is_numeric($id)) {
+                $result = Database::update($this->table, $params, array('id = ?'=>$id));        
+                if ($result){
+                    return true;
+                }   
+            }    
         }
         return false;
     }
-   
-    
 }

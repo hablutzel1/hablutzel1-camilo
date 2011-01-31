@@ -535,8 +535,8 @@ class SocialManager extends UserManager {
 			$user_id = api_get_user_id();
 		}
 
-		$show_groups = array('groups', 'group_messages', 'messages_list', 'group_add', 'mygroups', 'group_edit', 'member_list', 'invite_friends', 'waiting_list');
-		$show_messages = array('messages', 'messages_inbox', 'messages_outbox', 'messages_compose');
+		$show_groups      = array('groups', 'group_messages', 'messages_list', 'group_add', 'mygroups', 'group_edit', 'member_list', 'invite_friends', 'waiting_list');
+		$show_messages    = array('messages', 'messages_inbox', 'messages_outbox', 'messages_compose');
 
 		// get count unread message and total invitations
 		$count_unread_message = MessageManager::get_number_of_messages(true);
@@ -629,15 +629,19 @@ class SocialManager extends UserManager {
 	              <li><a href="'.api_get_path(WEB_PATH).'main/social/groups.php">'.Display::return_icon('group.png',get_lang('Groups'),array('hspace'=>'6')).'<span class="'.($show=='groups'?'social-menu-text-active':'social-menu-text4').'" >'.get_lang('Groups').'</span></a></li>';
 			
 			//Show groups
-	        if (in_array($show,$show_groups)) {
-					echo '<li><ul>';
-						echo $create_group_item;
-						echo '<li class="social-menu-sub-level" style="background:none;padding:0px"><a href="'.api_get_path(WEB_PATH).'main/social/groups.php?view=mygroups">'.Display::return_icon('group.png',get_lang('MyGroups'),array('hspace'=>'6')).'<span class="'.($show=='mygroups'?'social-menu-text-active':'social-menu-text4').'" >'.get_lang('MyGroups').'</span></a></li>';
-					echo '</ul></li>';
+	        if (in_array($show,$show_groups)) {					
+    			echo $create_group_item;
+                if (api_get_setting('allow_students_to_create_groups_in_social') == 'true' || api_is_platform_admin()) {                        
+                    echo '<li><ul>';    
+                    echo '<li class="social-menu-sub-level" style="background:none;padding:0px"><a href="'.api_get_path(WEB_PATH).'main/social/groups.php?view=mygroups">'.Display::return_icon('group.png',get_lang('MyGroups'),array('hspace'=>'6')).'<span class="'.($show=='mygroups'?'social-menu-text-active':'social-menu-text4').'" >'.get_lang('MyGroups').'</span></a></li>';
+                    echo '</ul></li>';
+                }
 			}
 			
 			//Search users and groups
 	        echo '<li><a href="'.api_get_path(WEB_PATH).'main/social/search.php">'.Display::return_icon('zoom.png',get_lang('Search'),array('hspace'=>'6')).'<span class="'.($show=='search'?'social-menu-text-active':'social-menu-text4').'" >'.get_lang('Search').'</span></a></li>';
+            
+            echo Display::tag('li', Display::return_icon('group.png',get_lang('Groups'),array('hspace'=>'6')).Display::url(get_lang('MyClasses'),api_get_path(WEB_PATH).'main/social/usergroups.php'));
 			
 			//My files
 			 echo '<li><a href="'.api_get_path(WEB_PATH).'main/social/myfiles.php">'.Display::return_icon('briefcase_small.png',get_lang('MyFiles'),array('hspace'=>'6')).'<span class="'.($show=='myfiles'?'social-menu-text-active':'social-menu-text4').'" >'.get_lang('MyFiles').'</span></a></li>';	

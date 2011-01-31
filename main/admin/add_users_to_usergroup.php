@@ -29,12 +29,12 @@ api_protect_admin_script(true);
 
 // setting breadcrumbs
 $interbreadcrumb[]=array('url' => 'index.php','name' => get_lang('PlatformAdmin'));
-$interbreadcrumb[]=array('url' => 'usergroups.php','name' => get_lang('UserGroups'));
+$interbreadcrumb[]=array('url' => 'usergroups.php','name' => get_lang('Groups'));
 
 // Database Table Definitions
 
 // setting the name of the tool
-$tool_name=get_lang('SubscribeUsersToUserGroup');
+$tool_name=get_lang('SubscribeUsersToGroup');
 
 $add_type = 'multiple';
 if(isset($_REQUEST['add_type']) && $_REQUEST['add_type']!=''){
@@ -98,13 +98,19 @@ if($_POST['form_sent']) {
 }
 $data       = $usergroup->get($id);
 $list_in    = $usergroup->get_users_by_usergroup($id);
-$user_list  = UserManager::get_user_list();
+
+$order = array('lastname');
+if (api_is_western_name_order()) {
+    $order = array('firstname');	
+}
+$user_list  = UserManager::get_user_list(array(),$order);
 
 //api_display_tool_title($tool_name.' ('.$session_info['name'].')');
 $elements_not_in = $elements_in = array();
 
 if (!empty($user_list)) {
     foreach($user_list as $item) {
+        if ($item['status'] == 6 ) continue; //avoid anonymous users
         $person_name = api_get_person_name($item['firstname'], $item['lastname']);        
         if (in_array($item['user_id'], $list_in)) {                        
             $elements_in[$item['user_id']] = $person_name;             
@@ -157,7 +163,8 @@ function search($needle,$type) {
         } else {
             $return .= '<select id="elements_not_in" name="elements_not_in_name[]" multiple="multiple" size="15" style="width:360px;">';
             
-            foreach ($list as $item ) {         
+            foreach ($list as $item ) {
+                if ($item['status'] == 6 ) continue; //avoid anonymous users
                 if (!in_array($item['user_id'], array_keys($elements_in))) {       
                     $person_name = api_get_person_name($item['firstname'], $item['lastname']);   
                     $return .= '<option value="'.$item['user_id'].'">'.$person_name.'</option>';
@@ -226,10 +233,10 @@ if(!empty($errorMsg)) {
 
 <table border="0" cellpadding="5" cellspacing="0" width="100%">
 <tr>
-  <td align="center"><b><?php echo get_lang('SessionsInPlatform') ?> :</b>
+  <td align="center"><b><?php echo get_lang('UsersInPlatform') ?> :</b>
   </td>
   <td></td>
-  <td align="center"><b><?php echo get_lang('SessionsInGroup') ?> :</b></td>
+  <td align="center"><b><?php echo get_lang('UsersInGroup') ?> :</b></td>
 </tr>
 
 <?php if ($add_type=='multiple') { ?>

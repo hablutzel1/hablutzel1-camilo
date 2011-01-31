@@ -3,6 +3,7 @@
 
 // Language files that should be included.
 $language_file = array('courses', 'index', 'admin');
+$cidReset = true;
 require_once '../inc/global.inc.php';
 $libpath = api_get_path(LIBRARY_PATH);
 require_once $libpath.'course.lib.php';
@@ -21,7 +22,11 @@ api_protect_admin_script();
 $this_section = SECTION_PLATFORM_ADMIN;
 
 //Adds the JS needed to use the jqgrid
-$htmlHeadXtra[] = api_get_jqgrid_js();
+$htmlHeadXtra[] = api_get_jquery_ui_js(true);
+
+// setting breadcrumbs
+$interbreadcrumb[]=array('url' => 'index.php','name' => get_lang('PlatformAdmin'));
+$interbreadcrumb[]=array('url' => 'career_dashboard.php','name' => get_lang('CareersAndPromotions'));
 
 Display :: display_header($nameTools);
 
