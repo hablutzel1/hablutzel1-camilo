@@ -1,0 +1,367 @@
+<?php
+/* For licensing terms, see /license.txt */
+/**
+ * Responses to AJAX calls
+*/
+
+$action = $_GET['a'];
+switch ($action) {
+	case 'set_visibility':
+		require_once '../global.inc.php';
+		if (api_is_allowed_to_edit(null,true)) {
+			$tool_table = Database::get_course_table(TABLE_TOOL_LIST);
+			$tool_id = Security::remove_XSS($_GET["id"]);
+			$tool_info = api_get_tool_information($tool_id);
+			$tool_visibility   = $tool_info['visibility'];
+			$tool_image        = $tool_info['image'];
+			$new_image         = str_replace('.gif','_na.gif',$tool_image);
+			$requested_image   = ($tool_visibility == 0 ) ? $tool_image : $new_image;
+			$requested_clase   = ($tool_visibility == 0 ) ? 'visible' : 'invisible';
+			$requested_message = ($tool_visibility == 0 ) ? 'is_active' : 'is_inactive';
+		    $requested_view    = ($tool_visibility == 0 ) ? 'visible.gif' : 'invisible.gif';
+		    $requested_visible = ($tool_visibility == 0 ) ? 1 : 0;
+
+	    	$requested_view    = ($tool_visibility == 0 ) ? 'visible.gif' : 'invisible.gif';
+	    	$requested_visible = ($tool_visibility == 0 ) ? 1 : 0;
+			//HIDE AND REACTIVATE TOOL
+			if ($_GET["id"]==strval(intval($_GET["id"]))) {
+
+				/* -- session condition for visibility
+				 if (!empty($session_id)) {
+					$sql = "select session_id FROM $tool_table WHERE id='".$_GET["id"]."' AND session_id = '$session_id'";
+					$rs = Database::query($sql);
+					if (Database::num_rows($rs) > 0) {
+			 			$sql="UPDATE $tool_table SET visibility=$requested_visible WHERE id='".$_GET["id"]."' AND session_id = '$session_id'";
+					} else {
+						$sql_select = "select * FROM $tool_table WHERE id='".$_GET["id"]."'";
+						$res_select = Database::query($sql_select);
+						$row_select = Database::fetch_array($res_select);
+						$sql = "INSERT INTO $tool_table(name,link,image,visibility,admin,address,added_tool,target,category,session_id)
+								VALUES('{$row_select['name']}','{$row_select['link']}','{$row_select['image']}','0','{$row_select['admin']}','{$row_select['address']}','{$row_select['added_tool']}','{$row_select['target']}','{$row_select['category']}','$session_id')";
+					}
+				} else $sql="UPDATE $tool_table SET visibility=$requested_visible WHERE id='".$_GET["id"]."'";
+				*/
+
+				$sql="UPDATE $tool_table SET visibility=$requested_visible WHERE id='".intval($_GET['id'])."'";
+				Database::query($sql);
+			}	
+			$response_data = array(
+				'image'   => $requested_image,
+				'tclass'  => $requested_clase,
+				'message' => $requested_message,
+	      		'view'    => $requested_view
+			);
+			echo json_encode($response_data);
+        }
+        break;
+	
+	case 'show_course_information' :
+	
+		$language_file = array ('course_description');
+		require_once '../global.inc.php';			
+		require_once api_get_path(INCLUDE_PATH).'reduced_header.inc.php' ;
+		
+		// Get the name of the database course.
+		$database_course = CourseManager::get_name_database_course($_GET['code']);
+		$tbl_course_description = Database::get_course_table(TABLE_COURSE_DESCRIPTION, $database_course);
+	
+		$sql = "SELECT * FROM $tbl_course_description WHERE session_id=0 ORDER BY id";
+		$result = Database::query($sql);
+		while ($description = Database::fetch_object($result)) {
+			$descriptions[$description->id] = $description;
+		}
+		// Function that displays the details of the course description in html.
+		echo  CourseManager::get_details_course_description_html($descriptions, api_get_system_encoding(), false);
+	break;
+    
+    /** 
+     * @todo this functions need to belong to a class or a special wrapper to process the AJAX petitions from the jqgrid
+     */
+    case 'session_courses_lp_default':        
+        
+        require_once '../global.inc.php';
+        
+        $libpath = api_get_path(LIBRARY_PATH);
+        require_once $libpath.'course.lib.php';
+        require_once $libpath.'sessionmanager.lib.php';
+        require_once $libpath.'usermanager.lib.php';
+        require_once $libpath.'tracking.lib.php';                      
+        require_once api_get_path(SYS_CODE_PATH).'newscorm/learnpathList.class.php';
+        
+        
+        $page  = intval($_REQUEST['page']);     //page
+        $limit = intval($_REQUEST['rows']);     // quantity of rows
+        $sidx  = $_REQUEST['sidx'];    //index to filter         
+        $sord  = $_REQUEST['sord'];    //asc or desc
+        if (!in_array($sord, array('asc','desc'))) {
+        	$sord = 'desc';
+        }        
+        $session_id  = intval($_REQUEST['session_id']);
+        
+        //Filter users that does not belong to the session
+        if (!api_is_platform_admin()) {
+            $new_session_list = UserManager::get_personal_session_course_list(api_get_user_id());
+            $my_session_list  = array();
+            foreach($new_session_list as $item) {
+                if (!empty($item['id_session'])) 
+                    $my_session_list[] = $item['id_session'];
+            }        
+            if (!in_array($session_id, $my_session_list)) {
+            	break;
+            }
+        }
+        
+                        
+        if(!$sidx) $sidx =1;
+        
+        $start = $limit*$page - $limit;         
+        $course_list    = SessionManager::get_course_list_by_session_id($session_id);        
+        $count = 0;
+        
+        foreach ($course_list as $item) {
+            $list               = new LearnpathList(api_get_user_id(),$item['code']);
+            $flat_list          = $list->get_flat_list(); 
+            $lps[$item['code']] = $flat_list;
+            $course_url         = api_get_path(WEB_COURSE_PATH).$item['directory'].'/?id_session='.$session_id;
+            $item['title']      = Display::url($item['title'], $course_url, array('target'=>'_blank'));
+            foreach($flat_list as $lp_id => $lp_item) {                                                    
+                $temp[$count]['id']= $lp_id;                
+                $lp_url = api_get_path(WEB_CODE_PATH).'newscorm/lp_controller.php?cidReq='.$item['code'].'&id_session='.$session_id.'&lp_id='.$lp_id.'&action=view';
+                $last_date = Tracking::get_last_connection_date_on_the_course(api_get_user_id(),$item['code'], $session_id, false);
+                if ($lp_item['modified_on'] == '0000-00-00 00:00:00' || empty($lp_item['modified_on'])) {
+                    $lp_date = api_get_local_time($lp_item['created_on'], null, date_default_timezone_get());
+                    $image = 'new.gif';
+                    $label      = get_lang('LearnpathAdded');
+                } else {
+                    $lp_date    = api_get_local_time($lp_item['modified_on'], null, date_default_timezone_get());
+                    $image      = 'moderator_star.png';
+                    $label      = get_lang('LearnpathUpdated');
+                }
+                if (strtotime($last_date) < strtotime($lp_date)) {
+                    $icons = ' '.Display::return_icon($image, get_lang('_title_notification').': '.$label.' - '.$lp_date);                    
+                }
+                $temp[$count]['cell']=array(substr($lp_item['publicated_on'], 0,10), $item['title'], Display::url($lp_item['lp_name'].$icons,$lp_url, array('target'=>'_blank')));
+                $count++;     
+            }              
+        } 
+        
+        $i =0;
+        foreach($temp as $key=>$row) {   
+            $row = $row['cell'];            
+            if ($key >= $start  && $key < ($start + $limit)) {                 
+                $responce->rows[$i]['id']= $key;
+                $responce->rows[$i]['cell']=array($row[0], $row[1], $row[2]);
+                $i++;                
+            }
+        }        
+        
+        if($count > 0 && $limit > 0) { 
+            $total_pages = ceil($count/$limit); 
+        } else { 
+            $total_pages = 0; 
+        }         
+        $responce->total    = $total_pages;         
+        if ($page > $total_pages) { 
+            $responce->page= $total_pages;
+        } else {
+            $responce->page     = $page;	
+        }        
+        $responce->records = $count;    
+        echo json_encode($responce);        
+        break;
+        
+    case 'session_courses_lp_by_week':
+        
+        require_once '../global.inc.php';
+    
+        $libpath = api_get_path(LIBRARY_PATH);
+        require_once $libpath.'course.lib.php';
+        require_once $libpath.'usermanager.lib.php';
+        require_once $libpath.'tracking.lib.php';   
+        require_once $libpath.'sessionmanager.lib.php';        
+        require_once api_get_path(SYS_CODE_PATH).'newscorm/learnpathList.class.php';
+        
+        
+        $page  = intval($_REQUEST['page']);     //page
+        $limit = intval($_REQUEST['rows']);     // quantity of rows
+        $sidx  = intval($_REQUEST['sidx']);    //index to filter         
+        $sord  = $_REQUEST['sord'];    //asc or desc
+        if (!in_array($sord, array('asc','desc'))) {
+            $sord = 'desc';
+        }        
+        $session_id  = intval($_REQUEST['session_id']);
+        
+        //Filter users that does not belong to the session
+        if (!api_is_platform_admin()) {
+            $new_session_list = UserManager::get_personal_session_course_list(api_get_user_id());
+            $my_session_list  = array();
+            foreach($new_session_list as $item) {
+                if (!empty($item['id_session'])) 
+                    $my_session_list[] = $item['id_session'];
+            }        
+            if (!in_array($session_id, $my_session_list)) {
+                break;
+            }
+        }       
+               
+                
+        if(!$sidx) $sidx =1;
+        
+        $start = $limit*$page - $limit; 
+        
+        $course_list    = SessionManager::get_course_list_by_session_id($session_id);
+                        
+        $count = 0;
+        
+        foreach ($course_list as $item) {    
+            $list               = new LearnpathList(api_get_user_id(),$item['code']);
+            $flat_list          = $list->get_flat_list();    
+            $lps[$item['code']] = $flat_list;
+            $item['title'] = Display::url($item['title'],api_get_path(WEB_COURSE_PATH).$item['directory'].'/?id_session='.$session_id,array('target'=>'_blank'));
+            
+            foreach($flat_list as $lp_id => $lp_item) {                                                    
+                $temp[$count]['id']= $lp_id;
+                $lp_url = api_get_path(WEB_CODE_PATH).'newscorm/lp_controller.php?cidReq='.$item['code'].'&id_session='.$session_id.'&lp_id='.$lp_id.'&action=view';
+                
+                $last_date = Tracking::get_last_connection_date_on_the_course(api_get_user_id(),$item['code'], $session_id, false);
+                if ($lp_item['modified_on'] == '0000-00-00 00:00:00' || empty($lp_item['modified_on'])) {
+                    $lp_date = api_get_local_time($lp_item['created_on'], null, date_default_timezone_get());
+                    $image = 'new.gif';
+                    $label      = get_lang('LearnpathAdded');
+                } else {
+                    $lp_date    = api_get_local_time($lp_item['modified_on'], null, date_default_timezone_get());
+                    $image      = 'moderator_star.png';
+                    $label      = get_lang('LearnpathUpdated');
+                }
+                if (strtotime($last_date) < strtotime($lp_date)) {
+                    $icons = ' '.Display::return_icon($image, get_lang('_title_notification').': '.$label.' - '.$lp_date);                    
+                }
+                
+                $temp[$count]['cell']=array(get_week_from_day($lp_item['publicated_on']), substr($lp_item['publicated_on'], 0,10), $item['title'], Display::url($lp_item['lp_name'].$icons, $lp_url, array('target'=>'_blank')));
+                $count++;     
+            }              
+        } 
+        
+        $i =0;
+        foreach($temp as $key=>$row) {   
+            $row = $row['cell'];            
+            if ($key >= $start  && $key < ($start + $limit)) {                 
+                $responce->rows[$i]['id']= $key;
+                $responce->rows[$i]['cell']=array($row[0], $row[1], $row[2],$row[3]);
+                $i++;                
+            }
+        }
+        
+        if($count > 0 && $limit > 0) { 
+            $total_pages = ceil($count/$limit); 
+        } else { 
+            $total_pages = 0; 
+        }         
+        $responce->total    = $total_pages;         
+        if ($page > $total_pages) { 
+            $responce->page= $total_pages;
+        } else {
+            $responce->page     = $page;    
+        }        
+        $responce->records = $count;    
+        echo json_encode($responce); 
+        break;
+        
+
+    case 'session_courses_lp_by_course':
+        
+        require_once '../global.inc.php';
+    
+        $libpath = api_get_path(LIBRARY_PATH);
+        require_once $libpath.'course.lib.php';
+        require_once $libpath.'usermanager.lib.php';
+        require_once $libpath.'tracking.lib.php';   
+        require_once $libpath.'sessionmanager.lib.php';        
+        require_once api_get_path(SYS_CODE_PATH).'newscorm/learnpathList.class.php';
+        
+        
+        $page  = intval($_REQUEST['page']);     //page
+        $limit = intval($_REQUEST['rows']);     // quantity of rows
+        $sidx  = intval($_REQUEST['sidx']);    //index to filter         
+        $sord  = $_REQUEST['sord'];    //asc or desc
+        if (!in_array($sord, array('asc','desc'))) {
+            $sord = 'desc';
+        }        
+        $session_id  = intval($_REQUEST['session_id']);
+        
+        //Filter users that does not belong to the session
+        if (!api_is_platform_admin()) {
+            $new_session_list = UserManager::get_personal_session_course_list(api_get_user_id());
+            $my_session_list  = array();
+            foreach($new_session_list as $item) {
+                if (!empty($item['id_session'])) 
+                    $my_session_list[] = $item['id_session'];
+            }        
+            if (!in_array($session_id, $my_session_list)) {
+                break;
+            }
+        }
+                
+        if(!$sidx) $sidx =1;
+        
+        $start = $limit*$page - $limit; 
+        
+        $course_list    = SessionManager::get_course_list_by_session_id($session_id);
+                        
+        $count = 0;
+        
+        foreach ($course_list as $item) {    
+            $list               = new LearnpathList(api_get_user_id(),$item['code']);
+            $flat_list          = $list->get_flat_list();    
+            $lps[$item['code']] = $flat_list;
+            $item['title']      = Display::url($item['title'],api_get_path(WEB_COURSE_PATH).$item['directory'].'/?id_session='.$session_id, array('target'=>'_blank'));
+            foreach($flat_list as $lp_id => $lp_item) {                                                    
+                $temp[$count]['id']= $lp_id;
+                $lp_url = api_get_path(WEB_CODE_PATH).'newscorm/lp_controller.php?cidReq='.$item['code'].'&id_session='.$session_id.'&lp_id='.$lp_id.'&action=view';
+                Tracking::get_last_connection_date_on_the_course(api_get_user_id(),$item['code'], $session_id, false);
+                if ($lp_item['modified_on'] == '0000-00-00 00:00:00' || empty($lp_item['modified_on'])) {
+                    $lp_date = api_get_local_time($lp_item['created_on'], null, date_default_timezone_get());
+                    $image = 'new.gif';
+                    $label      = get_lang('LearnpathAdded');
+                } else {
+                    $lp_date    = api_get_local_time($lp_item['modified_on'], null, date_default_timezone_get());
+                    $image      = 'moderator_star.png';
+                    $label      = get_lang('LearnpathUpdated');
+                }
+                if (strtotime($last_date) < strtotime($lp_date)) {
+                    $icons = ' '.Display::return_icon($image, get_lang('_title_notification').': '.$label.' - '.$lp_date);                    
+                }
+                $temp[$count]['cell']=array(substr($lp_item['publicated_on'], 0,10), $item['title'], Display::url($lp_item['lp_name'].$icons, $lp_url, array('target'=>'_blank')));
+                $count++;     
+            }              
+        } 
+        
+        $i =0;
+        foreach($temp as $key=>$row) {   
+            $row = $row['cell'];            
+            if ($key >= $start  && $key < ($start + $limit)) {                 
+                $responce->rows[$i]['id']= $key;
+                $responce->rows[$i]['cell']=array($row[0], $row[1], $row[2],$row[3]);
+                $i++;                
+            }
+        }
+        
+        if($count > 0 && $limit > 0) { 
+            $total_pages = ceil($count/$limit); 
+        } else { 
+            $total_pages = 0; 
+        }         
+        $responce->total    = $total_pages;         
+        if ($page > $total_pages) { 
+            $responce->page= $total_pages;
+        } else {
+            $responce->page     = $page;    
+        }        
+        $responce->records = $count; 
+        
+        echo json_encode($responce); 
+        break;
+	default:
+		echo '';
+}
+exit;
