@@ -1,8 +1,14 @@
 <?php
+/* For licensing terms, see /license.txt */
+/**
+*   Session view
+*   @package chamilo.session
+*   @author Julio Montoya <gugli100@gmail.com>
+*/
+
 // Language files that should be included.
 $language_file = array('courses', 'index','tracking','exercice', 'admin');
-
-
+$cidReset = true;
 require_once '../inc/global.inc.php';
 $libpath = api_get_path(LIBRARY_PATH);
 require_once $libpath.'course.lib.php';
@@ -19,38 +25,27 @@ require_once api_get_path(SYS_CODE_PATH).'exercice/exercise.class.php';
 
 api_block_anonymous_users(); // Only users who are logged in can proceed.
 
-
 $this_section = SECTION_COURSES;
-//Tab js
-$htmlHeadXtra[] = '<link rel="stylesheet" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/cupertino/jquery-ui-1.8.7.custom.css" type="text/css">';
-$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.4.min.js" type="text/javascript" language="javascript"></script>'; //jQuery
-$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/cupertino/jquery-ui-1.8.7.custom.min.js" type="text/javascript" language="javascript"></script>';
-//Grid js
-$htmlHeadXtra[] = '<link rel="stylesheet" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jqgrid/css/ui.jqgrid.css" type="text/css">';
-$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jqgrid/js/i18n/grid.locale-en.js" type="text/javascript" language="javascript"></script>'; 
-$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jqgrid/js/jquery.jqGrid.min.js" type="text/javascript" language="javascript"></script>';
-
+$htmlHeadXtra[] = api_get_jquery_ui_js(true);
     
 Display :: display_header($nameTools);
 
-
-
 $session_id     = intval($_GET['session_id']);
+if (empty($session_id)) {
+	api_not_allowed();
+}
+
 $session_info   = SessionManager::fetch($session_id);
 $session_list   = SessionManager::get_sessions_by_coach(api_get_user_id());
-
-
 $course_list    = SessionManager::get_course_list_by_session_id($session_id);
+
 $course_select = array();
 
 $session_select = array();
 foreach ($session_list as $item) {
     $session_select[$item['id']] =  $item['name'];
 }
-/*
-foreach ($course_list as $course_item) {
-	$course_select[$course_item['id']] =  $course_item['title'];
-}*/
+
 // Session list form
 
 if (count($session_select) > 1) {
@@ -59,33 +54,25 @@ if (count($session_select) > 1) {
     $defaults['session_id'] = $session_id;
     $form->setDefaults($defaults);
     $form->display();
-    
-    
-    if ($form->validate()) {
-        
-    }
+    //if ($form->validate()) {}        
 }
-
-echo Display::tag('h1', $session_info['name']);
-
 
 //Listing LPs from all courses
+/*
 $lps = array();
-
-foreach ($course_list as $item) {    
-    $list       = new LearnpathList(api_get_user_id(),$item['code']);
-    $flat_list  = $list->get_flat_list();        
-    $lps[$item['code']] = $flat_list;
-    foreach ($flat_list as $item) {        
-        //var_dump(get_week_from_day($item['publicated_on']));	
-    }    
-}
-
+if (!empty($course_list)) {
+    foreach ($course_list as $item) {    
+        $list       = new LearnpathList(api_get_user_id(),$item['code']);
+        $flat_list  = $list->get_flat_list();        
+        $lps[$item['code']] = $flat_list;
+        foreach ($flat_list as $item) {        
+            //var_dump(get_week_from_day($item['publicated_on']));	
+        }    
+    }
+}*/
 
 //Getting all sessions where I'm subscribed
 $new_session_list = UserManager::get_personal_session_course_list(api_get_user_id());
-
-//echo '<pre>';
 
 $my_session_list = array();
 $final_array = array();
@@ -132,7 +119,14 @@ if (!empty($new_session_list)) {
     }
 }
 
-//print_r($final_array); exit;
+//If the requested session does not exist in my list we stop the script
+if (!api_is_platform_admin()) {    
+    if (!in_array($session_id, $my_session_list)) {
+        api_not_allowed();
+    }
+}
+
+//print_r($my_session_list); exit;
 require_once api_get_path(LIBRARY_PATH).'pear/HTML/Table.php';
 $html = '';
 //Final data to be show
@@ -165,12 +159,7 @@ foreach($final_array as $session_data) {
                 $counter = 1;                    
                 foreach ($exercise_data['data'] as $exercise_result) {                    
                     $my_exercise_result = array($exercise_data['name'], $exercise_result['exe_id']);
-                    $column = 1;
-                    //$exercise_result['exe_id']
-                    /*print_r($exercise_result);
-                    exe_weighting
-                    exe_result
-                    exe_id*/
+                    $column = 1;      
                     $score          = $exercise_result['exe_result'].' / '.$exercise_result['exe_weighting'];
                     $platform_score = show_score($exercise_result['exe_result'], $exercise_result['exe_weighting'], false);
                     if (!empty($exercise_result['exe_weighting']) && intval($exercise_result['exe_weighting']) != 0 ) {                        
@@ -199,47 +188,49 @@ foreach($final_array as $session_data) {
 }     
 //echo '<pre>';print_r($my_real_array) ;
 
+echo Display::tag('h1', $session_info['name']);
+
 //All Learnpaths grid settings (First tab, first subtab)
 
 $url            = api_get_path(WEB_AJAX_PATH).'course_home.ajax.php?a=session_courses_lp_default&session_id='.$session_id;
-$columns        = array('Date','Course', 'LP');
-$column_model   = array(array('name'=>'date',   'index'=>'date',  'width'=>'80',   'align'=>'left'),
-                        array('name'=>'course', 'index'=>'course', 'width'=>'500', 'align'=>'left'),
-                        array('name'=>'lp',     'index'=>'lp',     'width'=>'200',  'align'=>'center'));
+$columns        = array(get_lang('Date'),get_lang('Course'), get_lang('LearningPath'));
+
+$column_model   = array(array('name'=>'date',   'index'=>'date',   'width'=>'80',  'align'=>'left',  'sortable'=>'false'),
+                        array('name'=>'course', 'index'=>'course', 'width'=>'500', 'align'=>'left',  'sortable'=>'false'),
+                        array('name'=>'lp',     'index'=>'lp',     'width'=>'200', 'align'=>'center','sortable'=>'false'));
                         
 $extra_params['autowidth'] = 'true'; //use the width of the parent
 //$extra_params['forceFit'] = 'true'; //use the width of the parent
-
-
 //$extra_params['altRows'] = 'true'; //zebra style
-
                         
 //Per course grid settings
 $url_course             = api_get_path(WEB_AJAX_PATH).'course_home.ajax.php?a=session_courses_lp_by_course&session_id='.$session_id;
 $extra_params_course['grouping'] = 'true';
-$extra_params_course['groupingView'] = array('groupField'=>array('course'),
-                                            'groupColumnShow'=>array('false'),
-                                            'groupText' => array('<b>Course {0} - {1} Item(s)</b>'));
+$extra_params_course['groupingView'] = array('groupField'       => array('course'),
+                                             'groupColumnShow'  => array('false'),
+                                             'groupText'        => array('<b>'.get_lang('Course').' {0} - {1} Item(s)</b>'));
 $extra_params_course['autowidth'] = 'true'; //use the width of the parent                                          
                               
 //Per Week grid
-$url_week             = api_get_path(WEB_AJAX_PATH).'course_home.ajax.php?a=session_courses_lp_by_week&session_id='.$session_id;
-$column_week = array('Week','Date','Course', 'LP');
-$column_week_model =array(array('name'=>'week',     'index'=>'week',    'width'=>'80', 'align'=>'left'),       
-                          array('name'=>'date',     'index'=>'date',    'width'=>'80', 'align'=>'right'),
-                          array('name'=>'course',   'index'=>'course',  'width'=>'500', 'align'=>'left'),
-                          array('name'=>'lp',       'index'=>'lp',      'width'=>'200', 'align'=>'center'));
+$url_week           = api_get_path(WEB_AJAX_PATH).'course_home.ajax.php?a=session_courses_lp_by_week&session_id='.$session_id;
+$column_week        = array(get_lang('PeriodWeek'), get_lang('Date'),get_lang('Course'), get_lang('LearningPath'));
+$column_week_model  = array(
+                          array('name'=>'week',     'index'=>'week',    'width'=>'80', 'align'=>'left', 'sortable'=>'false'),       
+                          array('name'=>'date',     'index'=>'date',    'width'=>'80', 'align'=>'right','sortable'=>'false'),
+                          array('name'=>'course',   'index'=>'course',  'width'=>'500','align'=>'left', 'sortable'=>'false'),
+                          array('name'=>'lp',       'index'=>'lp',      'width'=>'200','align'=>'center','sortable'=>'false'));
+                          
                           
 $extra_params_week['grouping'] = 'true';
 $extra_params_week['groupingView'] = array('groupField'=>array('week'),
                                             'groupColumnShow'=>'false',
-                                            'groupText' => array('<b>Week {0} - {1} Item(s)</b>'));
+                                            'groupText' => array('<b>'.get_lang('PeriodWeek').' {0} - {1} </b>'));
 $extra_params_week['autowidth'] = 'true'; //use the width of the parent
 
 //MyQCM grid
-$column_exercise        = array(get_lang('Course'),get_lang('Exercise'), get_lang('Attempt').' #', get_lang('Result'), get_lang('Note'), get_lang('Position'));
-$column_exercise_model  = array(array('name'=>'course',     'index'=>'course',    'width'=>'450', 'align'=>'left','sortable'=>'false'),
-                                array('name'=>'exercise',   'index'=>'exercise',  'width'=>'250', 'align'=>'left', 'sortable'=>'false'),
+$column_exercise        = array(get_lang('Course'),get_lang('Exercise'), get_lang('Attempts'), get_lang('Result'), get_lang('Score'), get_lang('Position'));
+$column_exercise_model  = array(array('name'=>'course',     'index'=>'course',    'width'=>'450', 'align'=>'left',  'sortable'=>'false'),
+                                array('name'=>'exercise',   'index'=>'exercise',  'width'=>'250', 'align'=>'left',  'sortable'=>'false'),
                                 array('name'=>'attempt',    'index'=>'attempt',   'width'=>'50', 'align'=>'center', 'sortable'=>'false'),
                                 array('name'=>'result',     'index'=>'result',    'width'=>'50', 'align'=>'center', 'sortable'=>'false'),
                                 array('name'=>'note',       'index'=>'note',      'width'=>'50', 'align'=>'center', 'sortable'=>'false'),
@@ -266,10 +257,10 @@ $(function() {
     $( "#sub_tab" ).tabs();     
          
 <?php 
-     echo Display::grid_js('list_default',  $url,           $columns,$column_model,$extra_params);
-     echo Display::grid_js('list_course',   $url_course,    $columns,$column_model,$extra_params_course);
-     echo Display::grid_js('list_week',     $url_week,      $column_week,$column_week_model, $extra_params_week);     
-     echo Display::grid_js('exercises',      '',  $column_exercise,$column_exercise_model, $extra_params_exercise, $my_real_array);        
+     echo Display::grid_js('list_default',  $url,           $columns,        $column_model,$extra_params);
+     echo Display::grid_js('list_course',   $url_course,    $columns,        $column_model,$extra_params_course);
+     echo Display::grid_js('list_week',     $url_week,      $column_week,    $column_week_model, $extra_params_week);     
+     echo Display::grid_js('exercises',      '',            $column_exercise,$column_exercise_model, $extra_params_exercise, $my_real_array);        
 ?>
 
 });

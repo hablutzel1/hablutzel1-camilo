@@ -26,7 +26,7 @@ require_once 'answer.class.php';
 require_once 'exercise.lib.php';
 
 // debug var. Set to 0 to hide all debug display. Set to 1 to display debug messages.
-$debug = 1;
+$debug = 0;
 
 // name of the language file that needs to be included
 $language_file = 'exercice';
@@ -38,30 +38,12 @@ $this_section = SECTION_COURSES;
 // Notice for unauthorized people.
 api_protect_course_script(true);
 $is_allowedToEdit = api_is_allowed_to_edit(null,true);
-
-//Blocking access in LPs
-//This funcionality has been moved to the get_link function in the learnpath_class.php
-/*
-if ($origin == 'learnpath' && isset ($_GET['not_multiple_attempt']) && $_GET['not_multiple_attempt'] == strval(intval($_GET['not_multiple_attempt']))) {
-    $not_multiple_attempt = (int) $_GET['not_multiple_attempt'];
-    if ($not_multiple_attempt === 1) {
-        require_once '../inc/reduced_header.inc.php';
-        echo '<div style="height:10px">&nbsp;</div>';
-        Display :: display_warning_message(get_lang('ReachedOneAttempt'));
-        exit;
-    }
-}*/
-
 $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.js" type="text/javascript" language="javascript"></script>'; //jQuery
 
 if (api_get_setting('show_glossary_in_extra_tools') == 'true') {
     $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/glossary.js" type="text/javascript" language="javascript"></script>'; //Glossary
     $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.highlight.js" type="text/javascript" language="javascript"></script>';
 }
-
-$htmlHeadXtra[] = '<link rel="stylesheet" href="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/cupertino/jquery-ui-1.8.7.custom.css" type="text/css">';
-$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-1.4.4.min.js" type="text/javascript" language="javascript"></script>'; //jQuery
-$htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery-ui/cupertino/jquery-ui-1.8.7.custom.min.js" type="text/javascript" language="javascript"></script>'; //jQuery
 
 //@todo we should only enable this when there is a time control
 
@@ -397,7 +379,7 @@ if ($formSent && isset($_POST)) {
                     if (exercise_time_control_is_valid($exerciseId)) {
                     	$sql_exe_result = "";                    	
                     } else {
-                    	$sql_exe_result = ",exe_result = 0";
+                    	$sql_exe_result = ", exe_result = 0";
                     }
                     //Clean incomplete - @todo why setting to blank the data_tracking?
                     //$update_query = 'UPDATE ' . $stat_table . ' SET ' . "status = '', data_tracking='', exe_date = '" . api_get_utc_datetime() . "' $sql_exe_result " . ' WHERE exe_id = ' . Database::escape_string($exe_id);
@@ -490,6 +472,7 @@ if (api_is_course_admin() && $origin != 'learnpath') {
     echo '<a href="exercice.php?show=test">' . Display :: return_icon('back.png', get_lang('GoBackToQuestionList')) . get_lang('GoBackToQuestionList') . '</a>';
     if ($show_quiz_edition) {
     	echo Display :: return_icon('edit.gif', get_lang('ModifyExercise')) . '<a href="exercise_admin.php?' . api_get_cidreq() . '&modifyExercise=yes&exerciseId=' . $objExercise->id . '">' . get_lang('ModifyExercise') . '</a>';
+        //echo Display :: return_icon('wizard.gif', get_lang('QuestionList')) . '<a href="exercice/admin.php?' . api_get_cidreq() . '&exerciseId=' . $objExercise->id . '">' . get_lang('QuestionList') . '</a>';
     } else {
     	echo Display::return_icon('edit_na.gif', get_lang('ModifyExercise')).'<a href="#">'.get_lang('ModifyExercise').'</a>';
     }
@@ -497,7 +480,7 @@ if (api_is_course_admin() && $origin != 'learnpath') {
 }
 
 $exerciseTitle = text_filter($objExercise->selectTitle());
-echo "<h2>" . $exerciseTitle . "</h2>";
+echo Display::tag('h2', $exerciseTitle);
 $show_clock = true;
 $user_id = api_get_user_id();
 if ($objExercise->selectAttempts() > 0) {	
@@ -505,7 +488,34 @@ if ($objExercise->selectAttempts() > 0) {
     if ($attempt_count >= $objExercise->selectAttempts()) {
     	$show_clock = false;
         if (!api_is_allowed_to_edit(null,true)) {
-            Display :: display_warning_message(sprintf(get_lang('ReachedMaxAttempts'), $exerciseTitle, $objExercise->selectAttempts()), false);
+            
+            if ($objExercise->results_disabled == 0 && $origin != 'learnpath') {
+                //Showing latest attempt according with task BT#1628
+                $exercise_stat_info = get_all_exercise_results_by_user(api_get_user_id(), $exerciseId, api_get_course_id(), api_get_session_id());
+                if (!empty($exercise_stat_info )) {
+                    $max_exe_id = max(array_keys($exercise_stat_info));
+                    $last_attempt_info = $exercise_stat_info[$max_exe_id];
+                    
+                    //echo '<pre>';    //var_dump($last_attempt_info);  
+                    if (!empty($last_attempt_info['question_list'])) {               
+                        foreach($last_attempt_info['question_list'] as $question_data) {
+                            $question_id = $question_data['question_id'];
+                            $marks       = $question_data['marks'];
+                            
+                            $question_info = Question::read($question_id);                                                        
+                            echo Display::div($question_info->question, array('id'=>'question_title','class'=>'sectiontitle'));                            
+                            echo Display::div(get_lang('Score').' '.$marks, array('id'=>'question_score'));
+                        }
+                    }                    
+                    $score =  show_score($last_attempt_info['exe_result'],$last_attempt_info['exe_weighting']);
+                    echo Display::div(get_lang('YourTotalScore').' '.$score, array('id'=>'question_score'));
+                } else {
+                    Display :: display_warning_message(sprintf(get_lang('ReachedMaxAttempts'), $exerciseTitle, $objExercise->selectAttempts()), false);	
+                }
+            } else {
+                Display :: display_warning_message(sprintf(get_lang('ReachedMaxAttempts'), $exerciseTitle, $objExercise->selectAttempts()), false);
+            }
+            
             if ($origin != 'learnpath')
                 Display :: display_footer();
             exit;
