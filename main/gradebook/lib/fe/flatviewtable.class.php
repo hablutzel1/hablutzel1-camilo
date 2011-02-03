@@ -1,14 +1,14 @@
 <?php
 /* For licensing terms, see /license.txt */
-require_once (dirname(__FILE__).'/../../../inc/global.inc.php');
-require_once (dirname(__FILE__).'/../be.inc.php');
+require_once dirname(__FILE__).'/../../../inc/global.inc.php';
+require_once dirname(__FILE__).'/../be.inc.php';
 set_time_limit(0);
 define ('LIMIT',10);
 
 /**
  * Table to display flat view (all evaluations and links for all students)
  * @author Stijn Konings
- * @author Bert Stepp� (refactored, optimised)
+ * @author Bert Steppé (refactored, optimised)
  * @author Julio Montoya Armas Gradebook Graphics
  */
 class FlatViewTable extends SortableTable
@@ -24,7 +24,7 @@ class FlatViewTable extends SortableTable
 	function FlatViewTable ($selectcat, $users= array (), $evals= array (), $links= array (), $limit_enabled = false, $offset = 0, $addparams = null) {
 		parent :: __construct ('flatviewlist', null, null, (api_is_western_name_order() xor api_sort_by_first_name()) ? 1 : 0);
 		$this->datagen = new FlatViewDataGenerator($users, $evals, $links);
-		
+
 		$this->selectcat = $selectcat;
 		$this->limit_enabled = $limit_enabled;
 		$this->offset = $offset;

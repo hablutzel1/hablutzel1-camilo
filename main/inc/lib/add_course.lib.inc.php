@@ -28,7 +28,7 @@ require_once api_get_path(LIBRARY_PATH).'mail.lib.inc.php';
 * @param	integer Course admin ID
 * @param	string	DB prefix
 * @param	integer	Expiration delay in unix timestamp
-* @return true if the course creation was succesful, false otherwise.
+* @return	mixed Course code if course was successfully created, false otherwise
 */
 function create_course($wanted_code, $title, $tutor_name, $category_code, $course_language, $course_admin_id, $db_prefix, $firstExpirationDelay) {
 	$keys = define_course_keys($wanted_code, "", $db_prefix);
@@ -46,7 +46,7 @@ function create_course($wanted_code, $title, $tutor_name, $category_code, $cours
 		fill_Db_course($db_name, $directory, $course_language);
 		register_course($code, $visual_code, $directory, $db_name, $tutor_name, $category_code, $title, $course_language, $course_admin_id, $expiration_date);
 
-		return true;
+		return $code;
 	}
 	else
 		return false;
@@ -2375,7 +2375,7 @@ function fill_Db_course($courseDbName, $courseRepository, $language,$default_doc
 		-----------------------------------------------------------
 		*/
 
-		$intro_text='<table width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td width="110" valign="middle" align="left"><img src="'.api_get_path(REL_CODE_PATH).'img/mascot.png" alt="mr. Dokeos" title="mr. Dokeos" /></td><td valign="middle" align="left">'.lang2db(get_lang('IntroductionText')).'</td></tr></table>';
+		$intro_text='<table width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td width="110" valign="middle" align="left"><img src="'.api_get_path(REL_CODE_PATH).'img/mascot.png" alt="Mr. Chamilo" title="Mr. Chamilo" /></td><td valign="middle" align="left">'.lang2db(get_lang('IntroductionText')).'</td></tr></table>';
 		Database::query("INSERT INTO `".$TABLEINTROS . "` VALUES ('" . TOOL_COURSE_HOMEPAGE . "','".$intro_text. "', 0)");
 		Database::query("INSERT INTO `".$TABLEINTROS . "` VALUES ('" . TOOL_STUDENTPUBLICATION . "','".lang2db(get_lang('IntroductionTwo')) . "', 0)");
 
@@ -2393,7 +2393,7 @@ function fill_Db_course($courseDbName, $courseRepository, $language,$default_doc
 		Database::query("INSERT INTO `".$TABLEQUIZANSWERSLIST . "` VALUES ( '3', '1', '".lang2db(get_lang('Force')) . "', '1', '".lang2db(get_lang('Indeed')) . "', '5', '3','','','','')");
 		Database::query("INSERT INTO `".$TABLEQUIZANSWERSLIST . "` VALUES ( '4', '1', '".lang2db(get_lang('Contradiction')) . "', '1', '".lang2db(get_lang('NotFalse')) . "', '5', '4','','','','')");
 		$html=Database::escape_string('<table width="100%" border="0" cellpadding="0" cellspacing="0"><tr><td width="110" valign="top" align="left"><img src="'.api_get_path(WEB_CODE_PATH).'default_course_document/images/mr_dokeos/thinking.jpg"></td><td valign="top" align="left">'.get_lang('Antique').'</td></tr></table>');
-		
+
 		Database::query('INSERT INTO `'.$TABLEQUIZ . '` (title, description, type, random, random_answers, active, results_disabled ) VALUES ("'.lang2db(get_lang('ExerciceEx')) . '", "'.$html.'", "1", "0", "0", "1", "0")');
 		Database::query("INSERT INTO `".$TABLEQUIZQUESTIONLIST . "` (id, question, description, ponderation, position, type, picture, level) VALUES ( '1', '".lang2db(get_lang('SocraticIrony')) . "', '".lang2db(get_lang('ManyAnswers')) . "', '10', '1', '2','',1)");
 		Database::query("INSERT INTO `".$TABLEQUIZQUESTION . "` (question_id, exercice_id, question_order) VALUES (1,1,1)");
@@ -2460,7 +2460,7 @@ function string2binary($variable)
  * @param array		Optional array of teachers' user ID
  * @return	int		0
  */
-function register_course($courseSysCode, $courseScreenCode, $courseRepository, $courseDbName, $titular, $category, $title, $course_language, $uidCreator, $expiration_date = "", $teachers=array())
+function register_course($courseSysCode, $courseScreenCode, $courseRepository, $courseDbName, $titular, $category, $title, $course_language, $uidCreator, $expiration_date = "", $teachers=array(), $visibility = null)
 {
 	global $defaultVisibilityForANewCourse, $error_msg;
 	$TABLECOURSE = Database :: get_main_table(TABLE_MAIN_COURSE);
@@ -2505,6 +2505,16 @@ function register_course($courseSysCode, $courseScreenCode, $courseRepository, $
 	} else {
 		$expiration_date = "FROM_UNIXTIME(".$expiration_date . ")";
 	}
+
+	if($visibility === null) {
+		$visibility = $defaultVisibilityForANewCourse;
+	} else {
+		if($visibility < 0 || $visibility > 3) {
+			$error_msg[] = "visibility is invalid";
+			$okForRegisterCourse = false;
+		}
+	}
+
 	if ($okForRegisterCourse) {
 		$titular=addslashes($titular);
 		// here we must add 2 fields
@@ -2516,7 +2526,7 @@ function register_course($courseSysCode, $courseScreenCode, $courseRepository, $
 					title = '".Database :: escape_string($title) . "',
 					description = '".lang2db(get_lang('CourseDescription')) . "',
 					category_code = '".Database :: escape_string($category) . "',
-					visibility = '".$defaultVisibilityForANewCourse . "',
+					visibility = '".$visibility . "',
 					show_score = '',
 					disk_quota = '".api_get_setting('default_document_quotum') . "',
 					creation_date = now(),
@@ -2559,7 +2569,7 @@ function register_course($courseSysCode, $courseScreenCode, $courseRepository, $
 		//adding the course to an URL
 		global $_configuration;
 		require_once (api_get_path(LIBRARY_PATH).'urlmanager.lib.php');
-		if ($_configuration['multiple_access_urls']==true) {
+		if ($_configuration['multiple_access_urls']) {
 			$url_id=1;
 			if (api_get_current_access_url_id()!=-1) {
 				$url_id=api_get_current_access_url_id();
@@ -2613,7 +2623,7 @@ function checkArchive($pathToArchive) {
  */
 function readPropertiesInArchive($archive, $isCompressed = TRUE) {
 	include api_get_path(LIBRARY_PATH) . "pclzip/pclzip.lib.php";
-	printVar(dirname($archive), "Zip : ");
+	debug::printVar(dirname($archive), "Zip : ");
 	$uid = api_get_user_id();
 	/*
 	string tempnam ( string dir, string prefix)

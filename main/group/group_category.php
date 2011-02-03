@@ -11,7 +11,6 @@ $language_file = 'group';
 require_once '../inc/global.inc.php';
 $this_section = SECTION_COURSES;
 require_once api_get_path(LIBRARY_PATH).'groupmanager.lib.php';
-require_once api_get_path(LIBRARY_PATH).'debug.lib.inc.php';
 require_once api_get_path(LIBRARY_PATH).'formvalidator/FormValidator.class.php';
 if (!api_is_allowed_to_edit(false,true) || !(isset ($_GET['id']) || isset ($_POST['id']) || isset ($_GET['action']) || isset ($_POST['action']))) {
 	api_not_allowed();
@@ -187,7 +186,7 @@ Display :: display_header($nameTools, 'Group');
 
 // actions bar
 echo '<div class="actions">';
-echo '<a href="group.php">'.Display::return_icon('back.png', get_lang('BackTo').' '.api_strtolower(get_lang('GroupOverview'))).' '.get_lang('BackTo').' '.api_strtolower(get_lang('GroupOverview')).'</a>';
+echo '<a href="group.php">'.Display::return_icon('back.png', get_lang('BackToGroupList')).' '.get_lang('BackToGroupList').'</a>';
 echo '</div>';
 
 $defaults = $category;

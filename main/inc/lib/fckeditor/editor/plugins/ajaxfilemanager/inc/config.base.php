@@ -7,7 +7,7 @@
 	 *
 	 *
 	 * Modify system config setting for Dokeos
-	 * @author Juan Carlos Ra�a
+	 * @author Juan Carlos Raña Trabado
 	 * @since 31/December/2008
 	 */
 
@@ -101,7 +101,15 @@
 			}
 			else
 			{
-				$PathDokeosAjaxFileManager='../../../../../../../courses/'.$_course['path'].'/document/shared_folder/sf_user_'.api_get_user_id().'/';
+				$current_session_id = api_get_session_id();
+				if($current_session_id==0)
+				{
+					$PathDokeosAjaxFileManager='../../../../../../../courses/'.$_course['path'].'/document/shared_folder/sf_user_'.api_get_user_id().'/';
+				}
+				else
+				{
+					$PathDokeosAjaxFileManager='../../../../../../../courses/'.$_course['path'].'/document/shared_folder_session_'.$current_session_id.'/sf_user_'.api_get_user_id().'/';
+				}				
 			}
 		}
 	}
@@ -152,7 +160,7 @@
 
 	define('CONFIG_OVERWRITTEN', false); //overwirte when processing paste
 	define('CONFIG_UPLOAD_VALID_EXTS', 'gif,jpg,jpeg,png,bmp,tif,psd,zip,sit,rar,gz,tar,htm,html,mov,mpg,avi,asf,mpeg,wmv,aif,aiff,wav,mp3,swf, flv, mp4, aac, ppt,rtf,doc, pdf,xls,txt,flv,odt,ods,odp,odg,odc,odf,odb,odi,pps,docx,pptx,xlsx,accdb,xml, mid');//For Dokeos updated
-	define("CONFIG_VIEWABLE_VALID_EXTS", 'gif,bmp,txt,jpg,jpeg, png,tif,html,htm,mp3,wav,wmv,wma,rm,rmvb,mov,swf,flv,mp4,aac,avi,mpg,mpeg,asf, mid');//For Dokeos updated
+	define("CONFIG_VIEWABLE_VALID_EXTS", 'gif,bmp,txt,jpg,jpeg,png,tif,html,htm,mp3,wav,wmv,wma,rm,rmvb,mov,swf,flv,mp4,aac,avi,mpg,mpeg,asf,mid');//For Dokeos updated
 	define('CONFIG_UPLOAD_INVALID_EXTS', 'php,php3,php4,php5,php6,phps,phtml,asp,aspx,jsp,cfm,cfc,pl,jar,sh,cgi,js,exe,com,bat,pif,scr,msi,ws,wsc,wsf,vb,vbe,vbs,reg,dll'); //For Dokeos added.
 	//Preview
 	define('CONFIG_IMG_THUMBNAIL_MAX_X', 100);

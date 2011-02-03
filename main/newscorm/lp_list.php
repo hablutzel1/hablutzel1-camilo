@@ -17,14 +17,14 @@ if(empty($lp_controller_touched) || $lp_controller_touched!=1){
 	header('location: lp_controller.php?action=list');
 }
 
-require_once('back_compat.inc.php');
+require_once 'back_compat.inc.php';
 $courseDir   = api_get_course_path().'/scorm';
 $baseWordDir = $courseDir;
 $display_progress_bar = true;
 
-require_once('learnpathList.class.php');
-require_once('learnpath.class.php');
-require_once('learnpathItem.class.php');
+require_once 'learnpathList.class.php';
+require_once 'learnpath.class.php';
+require_once 'learnpathItem.class.php';
 
 /**
  * Display initialisation and security checks
@@ -98,7 +98,7 @@ if ($is_allowed_to_edit) {
     Display::display_normal_message(api_failure::get_last_failure());
   }
 
-  //include('content_makers.inc.php');
+  //include 'content_makers.inc.php';
   echo '<div class="actions">';
   echo	'<a href="'.api_get_self().'?'.api_get_cidreq().'&action=add_lp">'.
 		'<img src="../img/wizard.gif" border="0" align="absmiddle" alt="'.get_lang('_add_learnpath').
@@ -184,12 +184,12 @@ if (is_array($flat_list)) {
 	    	// This is a student and this path is invisible, skip
 	    	continue;
 	    }
-	    
+
 	    // check if the learnpath is visible for student
 	    if (!$is_allowed_to_edit && !learnpath::is_lp_visible_for_student($id,api_get_user_id())) {
 	    	continue;
 	    }
-	    
+
 		$counter++;
 	    if (($counter % 2)==0) { $oddclass="row_odd"; } else { $oddclass="row_even"; }
 
@@ -206,6 +206,7 @@ if (is_array($flat_list)) {
 
 	    $dsp_export = '';
 	    $dsp_edit = '';
+            $dsp_build = '';
 	    $dsp_edit_close = '';
 	    $dsp_delete = '';
 	    $dsp_visible = '';
@@ -238,7 +239,7 @@ if (is_array($flat_list)) {
 			$dsp_progress = '<td width="140px" style="padding-top:1em;">'.learnpath::get_db_progress($id,api_get_user_id(),'both').'</td>';
 	    }
 	    if($is_allowed_to_edit) {
-	    	
+
 	    	/*
 	    	if ($current_session == $details['lp_session']) {
 		    	$dsp_desc = '<td valign="middle" style="color: grey; padding-top:1em;"><em>'.$details['lp_maker'].'</em>  &nbsp;&nbsp; '.$details['lp_proximity'].' &nbsp;&nbsp; '.$details['lp_encoding'].'<a href="lp_controller.php?'.api_get_cidreq().'&action=edit&lp_id='.$id.'">&nbsp;&nbsp;<img src="../img/edit.gif" border="0" title="'.get_lang('_edit_learnpath').'"></a></td>'."\n";
@@ -246,7 +247,7 @@ if (is_array($flat_list)) {
 				$dsp_desc = '<td valign="middle" style="color: grey; padding-top:1em;"><em>'.$details['lp_maker'].'</em>  &nbsp;&nbsp; '.$details['lp_proximity'].' &nbsp;&nbsp; '.$details['lp_encoding'].'<img src="../img/edit_na.gif" border="0" title="'.get_lang('_edit_learnpath').'"></td>'."\n";
 	    	}
 	    	*/
-	    	
+
 	    	$dsp_desc = '<td valign="middle" style="color: grey; padding-top:1em;"><em>'.$details['lp_maker'].'</em>  &nbsp;&nbsp; '.$details['lp_proximity'].' &nbsp;&nbsp; '.$details['lp_encoding'].'</td>'."\n";
 
 			/* export */
@@ -275,15 +276,15 @@ if (is_array($flat_list)) {
 
 			$dsp_edit = '<td align="center">';
 	    	$dsp_edit_close = '</td>';
-			
+
 			// EDIT LP
 			if ($current_session == $details['lp_session']) {
 				$dsp_edit_lp = '<a href="lp_controller.php?'.api_get_cidreq().'&action=edit&lp_id='.$id.'">&nbsp;&nbsp;<img src="../img/edit.gif" border="0" title="'.get_lang('_edit_learnpath').'"></a>&nbsp;';
 			} else {
-				$dsp_edit_lp = '<img src="../img/edit.gif" border="0" title="'.get_lang('_edit_learnpath').'">&nbsp;';
+				$dsp_edit_lp = '<img src="../img/edit_na.gif" border="0" title="'.get_lang('_edit_learnpath').'">&nbsp;';
 			}
-				
-			//   BUILD  
+
+			//   BUILD
 			if ($current_session == $details['lp_session']) {
 				if($details['lp_type']==1 || $details['lp_type']==2){
 					$dsp_build = '<a href="lp_controller.php?'.api_get_cidreq().'&amp;action=build&amp;lp_id='.$id.'"><img src="../img/wizard.gif" border="0" title="'.get_lang("Build").'"></a>&nbsp;';
@@ -299,24 +300,23 @@ if (is_array($flat_list)) {
 
 			/* VISIBILITY COMMAND */
 
-			if ($current_session == $details['lp_session']) {
+			// session test not necessary if we want to show base course learning paths inside the session (see http://support.chamilo.org/projects/chamilo-18/wiki/Tools_and_sessions)
+			//if ($current_session == $details['lp_session']) {
 				if ($details['lp_visibility'] == 0)
 				{
 				        $dsp_visible =	"<a href=\"".api_get_self()."?".api_get_cidreq()."&lp_id=$id&action=toggle_visible&new_status=1\">" .
 					"<img src=\"../img/invisible.gif\" border=\"0\" title=\"".get_lang('Show')."\" />" .
-					"</a>" .
-					"";
+					"</a>";
 				}
 				else
 				{
 					$dsp_visible =	"<a href='".api_get_self()."?".api_get_cidreq()."&lp_id=$id&action=toggle_visible&new_status=0'>" .
 					"<img src=\"../img/visible.gif\" border=\"0\" title=\"".get_lang('Hide')."\" />" .
-					"</a>".
-					"";
+					"</a>";
 				}
-			} else {
-				$dsp_visible = '<img src="../img/invisible.gif" border="0" title="'.get_lang('Show').'" />';
-			}
+			//} else {
+			//	$dsp_visible = '<img src="../img/invisible.gif" border="0" title="'.get_lang('Show').'" />';
+			//}
 
 
 			/* PUBLISH COMMAND */
@@ -416,35 +416,8 @@ if (is_array($flat_list)) {
 			} else {
 				$dsp_delete = '<img src="../img/delete_na.gif" border="0" title="'.get_lang('_delete_learnpath').'" />';
 			}
-
-			if($details['lp_prevent_reinit']==1){
-				$dsp_reinit = '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_reinit&lp_id='.$id.'">' .
-						'<img src="../img/kaboodleloop_gray.gif" border="0" alt="Allow reinit" title="'.get_lang("AllowMultipleAttempts").'"/>' .
-						'</a>&nbsp;';
-			}else{
-				$dsp_reinit = '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_reinit&lp_id='.$id.'">' .
-						'<img src="../img/kaboodleloop.gif" border="0" alt="Prevent reinit" title="'.get_lang("PreventMultipleAttempts").'"/>' .
-						'</a>&nbsp;';
-			}
-			if($details['lp_type']==1 || $details['lp_type']==2){
-				$dsp_build = '<a href="lp_controller.php?'.api_get_cidreq().'&amp;action=build&amp;lp_id='.$id.'"><img src="../img/wizard.gif" border="0" title="'.get_lang("Build").'"></a>&nbsp;';
-			}else{
-				$dsp_build = '<img src="../img/wizard_gray.gif" border="0" title="'.get_lang("Build").'">&nbsp;';
-			}
-			if($test_mode == 'test' or api_is_platform_admin())
-			{
-				if($details['lp_scorm_debug']==1){
-					$dsp_debug = '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_scorm_debug&lp_id='.$id.'">' .
-							'<img src="../img/bug.gif" border="0" alt="'.get_lang("HideDebug").'" title="'.get_lang("HideDebug").'"/>' .
-							'</a>';
-				}else{
-					$dsp_debug = '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_scorm_debug&lp_id='.$id.'">' .
-							'<img src="../img/bug_gray.gif" border="0" alt="'.get_lang("ShowDebug").'" title="'.get_lang("ShowDebug").'"/>' .
-							'</a>';
-				}
-		 	}
 		 	/*   Export  */
-	    	if($details['lp_type']==1){
+		    	if($details['lp_type']==1){
 				$dsp_disk =
 					"<a href='".api_get_self()."?".api_get_cidreq()."&action=export&lp_id=$id'>" .
 					"<img src=\"../img/cd.gif\" border=\"0\" title=\"".get_lang('Export')."\">" .

@@ -26,7 +26,6 @@ $cidReset = true;
 require_once 'main/inc/global.inc.php';
 
 require_once api_get_path(LIBRARY_PATH).'course.lib.php';
-require_once api_get_path(LIBRARY_PATH).'debug.lib.inc.php';
 require_once api_get_path(LIBRARY_PATH).'events.lib.inc.php';
 require_once api_get_path(LIBRARY_PATH).'system_announcements.lib.php';
 require_once api_get_path(LIBRARY_PATH).'groupmanager.lib.php';
@@ -419,7 +418,7 @@ function display_anonymous_right_menu() {
 		}
 
 		// Deleting the myprofile link
-		if (api_get_setting('allow_social_tool') == true) {
+		if (api_get_setting('allow_social_tool') == 'true') {
 			unset($menu_navigation['myprofile']);
 		}
 
@@ -574,7 +573,7 @@ function display_anonymous_course_list() {
 
 	//showing only the courses of the current access_url_id
 	global $_configuration;
-	if ($_configuration['multiple_access_urls'] == true) {
+	if ($_configuration['multiple_access_urls']) {
 		$url_access_id = api_get_current_access_url_id();
 		if ($url_access_id != -1) {
 			$tbl_url_rel_course = Database::get_main_table(TABLE_MAIN_ACCESS_URL_REL_COURSE);
@@ -699,15 +698,15 @@ function display_anonymous_course_list() {
 			$courses_list_string .= "<hr size=\"1\" noshade=\"noshade\">\n";
 		}
 		$courses_list_string .= '<h4 style="margin-top: 0px;">'.get_lang('CourseList')."</h4>\n<ul>\n";
-		
+
 		if (api_get_user_id()) {
 			$courses_of_user = get_courses_of_user(api_get_user_id());
 		}
-		
+
 		foreach ($course_list as $course) {
 			// $setting_show_also_closed_courses
 
-			if ($setting_show_also_closed_courses == false) {
+			if (!$setting_show_also_closed_courses) {
 				// If we do not show the closed courses
 				// we only show the courses that are open to the world (to everybody)
 				// and the courses that are open to the platform (if the current user is a registered user

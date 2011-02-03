@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>Chamilo 1.8.7 Installation Guide</title><link rel="stylesheet" href="default.css" type="text/css" media="screen,projection" />
+	<title>Chamilo 1.8.7.1 Installation Guide</title><link rel="stylesheet" href="default.css" type="text/css" media="screen,projection" />
 	<link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
 	<style type="text/css">
 	<!--
@@ -16,7 +16,7 @@
 <body>
 
 <div id="header1">
-	<h1>Chamilo 1.8.7 : Installation Guide</h1>
+	<h1>Chamilo 1.8.7.1 : Installation Guide</h1>
 </div>
 
 <a href="index.html">Documentation</a> &gt; Installation Guide
@@ -24,7 +24,7 @@
 <div id="main">
 <p></p>
 
-<p>Thank you for downloading Chamilo 1.8.7.</p>
+<p>Thank you for downloading Chamilo 1.8.7.1.</p>
 <ul>
   <li>Test Chamilo on <a href="http://campus.chamilo.org">Free Campus</a></li>
 </ul>
@@ -44,6 +44,7 @@
   <li><a href="#5._Administration_section">Administration section</a></li>
   <li><a href="#6._LDAP">LDAP&nbsp;</a></li>
   <li><a href="#7._Mathematical_formulas">Mathematical formulas with LaTeX</a></li>
+  <li><a href="#8._ASCIIMathML_mathematical_formulas">Mathematical formulas with ASCIIMathML</a></li>
 </ol>
 
 <br />
@@ -112,26 +113,28 @@ the installation.<span style="font-weight: bold;"><br />
   <li>Follow the web installation process. You can accept all default
 values. Consider changing the admin password to remember it.&nbsp;</li>
 </ul>
-
-
 <br />
-
-The following directories need to be readable, writeable and executable for everyone:
+The following directories need to be readable, writeable and executable for everyone (replace [chamilo] with the directory where your Chamilo installation is located):
 <ul>
 
-  <li>chamilo/main/inc/conf/</li>
-  <li>chamilo/main/upload/users/</li>
-  <li>chamilo/main/default_course_document/</li>
-  <li>chamilo/archive/</li>
-  <li>chamilo/courses/</li>
-  <li>chamilo/home/</li>
+  <li>[chamilo]/main/inc/conf/</li>
+  <li>[chamilo]/main/upload/users/</li>
+  <li>[chamilo]/main/default_course_document/images/</li>
+  <li>[chamilo]/archive/</li>
+  <li>[chamilo]/courses/</li>
+  <li>[chamilo]/home/</li>
+</ul>
+Optionally, you can do the same to the following directories if you want to
+enable CSS styles package upload and sub-language definition:
+<ul>
+  <li>[chamilo]/main/css/</li>
+  <li>[chamilo]/main/lang/</li>
 </ul>
 
-(where 'chamilo' is the directory in which you installed Chamilo)
 <p>On Linux, Mac OS X and BSD operating systems you can use the CHMOD
-777 command for this (although we recommend you seek advice from an
-experienced system administrator).
-In Windows, you may need to check the properties of the folders (by
+0777 command for this (although we recommend you seek advice from an
+experienced system administrator to avoid security issues).
+On Windows, you may need to check the properties of the folders (by
 right-clicking on them).</p>
 
 <p>
@@ -254,7 +257,7 @@ date.timezone = 'America/New_York'
   <li>php-mysql The mysql shared extension for php</li>
   <li>php-pcre The pcre shared extension for php</li>
   <li>php-session The session shared extension for php</li>
-  <li>php-zlib The zlib shared extension for php</li>    
+  <li>php-zlib The zlib shared extension for php</li>
   <li>(optional) php-ldap if you want to be able to use LDAP authentication</li>
 </ul>
 
@@ -263,7 +266,7 @@ date.timezone = 'America/New_York'
 	<li>php-ctype</li>
 	<li>php-gd</li>
 	<li>php-iconv</li>
-	<li>php-json</li> 
+	<li>php-json</li>
 	<li>php-mbstring</li>
 </ul>
 <p><a href="http://dev.mysql.com/doc/mysql/en/index.html"></a><br /></p>
@@ -277,15 +280,27 @@ please ask your hosting provider for advice.<br />
 
 <p></p>
 
+<h3>3.1 Upgrading from Chamilo 1.8.7</h3>
+<ul>
+  <li> check that you haven't left any customised stylesheet or image*</li>
+  <li> download the Chamilo 1.8.7.1 Palmas install package from the <a href="http://www.chamilo.org/download">Chamilo download page</a></li>
+  <li> unzip the new files of Chamilo 1.8.7.1 over the files of the older version (or unzip the files in one folder and then copy the files from there to the older version's directory)</li>
+  <li> update $_configuration['system_version'] to '1.8.7.1' in the main/inc/conf/configuration.php file</li>
+  <li> that's it! You are now using Chamilo 1.8.7.1</li>
+</ul>
 
-<h3>3.1 Upgrading from Dokeos 1.8.x</h3>
+<br />
+
+
+
+<h3>3.2 Upgrading from Dokeos 1.8.x</h3>
 
 
 <em>If you upgrade from Dokeos 1.8.x</em> :&nbsp;
 <ul>
   <li> check that you haven't left any customised stylesheet or image*</li>
-  <li> download the Chamilo 1.8.7 Salto install package from the <a href="http://www.chamilo.org/download">Chamilo download page</a></li>
-  <li> unzip the new files of Chamilo 1.8.7 over the files of the older version (or unzip the files in one folder and then copy the files from there to the older version's directory)</li>
+  <li> download the Chamilo 1.8.7.1 Palmas install package from the <a href="http://www.chamilo.org/download">Chamilo download page</a></li>
+  <li> unzip the new files of Chamilo 1.8.7.1 over the files of the older version (or unzip the files in one folder and then copy the files from there to the older version's directory)</li>
   <li> point your browser on your portal URL + main/install/</li>
   <li> choose your language and click&nbsp;<span style="font-style: italic;">Upgrade from 1.8.x</span></li>
 </ul>
@@ -306,7 +321,7 @@ to the old ones which will be deprecated shortly (not maintained).</font>
 
 <p></p>
 
-<h3>3.2 Upgrading from Dokeos 1.6.x</h3>
+<h3>3.3 Upgrading from Dokeos 1.6.x</h3>
 
 
 <em>If you upgrade from a lower version of Dokeos (1.6.x)</em>, the first
@@ -325,9 +340,9 @@ The complete process is as follow:
     <em>old_version</em> and make it writeable by the web server. This
 is important to allow the move of the courses/ and upload/ directories
 to the new install</li>
-  <li> download the Chamilo 1.8.7 install package from the
+  <li> download the Chamilo 1.8.7.1 install package from the
     <a href="http://www.chamilo.org/download">Chamilo download page</a></li>
-  <li> unzip the new files of Chamilo 1.8.7 in the main Chamilo/Dokeos directory. The
+  <li> unzip the new files of Chamilo 1.8.7.1 in the main Chamilo/Dokeos directory. The
 new directory <em>main</em> should be located directly inside your
 Chamilo/Dokeos root folder</li>
   <li> point your browser on your portal URL</li>
@@ -362,7 +377,7 @@ Do not modify the home_*.html files directly. Instead,
 choose "Configure the homepage" in the Chamilo administration section.</p>
 
 <p></p>
-<h3>3.3 In both cases</h3>
+<h3>3.4 In both last cases</h3>
 
 The following directories need to be readable, writeable and executable for the web server:
 <ul>
@@ -379,7 +394,7 @@ CHMOD 777 command, but if you are unsure, we recommend you seek advice for
 your own OS on <a href="http://www.chamilo.org/forum">our forum</a>.
 In Windows, you may need to check the properties of the folders.
 <p></p>
-<h3>3.4 Quick-upgrade from 1.6.x guide for Linux</h3>
+<h3>3.5 Quick-upgrade from 1.6.x guide for Linux</h3>
 
 
 The following quick-upgrade guide assumes that:
@@ -400,16 +415,16 @@ On the command-line, type:
   <li>mkdir /var/www/chamilo/old_version</li>
   <li>mv /var/www/chamilo/* /var/www/chamilo/old_version/</li>
   <li>chmod -R 0777 /var/www/chamilo/old_version/</li>
-  <li>wget http://www.chamilo.org/files/chamilo-1.8.7.tar.gz</li>
-  <li>tar zxvf chamilo-1.8.7.tar.gz</li>
-  <li>sudo cp -ra chamilo-1.8.7/* /var/www/chamilo/</li>
-  <li>rm chamilo-1.8.7.tar.gz</li>
-  <li>sudo rm -r chamilo-1.8.7/</li>
+  <li>wget http://www.chamilo.org/files/chamilo-1.8.7.1.tar.gz</li>
+  <li>tar zxvf chamilo-1.8.7.1.tar.gz</li>
+  <li>sudo cp -ra chamilo-1.8.7.1/* /var/www/chamilo/</li>
+  <li>rm chamilo-1.8.7.1.tar.gz</li>
+  <li>sudo rm -r chamilo-1.8.7.1/</li>
 </ul>
 
 <br />
 
-Then:
+Then (for cases other than from 1.8.7):
 <ul>
   <li>Direct your browser to http://www.portalurl.com/main/install/</li>
   <li>Proceed with the installation</li>
@@ -569,36 +584,23 @@ that criteria</li>
 
 You can enable mathematical equations writing inside the Chamilo online editor (FCKEditor) by applying the following steps:
 <ul>
-
-	<li>1. Configure your Apache installation to add a cgi-bin directory that contains a symbolic link to the mimetex.cgi in
-<i>chamilo/main/inc/lib/mimetex/</i> (*see below, step 4)</li>
-
+	<li>1. Configure your Apache installation to add a cgi-bin directory that contains a symbolic link to the mimetex.cgi in <i>chamilo/main/inc/lib/mimetex/</i> (*see below, step 4)</li>
 	<li>2. Reload your Apache configuration</li>
+	<li>3. Edit the online editor's configuration file <i>chamilo/main/inc/lib/fckeditor/myconfig.php</i> and</li>
+	<li>3.1. Enable the mimetex plugin, find the line //$config['LoadPlugin'][] = 'mimetex'; and modify it to be: <b>$config['LoadPlugin'][] = 'mimetex';</b> (remove the double slash)</li>
+	<li>3.2. The additional settings <b>$config['MimetexExecutableInstalled']</b> , <b>$config['MimetexExecutableDetectionMethod']</b>
+and <b>$config['MimetexExecutableDetectionTimeout']</b> are configured for best probability of automatic detection of the installed on the server file <i>mimetex.cgi</i> or <i>mimetex.exe</i>.
+In rare cases these options might need to be twicked, see the acccompanying comments about these options within the file <i>myconfig.php</i></li>
 
-	<li>3. Edit the online editor's configuration file <i>chamilo/main/inc/lib/fckeditor/myconfig.php</i> and
-
-    <ul>
-			<li>3.1. Enable the mimetex plugin, find the line //$config['LoadPlugin'][] = 'mimetex'; and modify it to be:
-<b>$config['LoadPlugin'][] = 'mimetex';</b> (remove the double slash)</li>
-
-			<li>3.2. The additional settings <b>$config['MimetexExecutableInstalled']</b> , <b>$config['MimetexExecutableDetectionMethod']</b>
-and <b>$config['MimetexExecutableDetectionTimeout']</b> are configured for best probability
-of automatic detection of the installed on the server file <i>mimetex.cgi</i> or <i>mimetex.exe</i>.
-In rare cases these options might need to be twicked, see the acccompanying comments abou
-these options within the file <i>myconfig.php</i></li>
-
-			<li>3.3. Once the plugin has been activated, almost in all toolbars the corresponding button appears.
+	<li>3.3. Once the plugin has been activated, almost in all toolbars the corresponding button appears.
 If you need to edit some toolbars, see the configuration files (php) within the directory <i>chamilo/main/inc/lib/fckeditor/toolbars/</i> .
 Here is an example:
-        <div class="code">$config['ToolbarSets']['Normal'] = array(<br />
-&nbsp;&nbsp;array('FitWindow','Bold','Image','Link','PasteWord','MP3',<b>'mimetex'</b>,'Table','Subscript','Superscript','ShowBlocks')<br />
-);</div>
-
-				The item <b>'mimetex'</b> represents the button, you may add it to or remove it from any toolbar.<br /><br />
-			</li>
-    </ul>
-
+    <div class="code">$config['ToolbarSets']['Normal'] = array(<br /> &nbsp;&nbsp;array('FitWindow','Bold','Image','Link','PasteWord','MP3',<b>'mimetex'</b>,'Table','Subscript','Superscript','ShowBlocks')<br />);</div>
+	The item <b>'mimetex'</b> represents the button, you may add it to or remove it from any toolbar.<br /><br />
+	</li>
     <li>4. To install mimetex executable file, make these changes:</li>
+</ul>
+
 
 <p>Add the corresponding cgi-bin directory to your Apache configuration could be done, in Apache 2, like this:
 
@@ -624,24 +626,73 @@ Here is an example:
 </div>
 <p>If you are reluctant to modify your Apache configuration, alternately you may do at step 4 the following:
 copy mimetex.exe (for windows) or mimetex.cgi (for linux) from <i>chamilo/main/inc/lib/mimetex/</i> directory to your <i>cgi-bin/</i></p>
-    <li>5. Make sure that the file mimetex.cgi (or mimetex.exe) has right to be executed by the web-server process. For example, on a Ubuntu Linux system you may write a command like the following:</li>
-<div class="code">
-  <p>sudo chmod a+x mimetex.cgi</p>
-</div>
-	</ul>
+<ul>
+    <li>5. Make sure that the file mimetex.cgi (or mimetex.exe) has right to be executed by the web-server process. For example, on a Ubuntu Linux system you may write a command like the following:
+        <div class="code">
+            sudo chmod a+x mimetex.cgi
+        </div>
+    </li>
+</ul>
 
 <p>As a result of this procedure, a new button becomes available in your Chamilo online editor, that gives you possibility
-to insert mathematical formulas into your documents.<br />
+to insert mathematical formulas into your documents.</p>
+<hr style="width: 100%; height: 2px;" />
+<h2><a name="8._ASCIIMathML_mathematical_formulas"></a>8. Mathematical formulas with ASCIIMathML</h2>
 
+<p>Mathematical formulas may be rendered on web-pages using the script ASCIIMathML.js (a customized version for Chamilo). For more information about this script
+and about the ASCIIMath formula syntax see <a href="http://www1.chapman.edu/~jipsen/mathml/asciimath.html">http://www1.chapman.edu/~jipsen/mathml/asciimath.html</a>
+and <a href="http://dlippman.imathas.com/asciimathtex/AMT.html">http://dlippman.imathas.com/asciimathtex/AMT.html</a>.</p>
 
+<p>For writing ASCIIMath formulas in documents, a correspondent plugin for the online editor should be activated. For doing this,
+see the platform administration section and open the page "Administration &gt; Configuration settings &gt; WYSIWYG Editor".
+Enable the setting <strong>"ASCIIMathML mathematical editor"</strong>.</p>
+
+<p>Inside documents, the script ASCIIMathML.js renders mathematical formulas in two altrnative ways:</p>
+<ul>
+	<li>By translation ASCIIMath formula notation into MathML code. MathML standard currently is supported by the following browsers:
+		<ul>
+			<li>Mozilla Firefox, you may consider installing STIX fonts (<a href="http://www.stixfonts.org">http://www.stixfonts.org</a>) on your client machines for nice looking formulas</li>
+			<li>Internet Explorer 6 or higher with the add-on MathPlayer 2.0 or higher (<a href="http://www.dessci.com/en/products/mathplayer">http://www.dessci.com/en/products/mathplayer</a>)</li>
+			<li>Opera 9.5 or higher</li>
+		</ul>
+	</li>
+	<li>For browser that do not support MathML - by translation ASCIIMath formula notation into TeX notation and passing it to
+	an external service. The external service produces and returns an image that contains the formula. This way is so called
+	"image-based fallback".
+	</li>
+</ul>
+
+<p>For providing <strong>image-based fallback</strong> in a production system, you should pick up and install on your server software for TeX rendering, such as:</p>
+<ul>
+	<li>mimeTeX - <a href="http://www.forkosh.dreamhost.com/source_mimetex.html">http://www.forkosh.dreamhost.com/source_mimetex.html</a>.
+	See <a href="#7._Mathematical_formulas">"7. Mathematical formulas with LaTeX"</a> on how to install the mimetex executable file on your server</li>
+	<li>mathTeX - <a href="http://www.forkosh.com/mathtex.html">http://www.forkosh.com/mathtex.html</a>. Browse the site for installation instructions</li>
+</ul>
+
+<p>As an alternative, you may try to use some public services for TeX rendering, such as:</p>
+<ul>
+	<li>MathTran - <a href="http://www.mathtran.org">http://www.mathtran.org</a></li>
+	<li>Google Chart Tools - <a href="http://code.google.com/apis/charttools">http://code.google.com/apis/charttools</a></li>
+</ul>
+
+<p>Open with a text editor the file <strong>.../chamilo/main/inc/lib/asciimath/ASCIIMathML.js</strong>.
+Find somewhere at the beginning the line that initializes the variable <strong>AMTcgiloc</strong>.
+You may need to alter the setting to be for example:</p>
+<ul>
+	<li><div class="code">var AMTcgiloc = "http://mychamiloserver.org/cgi-bin/mimetex.cgi";</div></li>
+	<li><div class="code">var AMTcgiloc = "http://mychamiloserver.org/cgi-bin/mathtex.cgi";</div></li>
+	<li><div class="code">var AMTcgiloc = "http://www.mathtran.org/cgi-bin/mathtran?tex=";</div></li>
+	<li><div class="code">var AMTcgiloc = "http://chart.apis.google.com/chart?cht=tx&amp;chs=1x0&amp;chl=";</div></li>
+	<li>... or something else</li>
+</ul>
+<p>For testing how the variable <strong>AMTcgiloc</strong> may be set, there are some examples (as comments) inside the script.</p>
+<hr style="width: 100%; height: 2px;" />
+<p>
   <br />
   <br />
   Contact address<br />
-
   Mail: info@chamilo.org<br />
-
   <br />
-
 </p>
 <hr />
 </div>

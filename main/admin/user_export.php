@@ -57,7 +57,7 @@ $courses[''] = '--';
 $sql = "SELECT code,visual_code,title FROM $course_table ORDER BY visual_code";
 
 global $_configuration;
-if ($_configuration['multiple_access_urls']==true) {
+if ($_configuration['multiple_access_urls']) {
 	$tbl_course_rel_access_url= Database::get_main_table(TABLE_MAIN_ACCESS_URL_REL_COURSE);
 	$access_url_id = api_get_current_access_url_id();
 	if ($access_url_id != -1){
@@ -104,7 +104,7 @@ if ($form->validate())
 		$filename = 'export_users_'.$course_code.'_'.date('Y-m-d_H-i-s');
 	} else {
 		global $_configuration;
-		if ($_configuration['multiple_access_urls']==true) {
+		if ($_configuration['multiple_access_urls']) {
 			$tbl_user_rel_access_url= Database::get_main_table(TABLE_MAIN_ACCESS_URL_REL_USER);
 			$access_url_id = api_get_current_access_url_id();
 			if ($access_url_id != -1) {
@@ -124,9 +124,9 @@ if ($form->validate())
 	if ($export['addcsvheader']=='1' AND $export['file_type']=='csv')
 	{
 		if($userPasswordCrypted!='none') {
-			$data[] = array('UserId', 'LastName', 'FirstName', 'Email', 'UserName', 'AuthSource', 'Status', 'OfficialCode', 'Phone');
+			$data[] = array('UserId', 'LastName', 'FirstName', 'Email', 'UserName', 'AuthSource', 'Status', 'OfficialCode', 'PhoneNumber');
 		} else {
-			$data[] = array('UserId', 'LastName', 'FirstName', 'Email', 'UserName','Password',  'AuthSource', 'Status', 'OfficialCode', 'Phone');
+			$data[] = array('UserId', 'LastName', 'FirstName', 'Email', 'UserName','Password',  'AuthSource', 'Status', 'OfficialCode', 'PhoneNumber');
 		}
 
 		foreach($extra_fields as $extra) {

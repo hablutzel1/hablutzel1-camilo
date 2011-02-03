@@ -55,13 +55,6 @@ function build_directory_selector($folders, $curdirpath, $group_dir = '', $chang
 			foreach ($folders as & $folder) {
 				$selected = ($curdirpath == $folder) ? ' selected="selected"' : '';
 				$path_parts = explode('/', $folder);
-
-				if ($folder_titles[$folder] == 'shared_folder') {
-					$folder_titles[$folder] = get_lang('SharedFolder');
-				} elseif (strstr($folder_titles[$folder], 'sf_user_')) {
-					$userinfo = Database::get_user_info_from_id(substr($folder_titles[$folder], 8));
-					$folder_titles[$folder] = api_get_person_name($userinfo['firstname'], $userinfo['lastname']);
-				}
 				$folder_titles[$folder] = cut($folder_titles[$folder], 80);
 				$label = str_repeat('&nbsp;&nbsp;&nbsp;', count($path_parts) - 2).' &mdash; '.$folder_titles[$folder];
 				$parent_select -> addOption($label, $folder);
@@ -80,7 +73,7 @@ function build_directory_selector($folders, $curdirpath, $group_dir = '', $chang
 				$path_parts = explode('/', str_replace($group_dir, '', $folder));
 				$label = cut($label, 80);
 				$label = str_repeat('&nbsp;&nbsp;&nbsp;', count($path_parts) - 2).' &mdash; '.$label;
-			}			
+			}
 			$parent_select -> addOption($label, $folder);
 			if ($selected != '') {
 				$parent_select->setSelected($folder);
@@ -121,7 +114,7 @@ function create_document_link($www, $title, $path, $filetype, $size, $visibility
 		// Folder download or file download?
 		$forcedownload_icon = ($filetype == 'folder') ? 'folder_zip.gif' : 'filesave.gif';
 		// Prevent multiple clicks on zipped folder download
-		$prevent_multiple_click = ($filetype == 'folder') ? " onclick=\"javascript: if(typeof clic_$dbl_click_id == 'undefined' || clic_$dbl_click_id == false) { clic_$dbl_click_id=true; window.setTimeout('clic_".($dbl_click_id++)."=false;',10000); } else { return false; }\"":'';
+		$prevent_multiple_click = ($filetype == 'folder') ? " onclick=\"javascript: if(typeof clic_$dbl_click_id == 'undefined' || !clic_$dbl_click_id) { clic_$dbl_click_id=true; window.setTimeout('clic_".($dbl_click_id++)."=false;',10000); } else { return false; }\"":'';
 	}
 
 	$target = '_self';
@@ -150,26 +143,45 @@ function create_document_link($www, $title, $path, $filetype, $size, $visibility
 	$tooltip_title = explode('?', basename($path));
 	$tooltip_title = $tooltip_title[0];
 
+	$tooltip_title_alt = $tooltip_title;
 	if ($tooltip_title == 'shared_folder') {
 		$tooltip_title_alt = get_lang('SharedFolder');
-	} elseif(strstr($tooltip_title, 'sf_user_')) {
+	}elseif(strstr($tooltip_title, 'shared_folder_session_')) {
+		$tooltip_title_alt = get_lang('SharedFolder').' ('.api_get_session_name($current_session_id).')';
+	}elseif(strstr($tooltip_title, 'sf_user_')) {
 		$userinfo = Database::get_user_info_from_id(substr($tooltip_title, 8));
-		$tooltip_title_alt = api_get_person_name($userinfo['firstname'], $userinfo['lastname']);
-	} else {
-		$tooltip_title_alt = $tooltip_title;
+		$tooltip_title_alt = get_lang('SharedFolder').' ('.api_get_person_name($userinfo['firstname'], $userinfo['lastname']).')';
 	}
 
+	$current_session_id=api_get_session_id();
 	if (!$show_as_icon) {
 		if ($filetype == 'folder') {
 			if (api_is_allowed_to_edit() || api_is_platform_admin() || api_get_setting('students_download_folders') == 'true') {
-				$force_download_html = ($size == 0) ? '' : '<a href="'.$forcedownload_link.'" style="float:right"'.$prevent_multiple_click.'>'.Display::return_icon($forcedownload_icon, get_lang('Download'), array('height'=>'16', 'width' => '16')).'</a>';
+				//filter when I am into shared folder, I can show for donwload only my shared folder
+				if(is_shared_folder($_GET['curdirpath'],$current_session_id))
+				{
+					if (preg_match('/shared_folder\/sf_user_'.api_get_user_id().'$/', urldecode($forcedownload_link))|| preg_match('/shared_folder_session_'.$current_session_id.'\/sf_user_'.api_get_user_id().'$/', urldecode($forcedownload_link)) || api_is_allowed_to_edit() || api_is_platform_admin())
+					{
+					  $force_download_html = ($size == 0) ? '' : '<a href="'.$forcedownload_link.'" style="float:right"'.$prevent_multiple_click.'>'.Display::return_icon($forcedownload_icon, get_lang('Download'), array('height'=>'16', 'width' => '16')).'</a>';
+					}
+				}
+				elseif(!preg_match('/shared_folder/', urldecode($forcedownload_link)) || api_is_allowed_to_edit() || api_is_platform_admin())
+				{
+					$force_download_html = ($size == 0) ? '' : '<a href="'.$forcedownload_link.'" style="float:right"'.$prevent_multiple_click.'>'.Display::return_icon($forcedownload_icon, get_lang('Download'), array('height'=>'16', 'width' => '16')).'</a>';
+				}
 			}
 		} else {
 			$force_download_html = ($size==0)?'':'<a href="'.$forcedownload_link.'" style="float:right"'.$prevent_multiple_click.'>'.Display::return_icon($forcedownload_icon, get_lang('Download'), array('height'=>'16', 'width' => '16')).'</a>';
 		}
 		return '<a href="'.$url.'" title="'.$tooltip_title_alt.'" target="'.$target.'"'.$visibility_class.' style="float:left">'.$title.'</a>'.$force_download_html;
 	} else {
+		if(preg_match('/shared_folder/', urldecode($url)) && preg_match('/shared_folder$/', urldecode($url))==false && preg_match('/shared_folder_session_'.$current_session_id.'$/', urldecode($url))==false){
+			return '<a href="'.$url.'" title="'.$tooltip_title_alt.'" target="'.$target.'"'.$visibility_class.' style="float:left">'.build_document_icon_tag($filetype, $tooltip_title).Display::return_icon('shared.png', get_lang('ResourceShared'), array('hspace' => '5', 'align' => 'middle', 'height' => 22, 'width' => 22)).'</a>';
+		}
+		else
+		{
 		return '<a href="'.$url.'" title="'.$tooltip_title_alt.'" target="'.$target.'"'.$visibility_class.' style="float:left">'.build_document_icon_tag($filetype, $tooltip_title).'</a>';
+		}
 	}
 }
 
@@ -195,7 +207,14 @@ function build_document_icon_tag($type, $path) {
 			} else {
 				$basename = get_lang('SharedFolder');
 			}
-		} elseif(strstr($basename, 'sf_user_')) {
+		}elseif(strstr($basename, 'shared_folder_session_')) {
+			if ($is_allowed_to_edit) {
+				$basename = '***('.api_get_session_name($current_session_id).')*** '.get_lang('HelpSharedFolder');
+			} else {
+				$basename = get_lang('SharedFolder').' ('.api_get_session_name($current_session_id).')';
+			}
+			$icon = 'shared_folder.gif';
+		}elseif(strstr($basename, 'sf_user_')) {
 			$userinfo = Database::get_user_info_from_id(substr($basename, 8));
 			$image_path = UserManager::get_user_picture_path_by_id(substr($basename, 8), 'web', false, true);
 
@@ -204,7 +223,9 @@ function build_document_icon_tag($type, $path) {
 			} else {
 				$icon = '../upload/users/'.substr($basename, 8).'/'.$image_path['file'];
 			}
-			$basename = api_get_person_name($userinfo['firstname'], $userinfo['lastname']);
+
+			$basename = get_lang('SharedFolder').' ('.api_get_person_name($userinfo['firstname'], $userinfo['lastname']).')';
+
 		} else {
 			if (($basename =='audio' || $basename =='flash' || $basename =='images' || $basename =='video') && api_is_allowed_to_edit()) {
 				$basename = get_lang('HelpDefaultDirDocuments');
@@ -293,33 +314,36 @@ function build_edit_icons($curdirpath, $type, $path, $visibility, $id, $is_templ
         }
 	}
 
-	if ($type == 'file' && pathinfo($path, PATHINFO_EXTENSION) == 'html') {
+	$extension = pathinfo($path, PATHINFO_EXTENSION);
+	if ($type == 'file' && ($extension == 'html' || $extension == 'htm')) {
 		if ($is_template == 0) {
-			if ((isset($_GET['curdirpath']) && $_GET['curdirpath']<>'/certificates') || !isset($_GET['curdirpath'])) {
-					$modify_icons .= '&nbsp;<a href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;add_as_template='.$id.$req_gid.'&amp;'.$sort_params.'"><img src="../img/wizard_small.gif" border="0" title="'.get_lang('AddAsTemplate').'" alt="'.get_lang('AddAsTemplate').'" /></a>';
+			if ((isset($_GET['curdirpath']) && $_GET['curdirpath'] != '/certificates') || !isset($_GET['curdirpath'])) {
+				$modify_icons .= '&nbsp;<a href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;add_as_template='.$id.$req_gid.'&amp;'.$sort_params.'"><img src="../img/wizard_small.gif" border="0" title="'.get_lang('AddAsTemplate').'" alt="'.get_lang('AddAsTemplate').'" /></a>';
+			}
+			if (isset($_GET['curdirpath']) && $_GET['curdirpath']=='/certificates') {//allow attach certificate to course
+				$visibility_icon_certificate='nocertificate';
+				if (DocumentManager::get_default_certificate_id(api_get_course_id())==$id) {
+					$visibility_icon_certificate='certificate';
+					$certificate=get_lang('DefaultCertificate');
+					$preview=get_lang('PreviewCertificate');
+					$is_preview=true;
+				} else {
+					$is_preview=false;
+					$certificate=get_lang('NoDefaultCertificate');
 				}
-				if (isset($_GET['curdirpath']) && $_GET['curdirpath']=='/certificates') {//allow attach certificate to course
-					  $visibility_icon_certificate='nocertificate';
-					  if (DocumentManager::get_default_certificate_id(api_get_course_id())==$id) {
-					  	$visibility_icon_certificate='certificate';
-					  	$certificate=get_lang('DefaultCertificate');
-					  	$preview=get_lang('PreviewCertificate');
-						$is_preview=true;
-					  } else {
-					  	$is_preview=false;
-					  	$certificate=get_lang('NoDefaultCertificate');
-					  }
-					  if (isset($_GET['selectcat'])) {
-					  	$modify_icons .= '&nbsp;<a href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;selectcat='.Security::remove_XSS($_GET['selectcat']).'&amp;set_certificate='.$id.$req_gid.'&amp;'.$sort_params.'"><img src="../img/'.$visibility_icon_certificate.'.png" border="0" title="'.$certificate.'" alt="" /></a>';
-						if ($is_preview) {
-						 	$modify_icons .= '&nbsp;<a target="_blank"  href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;set_preview='.$id.$req_gid.'&amp;'.$sort_params.'" ><img src="../img/search.gif" border="0" title="'.$preview.'" alt="" /></a>';
-							}
-					  }
+				if (isset($_GET['selectcat'])) {
+					$modify_icons .= '&nbsp;<a href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;selectcat='.Security::remove_XSS($_GET['selectcat']).'&amp;set_certificate='.$id.$req_gid.'&amp;'.$sort_params.'"><img src="../img/'.$visibility_icon_certificate.'.png" border="0" title="'.$certificate.'" alt="" /></a>';
+					if ($is_preview) {
+						$modify_icons .= '&nbsp;<a target="_blank"  href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;set_preview='.$id.$req_gid.'&amp;'.$sort_params.'" ><img src="../img/search.gif" border="0" title="'.$preview.'" alt="" /></a>';
+					}
 				}
+			}
 		} else {
 			$modify_icons .= '&nbsp;<a href="'.api_get_self().'?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;remove_as_template='.$id.$req_gid.'&amp;'.$sort_params.'"><img src="../img/wizard_gray_small.gif" border="0" title="'.get_lang('RemoveAsTemplate').'" alt=""'.get_lang('RemoveAsTemplate').'" /></a>';
 		}
+		$modify_icons .= '&nbsp;<a href="export_htmldoc2pdf.php?'.api_get_cidreq().'&curdirpath='.$curdirpath.'&amp;file='.urlencode($path).$req_gid.'"><img src="../img/file_pdf_small.gif" border="0" title="'.get_lang('Export2PDF').'" alt="" /></a>';
 	}
+
 	return $modify_icons;
 }
 
@@ -468,10 +492,67 @@ function create_dir_form() {
 	return $new_folder_text;
 }
 
+
 /**
- * Checks whether the user is in his/her shared folder
- * @return return bool Return true when user is in his shared folder
+ * Checks whether the user is in shared folder
+ * @return return bool Return true when user is into shared folder
  */
-function is_my_shared_folder($user_id, $path) {
-	return Security::remove_XSS($path) == '/shared_folder/sf_user_'.$user_id;
+function is_shared_folder($curdirpath, $current_session_id) {
+	$clean_curdirpath = Security::remove_XSS($curdirpath);
+	if($clean_curdirpath== '/shared_folder'){
+		return true;
+	}
+	elseif($clean_curdirpath== '/shared_folder_session_'.$current_session_id){
+		return true;
+	}
+	else{
+		return false;
+	}
 }
+
+/**
+ * Checks whether the user is into any user shared folder
+ * @return return bool Return true when user is in any user shared folder
+ */
+function is_any_user_shared_folder($path, $current_session_id) {
+	$clean_path = Security::remove_XSS($path);
+	if(strpos($clean_path,'shared_folder/sf_user_')){
+		return true;
+	}
+	elseif(strpos($clean_path, 'shared_folder_session_'.$current_session_id.'/sf_user_')){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+/**
+ * Checks whether the user is into his shared folder
+ * @return return bool Return true when user is in his user shared folder
+ */
+function is_my_shared_folder($user_id, $path, $current_session_id) {
+	$clean_path = Security::remove_XSS($path);
+	if($clean_path == '/shared_folder/sf_user_'.$user_id){
+		return true;
+	}
+	elseif($clean_path == '/shared_folder_session_'.$current_session_id.'/sf_user_'.$user_id){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+/**
+ * Check if the file name or folder searched exist
+ * @return return bool Return true when exist
+ */
+function search_keyword($document_name, $keyword) {
+	if (api_strripos($document_name, $keyword) !== false){
+		return true;
+	} else {
+		return false;
+	}
+}
+?>

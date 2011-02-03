@@ -1,4 +1,4 @@
-<?php // $Id: scorm_api.php 21162 2009-06-01 16:18:46Z yannoo $
+<?php
 /* For licensing terms, see /license.txt */
 /**
 *	API event handler functions for Scorm 1.1 and 1.2 and 1.3
@@ -26,10 +26,10 @@
 //flag to allow for anonymous user - needs to be set before global.inc.php
 $use_anonymous = true;
 
-require_once('back_compat.inc.php');
-require_once('learnpath.class.php');
-require_once('learnpathItem.class.php');
-require_once('scorm.class.php');
+require_once 'back_compat.inc.php';
+require_once 'learnpath.class.php';
+require_once 'learnpathItem.class.php';
+require_once 'scorm.class.php';
 
 // Is this needed? This is probabaly done in the header file
 //$_user							= $_SESSION['_user'];
@@ -41,7 +41,7 @@ if (!is_object($oItem)) {
 	exit;
 }
 $autocomplete_when_80pct = 0;
-
+header('Content-type: text/javascript');
 /*
  * JavaScript Functions
  */
@@ -854,12 +854,11 @@ function LMSFinish(val) {
     olms.G_LastErrorMessage = 'No error';
     // if olms.commit == false, then the SCORM didn't ask for a commit, so we
     // should at least report that
-    if (( olms.commit == false )) {
+    if ( !olms.commit ) {
         logit_scorm('LMSFinish() (no LMSCommit())',1);
-
     }
 
-    //if ( olms.commit == true ) {
+    //if ( olms.commit ) {
     	logit_scorm('LMSFinish() called',1);
     	savedata('finish');
         olms.commit = false;
@@ -1017,7 +1016,7 @@ function addListeners(){
  */
 function lms_save_asset(){
 	// only for dokeos lps
-	if (olms.execute_stats==true) {
+	if (olms.execute_stats) {
 		olms.execute_stats=false;
 	} else {
 		olms.execute_stats=true;
@@ -1178,7 +1177,7 @@ function update_toc(update_action,update_id,change_ids)
  * Update the stats frame using a reload of the frame to avoid unsynched data
  */
 function update_stats() {
-	if (olms.execute_stats==true) {
+	if (olms.execute_stats) {
 		try {
 		cont_f = document.getElementById('content_id');
 		cont_f.src="lp_controller.php?action=stats";
@@ -1254,7 +1253,7 @@ function process_scorm_values () {
 
     for (i=0;i<olms.scorm_variables.length;i++) {
 
-        if (olms.updatable_vars_list[olms.scorm_variables[i]]==true) {
+        if (olms.updatable_vars_list[olms.scorm_variables[i]]) {
             olms.variable_to_send.push(olms.scorm_variables[i]);
         }
     }
@@ -1269,7 +1268,7 @@ function reinit_updatable_vars_list () {
 
     for (i=0;i<olms.scorm_variables.length;i++) {
 
-        if (olms.updatable_vars_list[olms.scorm_variables[i]]==true) {
+        if (olms.updatable_vars_list[olms.scorm_variables[i]]) {
             olms.updatable_vars_list[olms.scorm_variables[i]]=false;
         }
     }

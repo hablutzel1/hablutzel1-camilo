@@ -19,15 +19,20 @@ require_once '../inc/lib/fckeditor/fckeditor.php';
  * @param int current item from the list of questions
  * @param int number of total questions
  * */
-function showQuestion($questionId, $onlyAnswers=false, $origin=false,$current_item, $total_item) {
-	//change false to true in the following line to enable answer hinting
+function showQuestion($questionId, $onlyAnswers = false, $origin = false, $current_item, $total_item) {
+
+	// Text direction for the current language
+	$is_ltr_text_direction = api_get_text_direction() != 'rtl';
+
+	// Change false to true in the following line to enable answer hinting.
 	$debug_mark_answer = api_is_allowed_to_edit() && false;
+
 	if (!ereg("MSIE", $_SERVER["HTTP_USER_AGENT"])) {
 		//echo '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.js" type="text/javascript"></script>';
 		//echo '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.corners.min.js" type="text/javascript"></script>';
 	}
 
-	// reads question informations
+	// Reads question informations.
 	if (!$objQuestionTmp = Question::read($questionId)) {
 		// question not found
 		return false;
@@ -75,7 +80,7 @@ function showQuestion($questionId, $onlyAnswers=false, $origin=false,$current_it
 		} else {
 			$option_ie="margin-left:10px";
 		}
-		$s .= '<table width="720" class="exercise_options" style="width: 720px;'.$option_ie.' background-color:#fff;\">';
+		$s .= '<table width="720" class="exercise_options" style="width: 720px;'.$option_ie.' background-color:#fff;">';
 		// construction of the Answer object (also gets all answers details)
 		$objAnswerTmp=new Answer($questionId);
 		$nbrAnswers=$objAnswerTmp->selectNbrAnswers();
@@ -139,6 +144,7 @@ function showQuestion($questionId, $onlyAnswers=false, $origin=false,$current_it
 			$answer          = $objAnswerTmp->selectAnswer($answerId);
 			$answerCorrect   = $objAnswerTmp->isCorrect($answerId);
 			$numAnswer       = $objAnswerTmp->selectAutoId($answerId);
+
 			if ($answerType == FILL_IN_BLANKS) {
 				// splits text and weightings that are joined with the character '::'
 				list($answer) = explode('::',$answer);
@@ -158,12 +164,12 @@ function showQuestion($questionId, $onlyAnswers=false, $origin=false,$current_it
 				// replaces [blank] by an input field
 
 				//getting the matches
-				$answer = api_ereg_replace('\[[^]]+\]','<input type="text" name="choice['.$questionId.'][]" size="10">',($answer));
+				$answer = api_ereg_replace('\[[^]]+\]','<input type="text" name="choice['.$questionId.'][]" size="10" />',($answer));
 
 				// Change input size
 				/*
 				preg_match_all('/\[[^]]+]/',$answer,$matches);
-				$answer=ereg_replace('\[[^]]+\]','<input type="text" name="choice['.$questionId.'][]" size="@@">',($answer));
+				$answer=ereg_replace('\[[^]]+\]','<input type="text" name="choice['.$questionId.'][]" size="@@" />',($answer));
 
 				// 4. resize the input
 
@@ -206,71 +212,71 @@ function showQuestion($questionId, $onlyAnswers=false, $origin=false,$current_it
 				$answer=str_replace("{texcode}",$texstring,$answer);
 
 			}
-			// unique answer
+
+			// Unique answer
 			if ($answerType == UNIQUE_ANSWER) {
 				// set $debug_mark_answer to true at function start to
 				// show the correct answer with a suffix '-x'
 				$help = $selected = '';
-				if ($debug_mark_answer==true) {
+				if ($debug_mark_answer) {
 					if ($answerCorrect) {
 						$help = 'x-';
 						$selected = 'checked="checked"';
 					}
 				}
-				$s .= '<input type="hidden" name="choice2['.$questionId.']" value="0">
-				<tr>
-				 <td colspan="3">
-				 	<div class="u-m-answer">
-					<p style="float:left; padding-right:4px;">
-					<span><input class="checkbox" type="radio" name="choice['.$questionId.']" value="'.$numAnswer.'" '.$selected.'></p></span>';
 				$answer = api_parse_tex($answer);
-				$s .= Security::remove_XSS($answer, STUDENT);
-				$s .= '</div></td></tr>';
+				$answer = Security::remove_XSS($answer, STUDENT);
+				$s .= '<input type="hidden" name="choice2['.$questionId.']" value="0" />'.
+					'<tr><td colspan="3"><div class="u-m-answer"><p style="float: '.($is_ltr_text_direction ? 'left' : 'right').'; padding-'.($is_ltr_text_direction ? 'right' : 'left').': 4px;">'.
+					'<span><input class="checkbox" type="radio" name="choice['.$questionId.']" value="'.$numAnswer.'" '.$selected.' /></span></p>'.
+					'<div style="margin-'.($is_ltr_text_direction ? 'left' : 'right').': 24px;">'.
+					$answer.
+					'</div></div></td></tr>';
 
 			} elseif ($answerType == MULTIPLE_ANSWER) {
 				// multiple answers
 				// set $debug_mark_answer to true at function start to
 				// show the correct answer with a suffix '-x'
 				$help = $selected = '';
-				if ($debug_mark_answer==true) {
+				if ($debug_mark_answer) {
 					if ($answerCorrect) {
 						$help = 'x-';
 						$selected = 'checked="checked"';
 					}
 				}
-				$s .= '<input type="hidden" name="choice2['.$questionId.']" value="0">
-				<tr>
-				  <td colspan="3">
-					 <div class="u-m-answer">
-					 <p style="float:left; padding-right:4px;">
-					 <span><input class="checkbox" type="checkbox" name="choice['.$questionId.']['.$numAnswer.']" value="1" '.$selected.'></p></span>';
 				$answer = api_parse_tex($answer);
-				$s .= Security::remove_XSS($answer, STUDENT);
-				$s .= '</div></td></tr>';
+				$answer = Security::remove_XSS($answer, STUDENT);
+				$s .= '<input type="hidden" name="choice2['.$questionId.']" value="0" />'.
+					'<tr><td colspan="3"><div class="u-m-answer"><p style="float: '.($is_ltr_text_direction ? 'left' : 'right').'; padding-'.($is_ltr_text_direction ? 'right' : 'left').': 4px;">'.
+					'<span><input class="checkbox" type="checkbox" name="choice['.$questionId.']['.$numAnswer.']" value="1" '.$selected.' /></span></p>'.
+					'<div style="margin-'.($is_ltr_text_direction ? 'left' : 'right').': 24px;">'.
+					$answer.
+					'</div></div></td></tr>';
 
 			} elseif ($answerType == MULTIPLE_ANSWER_COMBINATION) {
 				// multiple answers
 				// set $debug_mark_answer to true at function start to
 				// show the correct answer with a suffix '-x'
 				$help = $selected = '';
-				if ($debug_mark_answer==true) {
+				if ($debug_mark_answer) {
 					if ($answerCorrect) {
 						$help = 'x-';
 						$selected = 'checked="checked"';
 					}
 				}
-				$s .= '<input type="hidden" name="choice2['.$questionId.']" value="0">
-				<tr>
-				  <td colspan="3">
-					 <div class="u-m-answer">
-					 <p style="float:left; padding-right:4px;">
-					 <span><input class="checkbox" type="checkbox" name="choice['.$questionId.']['.$numAnswer.']" value="1" '.$selected.'></p></span>';
 				$answer = api_parse_tex($answer);
-				$s .= Security::remove_XSS($answer, STUDENT);
-				$s .= '</div></td></tr>';
+				$answer = Security::remove_XSS($answer, STUDENT);
+				$s .= '<input type="hidden" name="choice2['.$questionId.']" value="0" />'.
+					'<tr><td colspan="3"><div class="u-m-answer"><p style="float: '.($is_ltr_text_direction ? 'left' : 'right').'; padding-'.($is_ltr_text_direction ? 'right' : 'left').': 4px;">'.
+					'<span><input class="checkbox" type="checkbox" name="choice['.$questionId.']['.$numAnswer.']" value="1" '.$selected.' /></span></p>'.
+					'<div style="margin-'.($is_ltr_text_direction ? 'left' : 'right').': 24px;">'.
+					$answer.
+					'</div></div></td></tr>';
+
 			} elseif ($answerType == FILL_IN_BLANKS) {
 				// fill in blanks
 				$s .= '<tr><td colspan="3">'.$answer.'</td></tr>';
+
 			} else {
 				//  matching type, showing suggestions and answers
 				// TODO: replace $answerId by $numAnswer
@@ -291,7 +297,7 @@ function showQuestion($questionId, $onlyAnswers=false, $origin=false,$current_it
 						// set $debug_mark_answer to true at function start to
 						// show the correct answer with a suffix '-x'
 						$help = $selected = '';
-						if ($debug_mark_answer==true) {
+						if ($debug_mark_answer) {
 							if ($val['id'] == $answerCorrect) {
 								$help = '-x';
 								$selected = 'selected="selected"';
@@ -380,7 +386,7 @@ function showQuestion($questionId, $onlyAnswers=false, $origin=false,$current_it
 			//@todo I need to the get the feedback type
 			//if($answerType == 2)
 			//	$s.=' / '.$total_item;
-			echo '<input type="hidden" name="hidden_hotspot_id" value="'.$questionId.'">';
+			echo '<input type="hidden" name="hidden_hotspot_id" value="'.$questionId.'" />';
 			echo '<table class="exercise_questions" >
 				  <tr>
 			  		<td valign="top" colspan="2">';

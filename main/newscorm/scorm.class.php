@@ -1,46 +1,47 @@
 <?php
 /* For licensing terms, see /license.txt */
-
 /**
  * Defines the scorm class, which is meant to contain the scorm items (nuclear elements)
- * @package dokeos.learnpath.scorm
+ * @package chamilo.learnpath.scorm
  * @author	Yannick Warnier <ywarnier@beeznest.org>
  */
+/**
+ * Includes
+ */
+require_once 'scormItem.class.php';
+require_once 'scormMetadata.class.php';
+require_once 'scormOrganization.class.php';
+require_once 'scormResource.class.php';
 /**
  * Defines the "scorm" child of class "learnpath"
  * @package chamilo.learnpath
  */
-require_once('scormItem.class.php');
-require_once('scormMetadata.class.php');
-require_once('scormOrganization.class.php');
-require_once('scormResource.class.php');
-
 class scorm extends learnpath {
-	var $manifest = array();
-	var $resources = array();
-	var $resources_att = array();
-	var $organizations = array();
-	var $organizations_att = array();
-	var $metadata = array();
-	var $idrefs = array(); //will hold the references to resources for each item ID found
-	var $refurls = array(); //for each resource found, stores the file url/uri
-	var $subdir = ''; //path between the scorm/ directory and the imsmanifest.xml e.g. maritime_nav/maritime_nav. This is the path that will be used in the lp_path when importing a package
-	var $items = array();
-	var $zipname = ''; //keeps the zipfile safe for the object's life so that we can use it if no title avail
-	var $lastzipnameindex = 0; //keeps an index of the number of uses of the zipname so far
-	var $manifest_encoding = 'UTF-8';
-	var $debug = 0;
+	public $manifest = array();
+	public $resources = array();
+	public $resources_att = array();
+	public $organizations = array();
+	public $organizations_att = array();
+	public $metadata = array();
+	public $idrefs = array(); //will hold the references to resources for each item ID found
+	public $refurls = array(); //for each resource found, stores the file url/uri
+	public $subdir = ''; //path between the scorm/ directory and the imsmanifest.xml e.g. maritime_nav/maritime_nav. This is the path that will be used in the lp_path when importing a package
+	public $items = array();
+	public $zipname = ''; //keeps the zipfile safe for the object's life so that we can use it if no title avail
+	public $lastzipnameindex = 0; //keeps an index of the number of uses of the zipname so far
+	public $manifest_encoding = 'UTF-8';
+	public $debug = 0;
 	/**
 	 * Class constructor. Based on the parent constructor.
 	 * @param	string	Course code
 	 * @param	integer	Learnpath ID in DB
 	 * @param	integer	User ID
 	 */
-    function scorm($course_code=null,$resource_id=null,$user_id=null) {
+    function __construct($course_code=null,$resource_id=null,$user_id=null) {
     	if($this->debug>0){error_log('New LP - scorm::scorm('.$course_code.','.$resource_id.','.$user_id.') - In scorm constructor',0);}
     	if(!empty($course_code) and !empty($resource_id) and !empty($user_id))
     	{
-    		parent::learnpath($course_code, $resource_id, $user_id);
+    		parent::__construct($course_code, $resource_id, $user_id);
     	}else{
     		//do nothing but still build the scorm object
     	}
@@ -487,9 +488,9 @@ class scorm extends learnpath {
 
 				// code for indexing, now only index specific fields like terms and the title
 				if (!empty($_POST['index_document'])) {
-					require_once(api_get_path(LIBRARY_PATH).'search/DokeosIndexer.class.php');
-					require_once(api_get_path(LIBRARY_PATH).'search/IndexableChunk.class.php');
-					require_once(api_get_path(LIBRARY_PATH).'specific_fields_manager.lib.php');
+					require_once api_get_path(LIBRARY_PATH).'search/DokeosIndexer.class.php';
+					require_once api_get_path(LIBRARY_PATH).'search/IndexableChunk.class.php';
+					require_once api_get_path(LIBRARY_PATH).'specific_fields_manager.lib.php';
 
 					$di = new DokeosIndexer();
 					isset($_POST['language'])? $lang=Database::escape_string($_POST['language']): $lang = 'english';
@@ -562,7 +563,7 @@ class scorm extends learnpath {
      function import_package($zip_file_info,$current_dir = '')
      {
      	if($this->debug>0){error_log('In scorm::import_package('.print_r($zip_file_info,true).',"'.$current_dir.'") method',0);}
-     	require_once(api_get_path(LIBRARY_PATH).'document.lib.php');
+     	require_once api_get_path(LIBRARY_PATH).'document.lib.php';
      	$maxFilledSpace = DocumentManager :: get_course_quota();
      	//$maxFilledSpace = 1000000000;
 
@@ -650,7 +651,7 @@ class scorm extends learnpath {
 		}
 
 		if (! enough_size($realFileSize, $course_sys_dir, $maxFilledSpace) )
-		{ 
+		{
 			if($this->debug>1){error_log('New LP - Not enough space to store package',0);}
 			return api_failure::set_failure('not_enough_space');
 		}
@@ -864,11 +865,11 @@ class scorm extends learnpath {
 	 	//error_log('New LP - in export_zip()',0);
 	 	//zip everything that is in the corresponding scorm dir
 	 	//write the zip file somewhere (might be too big to return)
-		require_once (api_get_path(LIBRARY_PATH)."fileUpload.lib.php");
-		require_once (api_get_path(LIBRARY_PATH)."fileManage.lib.php");
-		require_once (api_get_path(LIBRARY_PATH)."document.lib.php");
-		require_once (api_get_path(LIBRARY_PATH)."pclzip/pclzip.lib.php");
-		require_once ("learnpath_functions.inc.php");
+		require_once api_get_path(LIBRARY_PATH).'fileUpload.lib.php';
+		require_once api_get_path(LIBRARY_PATH).'fileManage.lib.php';
+		require_once api_get_path(LIBRARY_PATH).'document.lib.php';
+		require_once api_get_path(LIBRARY_PATH).'pclzip/pclzip.lib.php';
+		require_once 'learnpath_functions.inc.php';
 		$tbl_lp = Database::get_course_table(TABLE_LP_MAIN);
 		$_course = Database::get_course_info(api_get_course_id());
 

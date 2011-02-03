@@ -4,12 +4,12 @@
 	 * @author Logan Cai (cailongqun [at] yahoo [dot] com [dot] cn)
 	 * @link www.phpletter.com
 	 * @since 22/April/2007
-	 *
-	 * Modify for Dokeos
+	 * 
+	 * Modify for Chamilo
 	 * @author Juan Carlos Raña
 	 * @since 31/December/2008
 	 */
-
+	 
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . "class.file.php");
 class manager
 {
@@ -31,7 +31,7 @@ class manager
 	'flag'=>'noFlag',
 	'friendly_path'=>'',
 	);
-
+	
 	var $lastVisitedFolderPathIndex = 'ajax_last_visited_folder';
 	var $folderPathIndex = "path";
 	var $calculateSubdir = true;
@@ -42,7 +42,7 @@ class manager
 			array(array("htm", "html", "php", "jsp", "asp", 'js', 'css'), "fileCode", SEARCH_TYPE_HTML, 1),
 			array(array("mov", "ram", "rm", "asx", "dcr", "wmv"), "fileVideo", SEARCH_TYPE_VIDEO, 1),
 			array(array("mpg", "avi", "asf", "mpeg"), "fileVideo", SEARCH_TYPE_MOVIE, 1),
-			array(array("aif", "aiff", "wav", "mp3", "wma", "mid"), "fileMusic", SEARCH_TYPE_MUSIC, 1),
+			array(array("aif", "aiff", "wav", "mp3", "wma","mid"), "fileMusic", SEARCH_TYPE_MUSIC, 1),
 			array(array("swf", 'flv'), "fileFlash", SEARCH_TYPE_FLASH, 1),
 			array(array("ppt"), "filePPT", SEARCH_TYPE_PPT, 0),
 			array(array("rtf"), "fileRTF", SEARCH_TYPE_DOC, 0),
@@ -52,12 +52,12 @@ class manager
 			array(array("txt"), "fileText", SEARCH_TYPE_TEXT, 1),
 			array(array("xml", "xsl", "dtd"), "fileXml", SEARCH_TYPE_XML, 1)
 	);
-
+	
 	/**
 		 * constructor
 		 * @path the path to a folder
 		 * @calculateSubdir force to get the subdirectories information
-		 */
+		 */		
 	function __construct($path = null, $calculateSubdir=true)
 	{
 
@@ -81,43 +81,55 @@ class manager
 		{
 			$this->currentFolderPath = CONFIG_SYS_DEFAULT_PATH;
 		}
-
+		
 		$this->currentFolderPath = (isUnderRoot($this->currentFolderPath)?backslashToSlash((addTrailingSlash($this->currentFolderPath))):CONFIG_SYS_DEFAULT_PATH);
-
+		
 		if($this->calculateSubdir)
-		{// keep track of this folder path in session
+		{// keep track of this folder path in session 
 			$_SESSION[$this->lastVisitedFolderPathIndex] = $this->currentFolderPath;
 		}
 		if(is_dir($this->currentFolderPath))
 		{
+						  
 			$file = new file($this->currentFolderPath);
 			$folderInfo = $file->getFileInfo();
 			if(sizeof($folderInfo))
 			{
-			    //for Dokeos in a name folder, replace num user by user names
-
-				if(ereg('sf_user_', basename($this->currentFolderPath)))
+				//for Chamilo in a name folder, replace num user by user names
+				if(preg_match('/sf_user_/',basename($this->currentFolderPath)))
 				{
 					$userinfo=Database::get_user_info_from_id(substr(basename($this->currentFolderPath), 8));
 					$this->currentFolderInfo['name']=api_get_person_name($userinfo['firstname'], $userinfo['lastname']);
 				}
 				else
 				{
-					$this->currentFolderInfo['name']=str_replace('_',' ',basename($this->currentFolderPath));//for Dokeos. Prevent long directory name
+					$this->currentFolderInfo['name']=str_replace('_',' ',basename($this->currentFolderPath));//for Chamilo. Prevent long directory name
+				}				
+				if(preg_match('/shared_folder/', basename($this->currentFolderPath)))
+				{
+					$this->currentFolderInfo['name']=get_lang('SharedDocumentsDirectory');
 				}
+				if(preg_match('/shared_folder_session_/',basename($this->currentFolderPath)))
+				{
+					$session = explode('_', basename($this->currentFolderPath));
+					$session = strtolower($session[sizeof($session) - 1]);
+					$this->currentFolderInfo['name']=get_lang('SharedDocumentsDirectory').' ('.api_get_session_name($session).')*';
+				}
+			
+				//end Chamilo
 				$this->currentFolderInfo['subdir']=0;
 				$this->currentFolderInfo['file']=0;
 				$this->currentFolderInfo['ctime']=$folderInfo['ctime'];
 				$this->currentFolderInfo['mtime']=$folderInfo['mtime'];
 				$this->currentFolderInfo['is_readable']=$folderInfo['is_readable'];
-				$this->currentFolderInfo['is_writable']=$folderInfo['is_writable'];
+				$this->currentFolderInfo['is_writable']=$folderInfo['is_writable'];	
 				$this->currentFolderInfo['path']  = $this->currentFolderPath;
 				$this->currentFolderInfo['friendly_path'] = transformFilePath($this->currentFolderPath);
 				$this->currentFolderInfo['type'] = "folder";
 				$this->currentFolderInfo['cssClass']='folder';
-
+				
 				//$this->currentFolderInfo['flag'] = $folderInfo['flag'];
-			}
+			}			
 		}
 		if($calculateSubdir && !file_exists($this->currentFolderPath))
 		{
@@ -125,12 +137,12 @@ class manager
 		}
 
 
-
+	
 	}
-
+	
 	function setSessionAction(&$session)
 	{
-		$this->sessionAction = $session;
+		$this->sessionAction = $session;	
 	}
 	/**
 		 * constructor
@@ -165,7 +177,7 @@ class manager
 				if($file != '.' && $file != '..')
 				{
 					$flag = $this->flags['no'];
-
+				
 					if($this->sessionAction->getFolder() == $this->currentFolderPath)
 					{//check if any flag associated with this folder or file
 						$folder = addTrailingSlash(backslashToSlash($this->currentFolderPath));
@@ -174,22 +186,21 @@ class manager
 							if($this->sessionAction->getAction() == "copy")
 							{
 								$flag = $this->flags['copy'];
-							}else
+							}else 
 							{
 								$flag = $this->flags['cut'];
 							}
 						}
-					}
+					}					
 					$path=$this->currentFolderPath.$file;
 					if(is_dir($path) && isListingDocument($path) )
 					{
 						$this->currentFolderInfo['subdir']++;
-
-						//fix count left folders for Dokeos
-						$deleted_by_dokeos_folder='_DELETED_';
-						$css_folder_dokeos='css';
-						$hotpotatoes_folder_dokeos='HotPotatoes_files';
-						$chat_files_dokeos='chat_files';
+						//fix count left folders for Chamilo
+						$deleted_by_Chamilo_folder='_DELETED_';
+						$css_folder_Chamilo='css';
+						$hotpotatoes_folder_Chamilo='HotPotatoes_files';
+						$chat_files_Chamilo='chat_files';
 						//show group's directory only if I'm member. Or if I'm a teacher. TODO: check groups not necessary because the student dont have access to main folder documents (only to document/group or document/shared_folder). Teachers can access to all groups ?
 						$group_folder='_groupdocs';
 						$hide_doc_group=false;
@@ -203,24 +214,24 @@ class manager
 
 						}
 
-						if(ereg($deleted_by_dokeos_folder, $path)|| ereg($css_folder_dokeos, $path) || ereg($hotpotatoes_folder_dokeos, $path) || ereg($chat_files_dokeos, $path) || $hide_doc_group==true || $file[0]=='.')
+						if(ereg($deleted_by_Chamilo_folder, $path)|| ereg($css_folder_Chamilo, $path) || ereg($hotpotatoes_folder_Chamilo, $path) || ereg($chat_files_Chamilo, $path) || $hide_doc_group || $file[0]=='.')
 						{
 							$this->currentFolderInfo['subdir']=$this->currentFolderInfo['subdir']-1;
 						}
-						///end fix for Dokeos
+						//end fix for Chamilo						
 
 						if(!$this->calculateSubdir)
+						{			
+						}else 
 						{
-						}else
-						{
-
+							
 								$folder = $this->getFolderInfo($path);
 								$folder['flag'] = $flag;
 								$folders[$file] = $folder;
-								$outputs[$file] = $folders[$file];
+								$outputs[$file] = $folders[$file];							
 						}
 
-
+						
 					}elseif(is_file($path) && isListingDocument($path))
 					{
 
@@ -235,28 +246,26 @@ class manager
 								}
 								$this->currentFolderInfo['size'] += $tem['size'];
 								$this->currentFolderInfo['file']++;
-
-								//fix count left files for Dokeos
-								$deleted_by_dokeos_file=' DELETED '; // ' DELETED ' not '_DELETED_' because in $file['name'] _ is replaced with blank see class.manager.php
-								if(ereg($deleted_by_dokeos_file, $tem['name']) || $tem['name'][0]=='.')
+								//fix count left files for Chamilo
+								$deleted_by_Chamilo_file=' DELETED '; // ' DELETED ' not '_DELETED_' because in $file['name'] _ is replaced with blank see class.manager.php
+								if(ereg($deleted_by_Chamilo_file, $tem['name']) || $tem['name'][0]=='.')
 								{
 									$this->currentFolderInfo['file']=$this->currentFolderInfo['file']-1;
 								}
-								///end fix for Dokeos
-
-								$tem['path'] = backslashToSlash($path);
+								///end fix for Chamilo
+								$tem['path'] = backslashToSlash($path);		
 								$tem['type'] = "file";
 								$tem['flag'] = $flag;
 								$files[$file] = $tem;
 								$outputs[$file] = $tem;
 								$tem = array();
 								$obj->close();
+								
+							}							
 
-							}
-
-
+				
 					}
-
+					
 				}
 			}
 			if($this->forceFolderOnTop)
@@ -272,11 +281,11 @@ class manager
 				{
 					$outputs[] = $v;
 				}
-			}else
+			}else 
 			{
 				uksort($outputs, "strnatcasecmp");
 			}
-
+			
 			@closedir($dirHandler);
 		}else
 		{
@@ -297,12 +306,12 @@ class manager
 		if(is_null($path))
 		{
 			return $this->currentFolderInfo;
-		}else
+		}else 
 		{
 			$obj = new manager($path, false);
 			$obj->setSessionAction($this->sessionAction);
 			$obj->getFileList();
-			return $obj->getFolderInfo();
+			return $obj->getFolderInfo();			
 		}
 
 	}
@@ -313,12 +322,12 @@ class manager
 		 * @param string file name
 		 * @return array
 		 */
-		function getFileType($fileName, $checkIfDir = false)
+		function getFileType($fileName, $checkIfDir = false) 
 		{
-
+			
 			$ext = strtolower($this->_getExtension($fileName, $checkIfDir));
-
-			foreach ($this->fileTypes as $fileType)
+			
+			foreach ($this->fileTypes as $fileType) 
 			{
 				if(in_array($ext, $fileType[0]))
 				{
@@ -333,21 +342,21 @@ class manager
 					{
 
 						return array("cssClass" => ($checkIfDir && $this->isDirEmpty($fileName)?'folderEmpty':"folder") , "fileType" => "Folder", "preview" => 0, 'test'=>1);
-					}else
+					}else 
 					{
 						return array("cssClass" => "fileUnknown", "fileType" => SEARCH_TYPE_UNKNOWN, "preview" => 0, 'test'=>2);
 					}
-				}else
+				}else 
 				{
 					return array("cssClass" => "fileUnknown", "fileType" => SEARCH_TYPE_UNKNOWN, "preview" => 0, 'test'=>3, 'ext'=>$ext , 'filename'=>$fileName);
 				}
-
+				
 			}else
 			{//this is unknown file
 				return array("cssClass" => "fileUnknown", "fileType" => SEARCH_TYPE_UNKNOWN, "preview" => 0, 'test'=>4);
 			}
-
-
+		
+		
 		}
 
 	/**
@@ -379,23 +388,23 @@ class manager
 
     /**
 	 * Get the extension of a file name
-	 *
+	 * 
 	 * @param  string $file
  	 * @return string
-     * @copyright this function originally come from Andy's php
+     * @copyright this function originally come from Andy's php 
 	 */
     function _getExtension($file, $checkIfDir = false)
     {
     	if($checkIfDir && file_exists($file) && is_dir($file))
     	{
     		return '';
-    	}else
+    	}else 
     	{
     		return @substr(@strrchr($file, "."), 1);
     	}
-
-
-    }
+    	
+    	
+    }	
 
 	function isDirEmpty($path)
 	{
@@ -408,14 +417,14 @@ class manager
 				{
 					@closedir($dirHandler);
 					return false;
-
+					
 				}
 			}
-
+			
 			@closedir($dirHandler);
-
-		}
-		return true;
+				
+		}	
+		return true;	
 	}
 }
 ?>

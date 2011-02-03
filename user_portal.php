@@ -1,23 +1,14 @@
 <?php
 /* For licensing terms, see /license.txt */
 /**
-*	This is the index file displayed when a user is logged in on Dokeos.
-*
-*	It displays:
-*	- personal course list
-*	- menu bar
-*
-*	Part of the what's new ideas were based on a rene haentjens hack
-*
-*	Search for
-*	CONFIGURATION parameters
-*	to modify settings
-*
-*	@todo rewrite code to separate display, logic, database code
-*	@package chamilo.main
-*/
-
-/**
+ *	This is the index file displayed when a user is logged in on Dokeos.
+ *
+ *	It displays:
+ *	- personal course list
+ *	- menu bar
+ *	Search for CONFIGURATION parameters to modify settings
+ *	@todo rewrite code to separate display, logic, database code
+ *	@package chamilo.main
  * @todo shouldn't the SCRIPTVAL_ and CONFVAL_ constant be moved to the config page? Has anybody any idea what the are used for?
  * 		 if these are really configuration settings then we can add those to the dokeos config settings
  * @todo move get_personal_course_list and some other functions to a more appripriate place course.lib.php or user.lib.php
@@ -49,7 +40,6 @@ $cidReset = true; /* Flag forcing the 'current course' reset,
 require_once './main/inc/global.inc.php';
 $libpath = api_get_path(LIBRARY_PATH);
 require_once $libpath.'course.lib.php';
-require_once $libpath.'debug.lib.inc.php';
 require_once $libpath.'system_announcements.lib.php';
 require_once $libpath.'groupmanager.lib.php';
 require_once $libpath.'usermanager.lib.php';
@@ -180,8 +170,8 @@ Display :: display_header($nameTools);
 
 /**
 * Database function that gets the list of courses for a particular user.
-* @param $user_id, the id of the user
-* @return an array with courses
+* @param	int		The id of the user
+* @return	array	An array with courses
 */
 function get_personal_course_list($user_id) {
 	// initialisation
@@ -204,7 +194,7 @@ function get_personal_course_list($user_id) {
 										course_rel_user.user_course_cat user_course_cat
 										FROM    ".$main_course_table."       course,".$main_course_user_table."   course_rel_user
 										WHERE course.code = course_rel_user.course_code"."
-										AND   course_rel_user.user_id = '".$user_id."' 
+										AND   course_rel_user.user_id = '".$user_id."'
 										AND course_rel_user.relation_type<>".COURSE_RELATION_TYPE_RRHH."
 										ORDER BY course_rel_user.user_course_cat, course_rel_user.sort ASC,i";
 
@@ -243,9 +233,12 @@ function get_personal_course_list($user_id) {
 }
 
 /**
- *  display special courses
- *  @param int User id
- *  @return void
+ * Display special courses (and only these) as several HTML divs of class userportal-course-item
+ * 
+ * Special courses are courses that stick on top of the list and are "auto-registerable"
+ * in the sense that any user clicking them is registered as a student 
+ * @param	int		User id
+ * @return	void
  */
 function display_special_courses ($user_id) {
 
@@ -287,7 +280,7 @@ function display_special_courses ($user_id) {
 			$number_of_courses = Database::num_rows($rs_special_course);
 			$key = 0;
 			$status_icon = '';
-			if ($number_of_courses > 0) {			
+			if ($number_of_courses > 0) {
 				while ($course = Database::fetch_array($rs_special_course)) {
 
 					// get notifications
@@ -301,7 +294,7 @@ function display_special_courses ($user_id) {
 					if (empty($course['user_id'])) {
 						$course['status'] = $user_info['status'];
 					}
-					
+
 					$status_icon = Display::return_icon('blackboard.png', get_lang('Course'), array('width'=>'48px'));
 					/*
 					if ($course['status'] == 1) {
@@ -310,9 +303,9 @@ function display_special_courses ($user_id) {
 					if (($course['status'] == 5 && !api_is_coach()) || empty($course['status'])) {
 						$status_icon=Display::return_icon('course.gif', get_lang('Course')).' '.Display::return_icon('students.gif', get_lang('Status').': '.get_lang('Student'),array('style'=>'width:11px; height:11px'));
 					}*/
-					
-					echo '<div class="userportal-course-item">';	
-		
+
+					echo '<div class="userportal-course-item">';
+
 					if (api_is_platform_admin()) {
 						echo   '<div style="float:right;"><a href="'.api_get_path(WEB_CODE_PATH).'course_info/infocours.php?cidReq='.$course['code'].'">'.Display::return_icon('edit.gif', get_lang('Edit'), array('align' => 'absmiddle')).'</a>';
 						if ($course['status'] == COURSEMANAGER) {
@@ -320,23 +313,6 @@ function display_special_courses ($user_id) {
 						}
 						echo '</div>';
 					}
-								
-					
-					
-					/*
-					if (api_is_allowed_to_edit(null, true)) {
-						$progress_thematic_icon = '<a href="'.api_get_path(WEB_CODE_PATH).'course_description/index.php?action=edit&cidReq='.$course['code'].'&description_type=8'.'">'.get_thematic_progress_icon($course['db_name']).'</a>';
-					} else {
-						$progress_thematic_icon = get_thematic_progress_icon($course['db_name']);
-					}
-					*/
-					
-					//echo "\t<tr>\n";
-					//echo "\t\t<td>\n";
-
-					//show a hyperlink to the course, unless the course is closed and user is not course admin
-					//$course_access_settings = CourseManager :: get_access_settings($course['code']);
-
 					$course_visibility = $course['visibility'];
 					if ($course_visibility != COURSE_VISIBILITY_CLOSED || $course['status'] == COURSEMANAGER) {
 						$course_title = '<a href="'.api_get_path(WEB_COURSE_PATH).$course['directory'].'/?id_session=0&amp;autoreg=1">'.$course['title'].'</a>';
@@ -351,11 +327,7 @@ function display_special_courses ($user_id) {
 					if (api_get_setting('display_coursecode_in_courselist') == 'true' && api_get_setting('display_teacher_in_courselist') == 'true') {
 						echo " - ";
 					}
-					
-					if ($course['status'] == COURSEMANAGER) {
-						//echo Display::return_icon('teachers.gif', get_lang('Status').': '.get_lang('Teacher'), array('style'=>'width:16px; height:16px; padding-right:5px;'));
-					}
-						
+
 					if (api_get_setting('display_teacher_in_courselist') == 'true') {
 						echo $course['tutor'];
 					}
@@ -372,14 +344,16 @@ function display_special_courses ($user_id) {
 }
 
 /**
- *  Display courses without special courses
- *  @param int user id
- *  @return void
+ * Display courses (without special courses) as several HTML divs 
+ * of course categories, as class userportal-catalog-item.
+ * @uses display_courses_in_category() to display the courses themselves
+ * @param	int		user id
+ * @return	void
  */
 function display_courses($user_id) {
 
 	global $_user, $_configuration;
-	
+
 	// building an array that contains all the id's of the user defined course categories
 	// initially this was inside the display_courses_in_category function but when we do it here we have fewer
 	// sql executions = performance increase.
@@ -396,13 +370,13 @@ function display_courses($user_id) {
 		// We simply display the title of the category.
 		echo '<div class="userportal-catalog-item">';
 			echo '<ul class="catalog_box">';
-				echo '<li>';			
+				echo '<li>';
 					echo Display::return_icon('folder_yellow.png', '', array('width'=>'48px', 'align' => 'absmiddle'));
-					echo '<span>';				
+					echo '<span>';
 					echo '<a name="category'.$row['id'].'"></a>'; // display an internal anchor.
 					echo $row['title'];
 					echo '</span>';
-				echo '</li>';		
+				echo '</li>';
 				display_courses_in_category($row['id']);
 		echo '</ul>';
 		echo '</div>';
@@ -410,18 +384,22 @@ function display_courses($user_id) {
 }
 
 /**
- *  display courses in category without special courses
+ *  Display courses inside a category (without special courses) as HTML dics of
+ *  class userportal-course-item.
  *  @param int User category id
  *  @return void
  */
 function display_courses_in_category($user_category_id) {
-	global $_user;
+
+	global $_user, $_configuration;
 	// table definitions
-	$TABLECOURS						= Database::get_main_table(TABLE_MAIN_COURSE);
-	$TABLECOURSUSER					= Database::get_main_table(TABLE_MAIN_COURSE_USER);
-	$TABLE_USER_COURSE_CATEGORY 	= Database::get_user_personal_table(TABLE_USER_COURSE_CATEGORY);
+	$TABLECOURS						= Database :: get_main_table(TABLE_MAIN_COURSE);
+	$TABLECOURSUSER					= Database :: get_main_table(TABLE_MAIN_COURSE_USER);
 	$TABLE_COURSE_FIELD 			= Database :: get_main_table(TABLE_MAIN_COURSE_FIELD);
 	$TABLE_COURSE_FIELD_VALUE		= Database :: get_main_table(TABLE_MAIN_COURSE_FIELD_VALUES);
+	$TABLE_ACCESS_URL_REL_COURSE    = Database :: get_main_table(TABLE_MAIN_ACCESS_URL_REL_COURSE);
+	$TABLE_USER_COURSE_CATEGORY 	= Database :: get_user_personal_table(TABLE_USER_COURSE_CATEGORY);
+	$current_url_id = api_get_current_access_url_id();
 
 	// get course list auto-register
 	$sql = "SELECT course_code FROM $TABLE_COURSE_FIELD_VALUE tcfv INNER JOIN $TABLE_COURSE_FIELD tcf ON " .
@@ -438,54 +416,60 @@ function display_courses_in_category($user_category_id) {
 	if (!empty($special_course_list)) {
 		$without_special_courses = ' AND course.code NOT IN ('.implode(',',$special_course_list).')';
 	}
-	
+
 	$sql_select_courses = "SELECT course.code, course.visual_code, course.subscribe subscr, course.unsubscribe unsubscr,
-								course.title title, course.tutor_name tutor, course.db_name, course.directory, course_rel_user.status status,
-								course_rel_user.sort sort, course_rel_user.user_course_cat user_course_cat, course.visibility
-		                        FROM    $TABLECOURS       course,
-										$TABLECOURSUSER  course_rel_user
-		                        WHERE course.code = course_rel_user.course_code
-		                        AND   course_rel_user.user_id = '".$_user['user_id']."'
-		                        AND course_rel_user.relation_type<>".COURSE_RELATION_TYPE_RRHH."
-		                        AND course_rel_user.user_course_cat='".$user_category_id."' $without_special_courses
-		                        ORDER BY course_rel_user.user_course_cat, course_rel_user.sort ASC";
+									course.title title, course.tutor_name tutor, course.db_name, course.directory, course_rel_user.status status,
+									course_rel_user.sort sort, course_rel_user.user_course_cat user_course_cat, course.visibility
+			                        FROM    $TABLECOURS       course,
+											$TABLECOURSUSER  course_rel_user, ".$TABLE_ACCESS_URL_REL_COURSE." url
+			                        WHERE course.code = course_rel_user.course_code AND url.course_code = course.code
+			                        AND   course_rel_user.user_id = '".$_user['user_id']."'
+			                        AND course_rel_user.relation_type<>".COURSE_RELATION_TYPE_RRHH."
+			                        AND course_rel_user.user_course_cat='".$user_category_id."' $without_special_courses ";
+	// If multiple URL access mode is enabled, only fetch courses 
+	// corresponding to the current URL
+    if ($_configuration['multiple_access_urls'] && $current_url_id != -1){
+		$sql_select_courses .= " AND url.course_code=course.code AND access_url_id='".$current_url_id."'";
+    }
+    // Use user's classification for courses (if any)
+    $sql_select_courses .= " ORDER BY course_rel_user.user_course_cat, course_rel_user.sort ASC";
 	$result = Database::query($sql_select_courses);
 	$number_of_courses = Database::num_rows($result);
 	$key = 0;
 	$status_icon = '';
-	
-	while ($course = Database::fetch_array($result)) {
 
+	// Browse through all courses
+	while ($course = Database::fetch_array($result)) {
 		// get notifications
 		$my_course = array();
 		$my_course['db']	= $course['db_name'];
 		$my_course['k']     = $course['code'];
 		$my_course['id_session'] =	null;
 		$my_course['s']		= $course['status'];
-		
-		$show_notification = show_notification($my_course);	
-		
+		// For each course, get if there is any notification icon to show 
+		// (something that would have changed since the user's last visit)
+		$show_notification = show_notification($my_course);
+		// New code displaying the user's status in respect to this course
 		$status_icon = Display::return_icon('blackboard.png', get_lang('Course'), array('width'=>'48px'));
-		
 		/*
-		// course list
+		// Old code displaying the status of the user in respect to this course
 		if ($course['status'] == COURSEMANAGER) {
 			$status_icon=Display::return_icon('course.gif', get_lang('Course')).' '.Display::return_icon('teachers.gif', get_lang('Status').': '.get_lang('Teacher'),array('style'=>'width:11px; height:11px;'));
-		}
-		if (($course['status'] == STUDENT && !api_is_coach()) || empty($course['status'])) {
+		} elseif (($course['status'] == STUDENT && !api_is_coach()) || empty($course['status'])) {
 			$status_icon=Display::return_icon('course.gif', get_lang('Course')).' '.Display::return_icon('students.gif', get_lang('Status').': '.get_lang('Student'),array('style'=>'width:11px; height:11px'));
 		}*/
-		
-		/*		
+
+		/*
+		// Code allowing to show the thematic progress (as a percentage) inside the course box
 		if (api_is_allowed_to_edit(null,true)) {
 			$progress_thematic_icon = '<a href="'.api_get_path(WEB_CODE_PATH).'course_description/index.php?action=edit&cidReq='.$course['code'].'&description_type=8'.'">'.get_thematic_progress_icon($course['db_name']).'</a>';
 		} else {
 			$progress_thematic_icon = get_thematic_progress_icon($course['db_name']);
 		}
 		*/
-		
-		echo '<div class="userportal-course-item">';	
-		
+
+		echo '<div class="userportal-course-item">';
+
 		if (api_is_platform_admin()) {
 			echo   '<div style="float:right;"><a href="'.api_get_path(WEB_CODE_PATH).'course_info/infocours.php?cidReq='.$course['code'].'">'.Display::return_icon('edit.gif', get_lang('Edit'), array('align' => 'absmiddle')).'</a>';
 			if ($course['status'] == COURSEMANAGER) {
@@ -494,7 +478,7 @@ function display_courses_in_category($user_category_id) {
 			echo '</div>';
 		}
 
-		//function logic - act on the data
+		//function logic - act on the data (check if the course is virtual, if yes change the link)
 		$is_virtual_course = CourseManager :: is_virtual_course_from_system_code($course['code']);
 		if ($is_virtual_course) {
 			// If the current user is also subscribed in the real course to which this
@@ -506,7 +490,7 @@ function display_courses_in_category($user_category_id) {
 				return; //do not display this course entry
 			}
 		}
-
+		// Check if the course has virtual courses attached. If yes change the course title and display code
 		$has_virtual_courses = CourseManager :: has_virtual_courses_from_code($course['code'], api_get_user_id());
 		if ($has_virtual_courses) {
 			$course_info = api_get_course_info($course['code']);
@@ -518,14 +502,14 @@ function display_courses_in_category($user_category_id) {
 			$course_display_code = $course['visual_code'];
 		}
 
-		//show a hyperlink to the course, unless the course is closed and user is not course admin
+		// Show a hyperlink to the course, unless the course is closed and user is not course admin
 		$course_visibility = $course['visibility'];
 		if ($course_visibility != COURSE_VISIBILITY_CLOSED || $course['status'] == COURSEMANAGER) {
 			$course_title = '<a href="'.api_get_path(WEB_COURSE_PATH).$course['directory'].'/?id_session=0">'.$course['title'].'</a>';
 		} else {
 			$course_title = $course['title']." ".get_lang('CourseClosed');
 		}
-
+		// Start displaying the course block itself
 		echo '<div style="float:left;margin-right:10px;">'.$status_icon.'</div><span style="font-size:135%;">'.$course_title.'</span><br />';
 		if (api_get_setting('display_coursecode_in_courselist') == 'true') {
 			echo $course_display_code;
@@ -534,13 +518,12 @@ function display_courses_in_category($user_category_id) {
 			echo ' - ';
 		}
 		if (api_get_setting('display_teacher_in_courselist') == 'true') {
-			if (!empty($course['tutor'])) 
+			if (!empty($course['tutor']))
 				echo $course['tutor'];
 		}
 		// show notifications
 		echo $show_notification;
 		echo '</div>';
-			
 		$key++;
 	}
 }
@@ -569,7 +552,7 @@ function display_courses_in_category($user_category_id) {
 		$image = 'level_'.$progress.'.png';
 		$title = $row['progress'].'%';
 		$img = Display::return_icon($image,get_lang('ThematicAdvance'),array('style'=>'vertical-align:middle')).'&nbsp;<span>'.$title.'</span>';
-	}	
+	}
 	return $img;
  }
 
@@ -789,7 +772,7 @@ function get_logged_user_course_html($course, $session_id = 0, $class='courses')
 	$is_coach = api_is_coach($my_course['id_session'],$course['code']);
 
 	$s_htlm_status_icon = "";
-	
+
 	$s_htlm_status_icon=Display::return_icon('blackboard_blue.png', get_lang('Course'), array('width'=>'48px'));
 	/*
 	if ($s_course_status == 1) {
@@ -820,7 +803,7 @@ function get_logged_user_course_html($course, $session_id = 0, $class='courses')
 	} else {
 		$result .= $course_display_title." "." ".get_lang('CourseClosed')."";
 	}
-	
+
 	/*
 	if (api_is_allowed_to_edit(null, true)) {
 		$progress_thematic_icon = '<a href="'.api_get_path(WEB_CODE_PATH).'course_description/index.php?action=edit&cidReq='.$course['code'].'&description_type=8'.'">'.get_thematic_progress_icon($course_database, $session_id).'</a>';
@@ -828,17 +811,17 @@ function get_logged_user_course_html($course, $session_id = 0, $class='courses')
 		$progress_thematic_icon = get_thematic_progress_icon($course_database, $session_id);
 	}
 	*/
-	
+
 	//$result .= '&nbsp;&nbsp;<span>'.$progress_thematic_icon.'</span>';
 	// show the course_code and teacher if chosen to display this
 	if (api_get_setting('display_coursecode_in_courselist') == 'true' || api_get_setting('display_teacher_in_courselist') == 'true') {
 		$result .= '<br />';
 	}
-	
+
 	if (api_get_setting('display_coursecode_in_courselist') == 'true') {
 		$result .= $course_display_code;
-	}	
-	
+	}
+
 	if (api_get_setting('display_teacher_in_courselist') == 'true') {
 		if (api_get_setting('use_session_mode')=='true' && !$nosession) {
 			$coachs_course = api_get_coachs_from_course($my_course['id_session'],$course['code']);
@@ -857,8 +840,8 @@ function get_logged_user_course_html($course, $session_id = 0, $class='courses')
 				if (is_array($course_coachs) && count($course_coachs)> 0 ) {
 					if (api_get_setting('display_coursecode_in_courselist') == 'true' && api_get_setting('display_teacher_in_courselist') == 'true') {
 						$result .= ' &ndash; ';
-					}					
-					$result .= get_lang('Coachs').': '.implode(', ',$course_coachs);					
+					}
+					$result .= get_lang('Coachs').': '.implode(', ',$course_coachs);
 				}
 			}
 
@@ -970,11 +953,11 @@ function get_logged_user_course_html($course, $session_id = 0, $class='courses')
  */
 function get_session_title_box($session_id) {
 	global $nosession;
-	
+
 	if (api_get_setting('use_session_mode')=='true' && !$nosession) {
 		global $now, $date_start, $date_end;
 	}
-	
+
 	$output = array();
 	if (api_get_setting('use_session_mode')=='true' && !$nosession) {
 		$main_user_table 		= Database :: get_main_table(TABLE_MAIN_USER);
@@ -993,7 +976,7 @@ function get_session_title_box($session_id) {
 		$session = array();
 		$session['title'] = $session_info[2];
 		$session['coach'] = '';
-		
+
 		if ( $session_info[3]=='0000-00-00' ) {
 			$session['dates'] = get_lang('WithoutTimeLimits');
 			if ( api_get_setting('show_session_coach') === 'true' ) {
@@ -1047,12 +1030,18 @@ function get_global_courses_list($user_id) {
 
 /**
  * Returns the "what's new" icon notifications
+ * 
+ * The general logic of this function is to track the last time the user 
+ * entered the course and compare to what has changed inside this course
+ * since then, based on the item_property table inside this course. Note that,
+ * if the user never entered the course before, he will not see notification
+ * icons. This function takes session ID into account (if any) and only shows
+ * the corresponding notifications.
  * @param	array	Course information array, containing at least elements 'db' and 'k'
  * @return	string	The HTML link to be shown next to the course
- * @version
  */
 function show_notification($my_course) {
-	
+
 	$statistic_database = Database :: get_statistic_database();
 	$user_id = api_get_user_id();
 	$course_database = $my_course['db'];
@@ -1060,13 +1049,13 @@ function show_notification($my_course) {
 	$tool_edit_table = Database::get_course_table(TABLE_ITEM_PROPERTY, $course_database);
 	$course_group_user_table = Database :: get_course_table(TABLE_GROUP_USER, $course_database);
 	$t_track_e_access = Database::get_statistic_table(TABLE_STATISTIC_TRACK_E_LASTACCESS);
-	// get the user's last access dates to all tools of this course
+	// Get the user's last access dates to all tools of this course
 	$sqlLastTrackInCourse = "SELECT * FROM $t_track_e_access
 									 USE INDEX (access_cours_code, access_user_id)
 									 WHERE access_cours_code = '".$my_course['k']."'
 									 AND access_user_id = '$user_id' AND access_session_id ='".$my_course['id_session']."'";
 	$resLastTrackInCourse = Database::query($sqlLastTrackInCourse);
-	
+
 	$oldestTrackDate = "3000-01-01 00:00:00";
 	while ($lastTrackInCourse = Database::fetch_array($resLastTrackInCourse)) {
 		$lastTrackInCourseDate[$lastTrackInCourse['access_tool']] = $lastTrackInCourse['access_date'];
@@ -1074,8 +1063,8 @@ function show_notification($my_course) {
 			$oldestTrackDate = $lastTrackInCourse['access_date'];
 		}
 	}
-	
-	
+
+
 	// get the last edits of all tools of this course
 	$sql = "SELECT tet.*, tet.lastedit_date last_date, tet.tool tool, tet.ref ref,
 						tet.lastedit_type type, tet.to_group_id group_id,
@@ -1085,20 +1074,27 @@ function show_notification($my_course) {
 					AND ctt.name = tet.tool
 					AND ctt.visibility = '1'
 					AND tet.lastedit_user_id != $user_id AND tet.id_session = '".$my_course['id_session']."'
-					ORDER BY tet.lastedit_date";	
+					ORDER BY tet.lastedit_date";
 	$res = Database::query($sql);
 	//get the group_id's with user membership
 	$group_ids = GroupManager :: get_group_ids($course_database, $user_id);
 	$group_ids[] = 0; //add group 'everyone'
 	//filter all selected items
 	while ($res && ($item_property = Database::fetch_array($res))) {
-
+		// First thing to check is if the user never entered the tool 
+		// or if his last visit was earlier than the last modification
 		if ((!isset ($lastTrackInCourseDate[$item_property['tool']]) || $lastTrackInCourseDate[$item_property['tool']] < $item_property['lastedit_date'])
-			&& ((in_array($item_property['to_group_id'], $group_ids) && ($item_property['tool'] != TOOL_DROPBOX && $item_property['tool'] != TOOL_NOTEBOOK && $item_property['tool'] != TOOL_CHAT)))
+			// drop the tool elements that are part of a group that the
+			// user is not part of
+			&& ((in_array($item_property['to_group_id'], $group_ids)
+			// drop the dropbox, notebook and chat tools because we don't care' 
+			&& ($item_property['tool'] != TOOL_DROPBOX && $item_property['tool'] != TOOL_NOTEBOOK && $item_property['tool'] != TOOL_CHAT)))
+			// take only what's visible or invisible but where the user is a teacher or where the visibility is unset
 			&& ($item_property['visibility'] == '1' || ($my_course['s'] == '1' && $item_property['visibility'] == '0') || !isset ($item_property['visibility']))) {
-
+			
+			// also drop announcements and events that are not for the user or his group 
 			if (($item_property['tool'] == TOOL_ANNOUNCEMENT || $item_property['tool'] == TOOL_CALENDAR_EVENT) && (($item_property['to_user_id'] != $user_id ) && (!isset($item_property['to_group_id']) || !in_array($item_property['to_group_id'],$group_ids)) )) continue;
-
+			// If it's a survey, make sure the user's invited. Otherwise drop it.'
 			if ($item_property['tool'] == TOOL_SURVEY) {
 				$survey_info = survey_manager::get_survey($item_property['ref'],0,$my_course['k']);
 				$invited_users = SurveyUtil::get_invited_users($survey_info['code'],$course_database);
@@ -1354,24 +1350,24 @@ if ( is_array($courses_tree) ) {
 					//echo '<div class="clear"></div>';
 					echo '<div class="userportal-session-item"><ul class="session_box">';
 						echo '<li class="session_box_title" id="session_'.$session['details']['id'].'" >';
-						
+
 						//echo Display::return_icon('div_hide.gif', get_lang('Expand').'/'.get_lang('Hide'), array('align' => 'absmiddle', 'id' => 'session_img_'.$session['details']['id'])) . ' ';
-						
+
 						echo Display::return_icon('window_list.png', get_lang('Expand').'/'.get_lang('Hide'), array('width'=>'48px', 'align' => 'absmiddle', 'id' => 'session_img_'.$session['details']['id'])) . ' ';
-												
+
 						$s = get_session_title_box($session['details']['id']);
 						$extra_info = (!empty($s['coach'])?$s['coach'].' | ':'').$s['dates'];
 						//var_dump($s);
 						//echo get_lang('SessionName') . ': ' . $s['title']. ' - '.(!empty($s['coach'])?$s['coach'].' - ':'').$s['dates'];
 						echo '<span>' . $s['title']. ' </span> <span style="padding-left:10px;  font-size: 90%; font-weight: normal;">'.$extra_info.'</span>';
-						if (api_is_platform_admin()) {						
+						if (api_is_platform_admin()) {
 							echo '<div style="float:right;"><a href="'.api_get_path(WEB_CODE_PATH).'admin/resume_session.php?id_session='.$session['details']['id'].'">'.Display::return_icon('edit.gif', get_lang('Edit'), array('align' => 'absmiddle')).'</a></div>';
-						}						
+						}
 						echo '</li>';
 					    echo $html_courses_session;
-					    
+
 					echo '</ul></div>';
-					
+
 				}
 			}
 
@@ -1410,17 +1406,17 @@ if ( is_array($courses_tree) ) {
 						$html_sessions .= '<li class="sub_session_box_title" id="session_'.$session['details']['id'].'">';
 						//$html_sessions .= Display::return_icon('div_hide.gif', get_lang('Expand').'/'.get_lang('Hide'), array('align' => 'absmiddle', 'id' => 'session_img_'.$session['details']['id'])) . ' ';
 						$html_sessions .= Display::return_icon('window_list.png', get_lang('Expand').'/'.get_lang('Hide'), array('width'=>'48px', 'align' => 'absmiddle', 'id' => 'session_img_'.$session['details']['id'])) . ' ';
-				
-						
+
+
 						$html_sessions .=  '<span>' . $s['title']. ' </span> ';
 						$html_sessions .=  '<span style="padding-left:10px; font-size: 90%; font-weight: normal;">';
 						$html_sessions .=  (!empty($s['coach'])?$s['coach'].' | ':'').$s['dates'];
 						$html_sessions .=  '</span>';
-						 
+
 						if (api_is_platform_admin()) {
 							$html_sessions .=  '<div style="float:right;"><a href="'.api_get_path(WEB_CODE_PATH).'admin/resume_session.php?id_session='.$session['details']['id'].'">'.Display::return_icon('edit.gif', get_lang('Edit'), array('align' => 'absmiddle')).'</a></div>';
-						}											
-						
+						}
+
 						$html_sessions .= '</li>';
 						$html_sessions .= $html_courses_session;
 						$html_sessions .= '</ul>';
@@ -1428,27 +1424,27 @@ if ( is_array($courses_tree) ) {
 				}
 
 				if ($count_courses_session > 0) {
-					
+
 					echo '<div class="userportal-session-category-item" id="session_category_'.$category['details']['id'].'">';
 					echo '<div class="session_category_title_box" id="session_category_title_box_'.$category['details']['id'].'" style="color: #555555;">';
 					//echo Display::return_icon('div_hide.gif', get_lang('Expand').'/'.get_lang('Hide'), array('align' => 'absmiddle', 'id' => 'category_img_'.$category['details']['id']));
-					
+
 					echo Display::return_icon('folder_blue.png', get_lang('SessionCategory'), array('width'=>'48px', 'align' => 'absmiddle'));
-					
-						
-					if (api_is_platform_admin()) {						
+
+
+					if (api_is_platform_admin()) {
 						echo'<div style="float:right;"><a href="'.api_get_path(WEB_CODE_PATH).'admin/session_category_edit.php?&id='.$category['details']['id'].'">'.Display::return_icon('edit.gif', get_lang('Edit'), array('align' => 'absmiddle')).'</a></div>';
-					}	
-						
-					
+					}
+
+
 					echo '<span id="session_category_title">';
 					echo $category['details']['name'];
 					echo '</span>';
-					
+
 					echo '<span style="padding-left:10px; font-size: 90%; font-weight: normal;">';
 					echo get_lang('From').' '.$category['details']['date_start'].' '.get_lang('Until').' '.$category['details']['date_end'].'</div>';
 					echo '</span>';
-					
+
 					echo $html_sessions;
 					echo '</div>';
 				}
@@ -1585,7 +1581,7 @@ api_session_register('status');
 
 */
 echo '	<div id="menu-wrapper">';
- 
+
 echo '	<div id="menu" class="menu">';
 
 // api_display_language_form(); // moved to the profile page.
@@ -1633,21 +1629,21 @@ echo '<div class="clear"></div>';
 echo '<div id="social_widget">';
 
 echo '  <div id="social_widget_image">';
-if (api_get_setting('allow_social_tool')=='true') {
-	if ($no_image == false) {
+if (api_get_setting('allow_social_tool') == 'true') {
+	if (!$no_image) {
 	    echo '<a href="'.api_get_path(WEB_PATH).'main/social/home.php"><img src="'.$img_array['file'].'"  '.$img_array['style'].' border="1"></a>';
 	} else {
 	    echo '<a href="'.api_get_path(WEB_PATH).'main/auth/profile.php"><img title="'.get_lang('EditProfile').'" src="'.$img_array['file'].'" '.$img_array['style'].' border="1"></a>';
 	}
 } else {
-    echo '<a href="'.api_get_path(WEB_PATH).'main/auth/profile.php"><img title="'.get_lang('EditProfile').'" src="'.$img_array['file'].'" '.$img_array['style'].' border="1"></a>';	
+    echo '<a href="'.api_get_path(WEB_PATH).'main/auth/profile.php"><img title="'.get_lang('EditProfile').'" src="'.$img_array['file'].'" '.$img_array['style'].' border="1"></a>';
 }
 echo '</div>';
 
-	
+
 //  @todo add a platform setting to add the user image
 if (api_get_setting('allow_social_tool')=='true' && api_get_setting('allow_message_tool') == 'true') {
-	
+
     require_once api_get_path(LIBRARY_PATH).'message.lib.php';
     require_once api_get_path(LIBRARY_PATH).'social.lib.php';
     require_once api_get_path(LIBRARY_PATH).'group_portal_manager.lib.php';
@@ -1682,11 +1678,11 @@ if (api_get_setting('allow_social_tool')=='true' && api_get_setting('allow_messa
     //}
 
     echo '</ul>';
-    echo '</div>';    
+    echo '</div>';
 }
-echo '</div>'; //end 
+echo '</div>'; //end
 
-    echo '</div>';    
+    echo '</div>';
 echo '</div>'; // end of menu
 
 echo '	<div id="menu" class="menu">';
@@ -1701,7 +1697,7 @@ if ($show_menu) {
 	if ($show_create_link) {
 		display_create_course_link();
 	}
-	if ($show_course_link) {		
+	if ($show_course_link) {
 		if (!api_is_drh()) {
 			display_edit_course_list_links();
 			display_history_course_session();
@@ -1719,7 +1715,7 @@ echo '</div>'; //close menusection
 
 
 //deleting the myprofile link
-if (api_get_setting('allow_social_tool') == true) {
+if (api_get_setting('allow_social_tool') == 'true') {
 	unset($menu_navigation['myprofile']);
 }
 
@@ -1756,7 +1752,7 @@ if (api_get_setting('allow_reservation') == 'true' && api_is_allowed_to_create_c
 	echo '</div>';
 }
 
-//Deleting the session_id 
+//Deleting the session_id
 api_session_unregister('session_id');
 
 // search textbox

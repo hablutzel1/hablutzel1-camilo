@@ -35,12 +35,20 @@ FCKLang['DlgAsciiMathInstallMathPlayer'] = FCKLang['DlgAsciiMathInstallMathPlaye
 FCKLang['DlgAsciiMathOldMathPlayer'] = FCKLang['DlgAsciiMathOldMathPlayer'] ? FCKLang['DlgAsciiMathOldMathPlayer'] : 'Your browser is not able to show mathematical formulas. You need to upgrade the MathPlayer plugin for Internet Explorer to version 2. Please, see %s for more information.' ;
 FCKLang['DlgAsciiMathOldMathPlayer'] = FCKLang['DlgAsciiMathOldMathPlayer'].replace( '%s', '<a href="http://www.dessci.com/en/products/mathplayer/" onclick="javascript: window.open(this.href,\'_blank\');return false;">http://www.dessci.com/en/products/mathplayer/</a>' ) ;
 
-var showasciiformulaonhover = false;
-
-// Suppressing the built-in notification message when the browser is incompatible.
-notifyIfNoMathML = false ;
-//Small font is used in the dialog.
-mathfontsize = "1.1em";
+// Settings for ASCIIMathML.js
+// Checking for native MathML support, it is always needed for this dialog.
+var checkForMathML = true;
+// Suppressing the built-in notification messages when the browser is incompatible.
+var notifyIfNoMathML = false ;
+var alertIfNoMathML = false ;
+var notifyIfNoSVG = false ;
+var alertIfNoSVG = false ;
+// Formula translation will be called explicitly in this dialog after it loads.
+var translateOnLoad = false ;
+// Formula tooltips are hard-coded in this dialog, there is no need they to be generated.
+var showasciiformulaonhover = false ;
+// Font size of the formulas in this dialog.
+var mathfontsize = "1.1em" ;
 
 // oSpanAM: The actual selected span element in the editor that contains the formula.
 var oSpanAM = FCKAsciiMath.FindFormulaContainer( FCKAsciiMath.GetSearchElementFromSelection() ) ;
@@ -99,10 +107,18 @@ window.onload = function()
 	// Translate the dialog box texts.
 	oEditor.FCKLanguageManager.TranslatePage( document ) ;
 
+	// Initialization of the script ASCIIMathML.js.
+	init() ;
+
 	// Load the selected element information (if any).
 	LoadSelection() ;
 
 	dialog.SetAutoSize( true ) ;
+
+	// When MathML is available show the button "Show MathML code".
+	if ( !noMathML ) {
+		GetE( 'show_mathml' ).style.display = '' ;
+	}
 
 	// Activate the "OK" button.
 	dialog.SetOkButton( true ) ;
@@ -111,7 +127,7 @@ window.onload = function()
 	inputField.focus() ;
 }
 
-function Set ( string )
+function Set( string )
 {
 	var inputField = GetE( 'inputText' ) ;
 	inputField.value += string ;
@@ -141,7 +157,7 @@ function Preview()
 	{
 		var str = GetE( 'inputText' ).value ;
 		var outnode = GetE( 'outputNode' ) ;
-		var newnode = AMcreateElementXHTML( 'div' ) ;
+		var newnode = createElementXHTML( 'div' ) ;
 		newnode.setAttribute( 'id', 'outputNode' ) ;
 		outnode.parentNode.replaceChild( newnode, outnode ) ;
 		outnode = GetE( 'outputNode' ) ;
@@ -253,79 +269,14 @@ function ShowMathML()
 	}
 }
 
-function CheckBrowserCompatibility( show_message )
-{
-	if ( FCKBrowserInfo.IsGecko )
-	{
-		// The browser is compatible, it is genuine Gecko - Firefox, etc.
-		return true ;
-	}
-	else if ( FCKBrowserInfo.IsIE )
-	{
-		// Internet Explorer.
-		if ( FCKBrowserInfo.IsIE6 )
-		{
-			if ( IsMathPlayerInstalled() )
-			{
-				var start = navigator.appVersion.indexOf( 'MathPlayer' ) ;
-				if ( start != -1 )
-				{
-					// The browser is Internet Explorer 6.0+ with properly set up plugin MathPalyer 2.
-					return true ;
-				}
-				else
-				{
-					// Notify reader they need to upgrade to MathPlayer 2.
-					if ( show_message )
-					{
-						document.write( '<span style="color:red;">' + FCKLang['DlgAsciiMathOldMathPlayer'] + '</span>' ) ;
-					}
-					return false ;
-				}
-			}
-			else
-			{
-				// Direct reader to MathPlayer page.
-				if ( show_message )
-				{
-					document.write( '<span style="color:red;">' + FCKLang['DlgAsciiMathInstallMathPlayer'] + '</span>' ) ;
-				}
-				return false ;
-			}
-		}
-		else
-		{
-			// The browser is a very old version of Internet Explorer, it have to be upgraded.
-			if ( show_message )
-			{
-				document.write( '<span style="color:red;">' + FCKLang['DlgAsciiMathOldIE'] + '</span>' ) ;
-			}
-			return false ;
-		}
-	}
-	else if ( FCKBrowserInfo.IsOpera && parseFloat( navigator.appVersion, 10 ) >= 9.5 )
-	{
-		return true ;
-	}
+// Highlighting formulas.
 
-	// The browser is not compatible.
-	if ( show_message )
-	{
-		document.write( '<span style="color:red;">' + FCKLang['DlgAsciiIncompatibleBrowser'] + '</span>' ) ;
-	}
-	return false ;
+function over(td)
+{
+	td.className = 'LightBackground Hand' ;
 }
 
-// Returns true if MathPlayer is installed.
-function IsMathPlayerInstalled()
+function out(td)
 {
-	try
-	{
-		var oMP = new ActiveXObject( 'MathPlayer.Factory.1' ) ;
-		return true ;
-	}
-	catch(e)
-	{
-		return false ;
-	}
+	td.className = 'Hand' ;
 }

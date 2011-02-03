@@ -1,7 +1,8 @@
-<?php //$id: $
+<?php
+/* For licensing terms, see /license.txt */
 /**
  * Script that displays the header frame for lp_view.php
- * @package dokeos.learnpath
+ * @package chamilo.learnpath
  * @author Yannick Warnier <ywarnier@beeznest.org>
  */
 /**
@@ -11,10 +12,10 @@
 $use_anonymous = true;
 // name of the language file that needs to be included
 $language_file[] = "scormdocument";
-require_once('back_compat.inc.php');
-require_once('learnpath.class.php');
-require_once('scorm.class.php');
-require_once('aicc.class.php');
+require_once 'back_compat.inc.php';
+require_once 'learnpath.class.php';
+require_once 'scorm.class.php';
+require_once 'aicc.class.php';
 if(isset($_SESSION['lpobject'])){
 	$temp = $_SESSION['lpobject'];
 	$_SESSION['oLP'] = unserialize($temp);
@@ -23,7 +24,7 @@ $path_name = $_SESSION['oLP']->get_name();
 $path_id = $_SESSION['oLP']->get_id();
 // use the flag set in lp_view.php to check if this script has been loaded
 // as a frame of lp_view.php. Otherwise, redirect to lp_controller
-if(!isset($_SESSION['loaded_lp_view']) || $_SESSION['loaded_lp_view']==false)
+if (!$_SESSION['loaded_lp_view'])
 {
 	header('location: lp_controller.php?'.api_get_cidreq().'&action=view&item_id='.$path_id);
 }
@@ -68,7 +69,7 @@ if($show_link)
 $interbreadcrumb[] = array("url"=>"./lp_controller.php?action=view&lp_id=".$path_id,'name'=>$path_name);
 $noPHP_SELF = true;
 $lp_theme_css=$_SESSION['oLP']->get_theme();
-include('../inc/reduced_header.inc.php');
+include '../inc/reduced_header.inc.php';
 echo '<div style="font-size:14px;padding-left: 17px;">';
 echo '<table ><tr><td>';
 echo '<a href="./lp_controller.php?action=return_to_course_homepage" target="_self" onclick="window.parent.API.save_asset();">';

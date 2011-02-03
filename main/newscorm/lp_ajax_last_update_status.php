@@ -1,4 +1,5 @@
-<?php //$id$
+<?php
+/* For licensing terms, see /license.txt */
 /**
  * This script contains the server part of the xajax interaction process. The
  * client part is located in lp_api.php or other api's.
@@ -15,14 +16,14 @@
  * whether the raw score is higher than the mastery score. If not, the status
  * will be set to 'failed', if yes, the status will be set to 'passed'
  * 5 - update the status in the table of contents
- * @package dokeos.learnpath
- * @author Yannick Warnier <yannick.warnier@dokeos.com>
+ * @package chamilo.learnpath
+ * @author Yannick Warnier <yannick.warnier@beeznest.com>
  */
 //flag to allow for anonymous user - needs to be set before global.inc.php
 $use_anonymous = true;
 // name of the language file that needs to be included
 $language_file[] = 'learnpath';
-require_once('back_compat.inc.php');
+require_once 'back_compat.inc.php';
 /**
  * Writes an item's new values into the database and returns the operation result
  * @param   integer Learnpath ID
@@ -38,10 +39,10 @@ function last_update_status($lp_id,$user_id,$view_id,$item_id)
     $debug=0;
     $return = '';
     if($debug>0){error_log('In last_update_status('.$lp_id.','.$user_id.','.$view_id.','.$item_id.')',0);}
-    require_once('learnpath.class.php');
-    require_once('scorm.class.php');
-    require_once('learnpathItem.class.php');
-    require_once('scormItem.class.php');
+    require_once 'learnpath.class.php';
+    require_once 'scorm.class.php';
+    require_once 'learnpathItem.class.php';
+    require_once 'scormItem.class.php';
     $mylp = '';
     if(isset($_SESSION['lpobject']))
     {

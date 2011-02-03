@@ -14,15 +14,18 @@ if ( typeof AMprocessNode != 'function' )
 {
 	LoadScript( FCKConfig.ScriptASCIIMathML ) ;
 }
-// Suppressing the built-in notification message when the browser is incompatible.
-notifyIfNoMathML = false ;
-// Suppressing parsing AsciiMath formulas at loading.
-translateASCIIMath = false ;
-// Small font is used in the dialog.
-mathfontsize = "1.1em";
+
+// Settings for ASCIIMathML.js
+// Suppressing the built-in notification messages when the browser is incompatible.
+var notifyIfNoMathML = false ;
+var alertIfNoMathML = false;
+var notifyIfNoSVG = false;
+var alertIfNoSVG = false;
+// Suppressing automatic parsing AsciiMath formulas at loading, the editor is to initate this.
+var translateASCIIMath = false ;
 
 // Registering the related command.
-FCKCommands.RegisterCommand( 'asciimath', new FCKDialogCommand( FCKLang['DlgAsciiMath'], FCKLang['DlgAsciiMath'], FCKConfig.PluginsPath + 'asciimath/fck_asciimath.html', 800, 550 ) ) ;
+FCKCommands.RegisterCommand( 'asciimath', new FCKDialogCommand( FCKLang['DlgAsciiMath'], FCKLang['DlgAsciiMath'], FCKConfig.PluginsPath + 'asciimath/fck_asciimath.html', 800, 610 ) ) ;
 
 // Create the "asciimath" toolbar button.
 var oAsciiMathItem = new FCKToolbarButton( 'asciimath', FCKLang['DlgAsciiMath'] ) ;
@@ -106,7 +109,7 @@ FCKAsciiMath.FindFormulaContainer = function( node )
 
 FCKAsciiMath.IsParsed = function( node )
 {
-	return node.getElementsByTagName( 'math' )[0] ? true : false ;
+	return ( node.getElementsByTagName( 'math' )[0] || node.getElementsByTagName( 'img' )[0] ) ? true : false ;
 }
 
 FCKAsciiMath.GetFormula = function( node )
@@ -126,7 +129,18 @@ FCKAsciiMath.GetFormula = function( node )
 			result = node.innerHTML ;
 		}
 	}
-	return result.replace( /`/g, '' ) ;
+	if ( result ) {
+		var start = result.indexOf( '`' ) ;
+		if ( start != -1 ) {
+			start = start + 1 ;
+			var stop = result.indexOf( '`', start ) ;
+			if ( stop == -1 ) stop = result.length ;
+			result = result.substring( start, stop ) ;
+		}
+	} else {
+		result = '';
+	}
+	return result ;
 }
 
 FCKAsciiMath.Delete = function()

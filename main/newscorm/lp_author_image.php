@@ -1,15 +1,16 @@
-<?php //$id: $
+<?php
+/* For licensing terms, see /license.txt */
 /**
  * Script that displays the author name and image of a LP
- * @package dokeos.learnpath
+ * @package chamilo.learnpath
  * @author Julio Montoya Armas <gugli100@gmail.com>
  */
 
 $use_anonymous = true;
-require_once('back_compat.inc.php');
-require_once('learnpath.class.php');
-require_once('scorm.class.php');
-require_once('aicc.class.php');
+require_once 'back_compat.inc.php';
+require_once 'learnpath.class.php';
+require_once 'scorm.class.php';
+require_once 'aicc.class.php';
 //Getting the LP
 if(isset($_SESSION['lpobject']))
 {
@@ -25,7 +26,7 @@ $lp_theme_css=$_SESSION['oLP']->get_theme();
 */
 $scorm_css_header=true;
 // scorm.css loaded
-include_once('../inc/reduced_header.inc.php');
+include_once '../inc/reduced_header.inc.php';
 
 echo '<html>
 		<body>';

@@ -1,27 +1,25 @@
-<?php //$id:$
+<?php
+/* For licensing terms, see /license.txt */
 /**
  * Defines the AICC class, which is meant to contain the aicc items (nuclear elements)
- * @package dokeos.learnpath
+ * @package chamilo.learnpath
  * @author	Yannick Warnier <ywarnier@beeznest.org>
- * @license	GNU/GPL - See Dokeos license directory for details
+ * @license	GNU/GPL
  */
-/**
- * Defines the "aicc" child of class "learnpath"
- * @package dokeos.learnpath.aicc
- */
-require_once('aiccItem.class.php');
-//require_once('aiccMetadata.class.php');
-//require_once('aiccOrganization.class.php');
-require_once('aiccResource.class.php');
-require_once('aiccBlock.class.php');
+require_once 'aiccItem.class.php';
+//require_once 'aiccMetadata.class.php';
+//require_once 'aiccOrganization.class.php';
+require_once 'aiccResource.class.php';
+require_once 'aiccBlock.class.php';
+
 class aicc extends learnpath {
 
-	var $config = array();
-	var $config_basename = '';  //the configuration files might be multiple and might have
+	public $config = array();
+	public $config_basename = '';  //the configuration files might be multiple and might have
 								//funny names. We need to keep the name of that file while we
 								//install the content.
-	var $config_files = array();
-	var $config_exts = array(
+	public $config_files = array();
+	public $config_exts = array(
 			'crs'=>0, //Course description file (mandatory)
 			'au' =>0, //Assignable Unit file (mandatory)
 			'des'=>0, //Descriptor file (mandatory)
@@ -30,29 +28,29 @@ class aicc extends learnpath {
 			'pre'=>0, //Prerequisites file (optional)
 			'cmp'=>0  //Completion Requirements file (optional)
 	);
-	var $aulist = array();
-	var $au_order_list = array();
-	var $au_order_list_new_id = array();
-	var $deslist = array();
-	var $cstlist = array();
-	var $orelist = array();
+	public $aulist = array();
+	public $au_order_list = array();
+	public $au_order_list_new_id = array();
+	public $deslist = array();
+	public $cstlist = array();
+	public $orelist = array();
 
-	var $subdir = ''; //path between the scorm/ directory and the config files e.g. maritime_nav/maritime_nav. This is the path that will be used in the lp_path when importing a package
-	var $zipname = ''; //keeps the zipfile safe for the object's life so that we can use it if no title avail
-	var $lastzipnameindex = 0; //keeps an index of the number of uses of the zipname so far
-	var $config_encoding = 'ISO-8859-1';
-	var $debug = 0;
+	public $subdir = ''; //path between the scorm/ directory and the config files e.g. maritime_nav/maritime_nav. This is the path that will be used in the lp_path when importing a package
+	public $zipname = ''; //keeps the zipfile safe for the object's life so that we can use it if no title avail
+	public $lastzipnameindex = 0; //keeps an index of the number of uses of the zipname so far
+	public $config_encoding = 'ISO-8859-1';
+	public $debug = 0;
 	/**
 	 * Class constructor. Based on the parent constructor.
 	 * @param	string	Course code
 	 * @param	integer	Learnpath ID in DB
 	 * @param	integer	User ID
 	 */
-    function aicc($course_code=null,$resource_id=null,$user_id=null) {
+    public function __construct($course_code=null,$resource_id=null,$user_id=null) {
     	if($this->debug>0){error_log('In aicc::aicc()',0);}
     	if(!empty($course_code) and !empty($resource_id) and !empty($user_id))
     	{
-    		parent::learnpath($course_code, $resource_id, $user_id);
+    		parent::__construct($course_code, $resource_id, $user_id);
     	}else{
     		//do nothing but still build the aicc object
     	}
@@ -61,7 +59,7 @@ class aicc extends learnpath {
      * Opens a resource
      * @param	integer	Database ID of the resource
      */
-    function open($id)
+    public function open($id)
     {
     	if($this->debug>0){error_log('In aicc::open()',0);}
     	// redefine parent method
@@ -450,7 +448,7 @@ class aicc extends learnpath {
 			}
 		}
 
-		if($package_type== '' OR $mandatory!=true)
+		if ($package_type == '' || !$mandatory)
 		 // && defined('CHECK_FOR_AICC') && CHECK_FOR_AICC)
 		{
 			return api_failure::set_failure('not_aicc_content');
@@ -663,11 +661,11 @@ class aicc extends learnpath {
 	 	//error_log('New LP - in export_zip()',0);
 	 	//zip everything that is in the corresponding scorm dir
 	 	//write the zip file somewhere (might be too big to return)
-		require_once (api_get_path(LIBRARY_PATH)."fileUpload.lib.php");
-		require_once (api_get_path(LIBRARY_PATH)."fileManage.lib.php");
-		require_once (api_get_path(LIBRARY_PATH)."document.lib.php");
-		require_once (api_get_path(LIBRARY_PATH)."pclzip/pclzip.lib.php");
-		require_once ("learnpath_functions.inc.php");
+		require_once api_get_path(LIBRARY_PATH).'fileUpload.lib.php';
+		require_once api_get_path(LIBRARY_PATH).'fileManage.lib.php';
+		require_once api_get_path(LIBRARY_PATH).'document.lib.php';
+		require_once api_get_path(LIBRARY_PATH).'pclzip/pclzip.lib.php';
+		require_once 'learnpath_functions.inc.php';
 		$tbl_lp = Database::get_course_table(TABLE_LP_MAIN);
 		$_course = Database::get_course_info(api_get_course_id());
 

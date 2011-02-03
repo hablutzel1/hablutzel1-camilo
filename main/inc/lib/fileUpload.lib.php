@@ -698,7 +698,7 @@ function unzip_uploaded_document($uploaded_file, $upload_path, $base_work_dir, $
 	$save_dir = getcwd();
 	chdir($base_work_dir.$upload_path);
 	// We extract using a callback function that "cleans" the path
-	$unzipping_state = $zip_file->extract(PCLZIP_CB_PRE_EXTRACT, 'clean_up_files_in_zip');
+	$unzipping_state = $zip_file->extract(PCLZIP_CB_PRE_EXTRACT, 'clean_up_files_in_zip', PCLZIP_OPT_REPLACE_NEWER);
 	// Add all documents in the unzipped folder to the database
 	add_all_documents_in_folder_to_database($_course, $_user['user_id'], $base_work_dir ,$upload_path == '/' ? '' : $upload_path, $to_group_id);
 	//Display::display_normal_message(get_lang('UplZipExtractSuccess'));
@@ -1017,13 +1017,13 @@ function search_img_from_html($html_file) {
  */
 function create_unexisting_directory($_course, $user_id, $to_group_id, $to_user_id, $base_work_dir, $desired_dir_name, $title = null, $visibility = '') {
 	$nb = '';
-	while (file_exists($base_work_dir.$desired_dir_name.$nb)) {		
+	while (file_exists($base_work_dir.$desired_dir_name.$nb)) {
 		$nb += 1;
 	}
 	if($title == null) {
 		$title = basename($desired_dir_name);
 	}
-	
+
 	if (mkdir($base_work_dir.$desired_dir_name.$nb, api_get_permissions_for_new_directories(), true)) {
 		// Check if pathname already exists inside document table
 		$tbl_document = Database::get_course_table(TABLE_DOCUMENT, $_course['dbName']);
@@ -1043,7 +1043,7 @@ function create_unexisting_directory($_course, $user_id, $to_group_id, $to_user_
 				return $desired_dir_name.$nb;
 			}
 		} else {
-			//This means the folder NOT exist in the filesystem (now this was created) but there is a record in the Database			 
+			//This means the folder NOT exist in the filesystem (now this was created) but there is a record in the Database
 			return $desired_dir_name.$nb;
 		}
 	} else {
@@ -1342,7 +1342,7 @@ function api_replace_parameter($upload_path, $buffer, $param_name = 'src') {
 		//$message .= "In tag $count, <b>" . htmlentities($tag_list[$count])
 		//	. "</b>, parameter <b>" . $replace_what[$count] . "</b> replaced by <b>" . $replace_by[$count] . "</b><br>"; //debug
 	}
-	//if (isset($message) && $message == true) api_display_debug_info($message); //debug
+	//if ($message) api_display_debug_info($message); //debug
 	$buffer = str_replace($replace_what, $replace_by, $buffer);
 	return $buffer;
 }
@@ -1429,19 +1429,19 @@ function add_all_documents_in_folder_to_database($_course, $user_id, $base_work_
 		   		}
 		   		// Recursive
 		   		add_all_documents_in_folder_to_database($_course,$user_id,$base_work_dir,$current_path.'/'.$safe_file, $to_group_id);
-		   }
-		   // File
-		   else {
+		   } else {
 		   		//Rename
-		   		$safe_file = disable_dangerous_file(replace_dangerous_char($file, 'strict'));
+		   		$safe_file = disable_dangerous_file(replace_dangerous_char($file, 'strict'));		   		
 				@rename($base_work_dir.$current_path.'/'.$file, $base_work_dir.$current_path.'/'.$safe_file);
-
-				if (!DocumentManager::get_document_id($_course, $current_path.'/'.$safe_file)) {
+				$document_id = DocumentManager::get_document_id($_course, $current_path.'/'.$safe_file);
+				if (!$document_id) {
 					$title = get_document_title($file);
 					$size = filesize($base_work_dir.$current_path.'/'.$safe_file);
 					$document_id = add_document($_course, $current_path.'/'.$safe_file, 'file', $size, $title);
 					api_item_property_update($_course, TOOL_DOCUMENT, $document_id, 'DocumentAdded', $user_id, $to_group_id, null, null, null, $current_session_id);
 					//echo $current_path.'/'.$safe_file.' added!<br />';
+				} else {					
+					api_item_property_update($_course, TOOL_DOCUMENT, $document_id, 'DocumentUpdated', $user_id, $to_group_id, null, null, null, $current_session_id);
 				}
 		   }
 		}

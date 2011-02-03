@@ -1,11 +1,9 @@
-<?php // $Id: user_import.php 21895 2009-07-08 15:51:31Z juliomontoya $
+<?php
 /* For licensing terms, see /dokeos_license.txt */
 /**
-==============================================================================
 * This tool allows platform admins to add users by uploading a CSV or XML file
 * @todo Add some langvars to DLTT
-* @package dokeos.admin
-==============================================================================
+* @package chamilo.admin
 */
 
 /**
@@ -388,8 +386,8 @@ $form = new FormValidator('user_import','post','user_import.php');
 $form->addElement('header', '', $tool_name);
 $form->addElement('hidden', 'formSent');
 $form->addElement('file', 'import_file', get_lang('ImportFileLocation'));
-$form->addElement('radio', 'file_type', get_lang('FileType'), 'XML (<a href="exemple.xml" target="_blank">'.get_lang('ExampleXMLFile').'</a>)', 'xml');
-$form->addElement('radio', 'file_type', null, 'CSV (<a href="exemple.csv" target="_blank">'.get_lang('ExampleCSVFile').'</a>)', 'csv');
+$form->addElement('radio', 'file_type', get_lang('FileType'), 'XML (<a href="example.xml" target="_blank">'.get_lang('ExampleXMLFile').'</a>)', 'xml');
+$form->addElement('radio', 'file_type', null, 'CSV (<a href="example.csv" target="_blank">'.get_lang('ExampleCSVFile').'</a>)', 'csv');
 $form->addElement('radio', 'sendMail', get_lang('SendMailToUsers'), get_lang('Yes'), 1);
 $form->addElement('radio', 'sendMail', null, get_lang('No'), 0);
 $form->addElement('style_submit_button', 'submit', get_lang('Import'), 'class="save"');

@@ -2,7 +2,7 @@
 /* For licensing terms, see /license.txt */
 /**
 *	This page allows the administrator to manage the system announcements.
-*	@package chamilo.admin
+*	@package chamilo.admin.announcement
 */
 /*		INIT SECTION */
 // name of the language file that needs to be included
@@ -33,15 +33,15 @@ $interbreadcrumb[] = array ("url" => 'index.php', "name" => get_lang('PlatformAd
 
 $tool_name = get_lang('SystemAnnouncements');
 
-if(empty($_GET['lang'])) {
-    $_GET['lang']=	$_SESSION['user_language_choice'];
+if (empty($_GET['lang'])) {
+    $_GET['lang'] = $_SESSION['user_language_choice'];
 }
 
 // displaying the header
 Display :: display_header($tool_name);
 
 /*
-		MAIN CODE
+ 	MAIN CODE
 */
 
 if($_GET['action'] != 'add' && $_GET['action'] != 'edit') {
@@ -103,8 +103,8 @@ if (isset ($_POST['action']) && $_POST['action'] == 'delete_selected') {
 if (isset ($_GET['action']) && $_GET['action'] == 'add') {
 	$values['action'] = 'add';
 	// Set default time window: NOW -> NEXT WEEK
-	$values['start'] = date('Y-m-d H:i:s');
-	$values['end'] = date('Y-m-d H:i:s',time() + (7 * 24 * 60 * 60));
+	$values['start'] = date('Y-m-d H:i:s',api_strtotime(api_get_local_time()));
+	$values['end'] = date('Y-m-d H:i:s',api_strtotime(api_get_local_time()) + (7 * 24 * 60 * 60));
 	$action_todo = true;
 }
 // Edit an announcement

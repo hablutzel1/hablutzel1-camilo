@@ -1,38 +1,13 @@
-<?php // $Id: resourcelinker.inc.php,v 1.15 2006/08/15 16:34:03 yannoo Exp $
-/*
-==============================================================================
-	Dokeos - elearning and course management software
-
-	Copyright (c) 2004-2008 Dokeos SPRL
-	Copyright (c) 2003 Ghent University (UGent)
-	Copyright (c) 2001 Universite catholique de Louvain (UCL)
-	Copyright (c) Patrick Cool (patrick.cool@ugent.be)
-	Copyright (c) Denes Nagy
-
-	For a full list of contributors, see "credits.txt".
-	The full license can be read in "license.txt".
-
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
-
-	See the GNU General Public License for more details.
-
-	Contact address: Dokeos, rue du Corbeau, 108, B-1030 Brussels, Belgium
-	Mail: info@dokeos.com
-==============================================================================
-*/
+<?php
+/* For licensing terms, see /license.txt */
 /**
-==============================================================================
-*	@author Patrick Cool - original version
-*	@author Denes Nagy - further improvements for learning path builder
-*	@author Roan Embrechts - refactoring to improve code organisation
-*	@package dokeos.resourcelinker
-*   @todo use the constants for the tools
-* 	@todo use Database API instead of creating table names locally.
-==============================================================================
-*/
+ *	@author Patrick Cool - original version
+ *	@author Denes Nagy - further improvements for learning path builder
+ *	@author Roan Embrechts - refactoring to improve code organisation
+ *	@package chamilo.resourcelinker
+ *	@todo use the constants for the tools
+ *	@todo use Database API instead of creating table names locally.
+ */
 
 /*
 ==============================================================================
@@ -44,12 +19,12 @@
 
 //flag to allow for anonymous user - needs to be set before global.inc.php
 $use_anonymous = true;
-require_once('back_compat.inc.php');
-include(api_get_path(SYS_CODE_PATH).'lang/english/resourcelinker.inc.php');
+require_once 'back_compat.inc.php';
+include api_get_path(SYS_CODE_PATH).'lang/english/resourcelinker.inc.php';
 if(!empty($_course['language'])){
-	include(api_get_path(SYS_CODE_PATH).'lang/'.$_course['language'].'/resourcelinker.inc.php');
+	include api_get_path(SYS_CODE_PATH).'lang/'.$_course['language'].'/resourcelinker.inc.php';
 }
-include('../exercice/hotpotatoes.lib.php');
+include '../exercice/hotpotatoes.lib.php';
 
 /*
 ==============================================================================
@@ -1705,7 +1680,7 @@ function rl_get_html_resource_link($course_code, $type, $id, $style='', $new_win
 
 	// styling the link of the added resource
 	if ($style <> '') $styling = ' class="'.$style.'"';
-	if($new_window == true){ $target = ' target = "_blank" ';}else{$target = ' target = "_self" ';}
+	if ($new_window) { $target = ' target = "_blank" '; } else { $target = ' target = "_self" '; }
 
 	$output = '';
 

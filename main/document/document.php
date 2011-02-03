@@ -44,6 +44,7 @@ require_once $lib_path.'usermanager.lib.php';
 require_once $lib_path.'document.lib.php';
 require_once $lib_path.'fileUpload.lib.php';
 require_once $lib_path.'sortabletable.class.php';
+require_once $lib_path.'formvalidator/FormValidator.class.php';
 
 api_protect_course_script(true);
 $htmlHeadXtra[] = '<script src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/jquery.js" type="text/javascript" language="javascript"></script>'; //jQuery
@@ -220,14 +221,46 @@ if (!(DocumentManager::is_visible($curdirpath, $_course) || $is_allowed_to_edit)
 $course_quota = DocumentManager::get_course_quota();
 $current_session_id = api_get_session_id();
 
-/*	Create the current user shared folder if no exist */
 
-if (!file_exists($base_work_dir.'/shared_folder/sf_user_'.api_get_user_id())) {
-	$usf_dir_title = api_get_person_name($_user['firstName'], $_user['lastName']);
-	$usf_dir_name = '/shared_folder/sf_user_'.api_get_user_id();
-	$to_group_id = 0;
-	create_unexisting_directory($_course, $_user['user_id'], $to_group_id, $to_user_id, $base_work_dir, $usf_dir_name, $usf_dir_title);
+/*	Create shared folders */
+
+if($current_session_id==0){
+	//Create shared folder. Necessary for courses recycled. Allways session_id should be zero. Allway should be created from a base course, never from a session.
+	if (!file_exists($base_work_dir.'/shared_folder')) {
+		$usf_dir_title = get_lang('SharedFolder');
+		$usf_dir_name = '/shared_folder';
+		$to_group_id = 0;
+		$visibility = 0;
+		create_unexisting_directory($_course, $_user['user_id'], $to_group_id, $to_user_id, $base_work_dir, $usf_dir_name, $usf_dir_title, $visibility);	
+	}
+	// Create dynamic user shared folder
+	if (!file_exists($base_work_dir.'/shared_folder/sf_user_'.api_get_user_id())) {
+			$usf_dir_title = api_get_person_name($_user['firstName'], $_user['lastName']);
+			$usf_dir_name = '/shared_folder/sf_user_'.api_get_user_id();
+			$to_group_id = 0;
+			$visibility = 1;
+			create_unexisting_directory($_course, $_user['user_id'], $to_group_id, $to_user_id, $base_work_dir, $usf_dir_name, $usf_dir_title, $visibility);
+	}
 }
+else{	
+		//Create shared folder session
+		if (!file_exists($base_work_dir.'/shared_folder_session_'.$current_session_id)) {
+			$usf_dir_title = get_lang('SharedFolder').' ('.api_get_session_name($current_session_id).')';
+			$usf_dir_name = '/shared_folder_session_'.$current_session_id;			
+			$to_group_id = 0;
+			$visibility = 0;
+			create_unexisting_directory($_course, $_user['user_id'], $to_group_id, $to_user_id, $base_work_dir, $usf_dir_name, $usf_dir_title, $visibility);
+		}
+		//Create dynamic user shared folder into a shared folder session
+		if (!file_exists($base_work_dir.'/shared_folder_session_'.$current_session_id.'/sf_user_'.api_get_user_id())) {
+			$usf_dir_title = api_get_person_name($_user['firstName'], $_user['lastName']).' ('.api_get_session_name($current_session_id).')';
+			$usf_dir_name = '/shared_folder_session_'.$current_session_id.'/sf_user_'.api_get_user_id();			
+			$to_group_id = 0;
+			$visibility = 1;
+			create_unexisting_directory($_course, $_user['user_id'], $to_group_id, $to_user_id, $base_work_dir, $usf_dir_name, $usf_dir_title, $visibility);
+		}
+}
+
 
 /*	MAIN SECTION */
 
@@ -264,9 +297,24 @@ if (isset($_GET['action']) && $_GET['action'] == 'download') {
 	exit;
 }
 
-// Download of an completed folder
+
+// Download a folder
 if (isset($_GET['action']) && $_GET['action'] == 'downloadfolder' && (api_get_setting('students_download_folders') == 'true' || api_is_allowed_to_edit() || api_is_platform_admin())) {
-	require 'downloadfolder.inc.php';
+	
+	//filter when I am into shared folder, I can donwload only my shared folder
+	
+	if(is_any_user_shared_folder($_GET['path'],$current_session_id))
+	{
+		if(is_my_shared_folder($_user['user_id'], $_GET['path'], $current_session_id) || api_is_allowed_to_edit() || api_is_platform_admin())
+		{
+		  require 'downloadfolder.inc.php';
+		}
+	}
+	else
+	{
+		require 'downloadfolder.inc.php';
+	}
+	
 }
 
 // Slideshow inititalisation
@@ -297,12 +345,7 @@ if (!$is_certificate_mode) {
 
 $dir_acum = '';
 for ($i = 0; $i < $array_len; $i++) {
-	if ($dir_array[$i] == 'shared_folder') {
-		$dir_array[$i] = get_lang('SharedFolder');
-	} elseif (strpos($dir_array[$i], 'sf_user_') !== false) {
-		$userinfo = Database::get_user_info_from_id(substr($dir_array[$i], 8));
-		$dir_array[$i] = api_get_person_name($userinfo['firstname'], $userinfo['lastname']);
-	}
+
 
 	$url_dir = 'document.php?&curdirpath='.$dir_acum.$dir_array[$i];
 	
@@ -603,15 +646,29 @@ if (isset($_GET['curdirpath']) && $_GET['curdirpath'] == '/certificates' && isse
 
 
 /*	GET ALL DOCUMENT DATA FOR CURDIRPATH */
+if(isset($_GET['keyword']) && !empty($_GET['keyword'])){
+$docs_and_folders = DocumentManager::get_all_document_data($_course, $curdirpath, $to_group_id, null, $is_allowed_to_edit || $group_member_with_upload_rights, $search=true);
+}else{
+$docs_and_folders = DocumentManager::get_all_document_data($_course, $curdirpath, $to_group_id, null, $is_allowed_to_edit || $group_member_with_upload_rights, $search=false);
+}
 
-$docs_and_folders = DocumentManager::get_all_document_data($_course, $curdirpath, $to_group_id, null, $is_allowed_to_edit || $group_member_with_upload_rights);
 $folders = DocumentManager::get_all_document_folders($_course, $to_group_id, $is_allowed_to_edit || $group_member_with_upload_rights);
 if ($folders === false) {
 	$folders = array();
 }
 
 echo '<div class="actions">';
-
+if ($is_allowed_to_edit || $group_member_with_upload_rights){
+/* BUILD SEARCH FORM */
+	echo '<span style="display:inline-block;">';
+	$form = new FormValidator('search_document', 'get', '', '', null, false);
+	$renderer = & $form->defaultRenderer();
+	$renderer->setElementTemplate('<span>{element}</span> ');
+	$form->add_textfield('keyword', '', false);
+	$form->addElement('style_submit_button', 'submit', get_lang('Search'), 'class="search"');
+	$form->display();
+	echo '</span>';
+}
 /* GO TO PARENT DIRECTORY */
 
 if ($curdirpath!= '/' && $curdirpath != $group_properties['directory'] && !$is_certificate_mode) {
@@ -629,9 +686,11 @@ if ($is_certificate_mode && $curdirpath != '/certificates') {
 }
 
 if (isset($docs_and_folders) && is_array($docs_and_folders)) {
+	
 	//echo('<pre>');
 	//print_r($docs_and_folders);
 	//echo('</pre>');
+	
 	// Do we need the title field for the document name or not?
 	// We get the setting here, so we only have to do it once
 	$use_document_title = api_get_setting('use_document_title');
@@ -650,15 +709,7 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
 		if ($use_document_title == 'true' && $id['title'] != '') {
 			$document_name = $id['title'];
 		} else {
-			$document_name = basename($id['path']);
-			// Juan Carlos Raña: Get firstname and lastname when folder is in shared_folder.
-			// TODO: Check if is also necessary (above else)
-			if (strstr($document_name, 'sf_user_')) {
-				$userinfo = Database::get_user_info_from_id(substr($document_name, 8));
-				$document_name = api_get_person_name($userinfo['firstname'], $userinfo['lastname']);
-			} elseif (strpos($document_name, 'shared_folder') !== false) {
-				$document_name = get_lang('SharedFolder');
-			}
+			$document_name = basename($id['path']);		
 		}
 		// Data for checkbox
 		if (($is_allowed_to_edit || $group_member_with_upload_rights) && count($docs_and_folders) > 1) {
@@ -711,7 +762,10 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
 		$row[] = $last_edit_date;
 		$row[] = $size;
 		$total_size = $total_size + $size;
-		$sortable_data[] = $row;
+		
+		if ((isset ($_GET['keyword']) && search_keyword($document_name, $_GET['keyword'])) || !isset($_GET['keyword']) || empty($_GET['keyword'])) {
+			$sortable_data[] = $row;
+		}
 	}
 } else {
 	$sortable_data = '';
@@ -720,13 +774,13 @@ if (isset($docs_and_folders) && is_array($docs_and_folders)) {
 
 $column_show = array();
 
-if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_folder($_user['user_id'], $curdirpath)) {
+if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_folder($_user['user_id'], $curdirpath, $current_session_id)) {
 
-	// @TODO:check enable more options for shared folders
+	// TODO:check enable more options for shared folders
 	/* CREATE NEW DOCUMENT OR NEW DIRECTORY / GO TO UPLOAD / DOWNLOAD ZIPPED FOLDER */
 
 	// Create new document
-	if (!$is_certificate_mode && !is_my_shared_folder($_user['user_id'], $curdirpath)) {
+	if (!$is_certificate_mode && !is_my_shared_folder($_user['user_id'], $curdirpath, $current_session_id)) {
 ?>
 	<a href="create_document.php?<?php echo api_get_cidreq(); ?>&dir=<?php echo $curdirpathurl.$req_gid; ?>">
 		<?php Display::display_icon('filenew.gif', get_lang('CreateDoc')); echo get_lang('CreateDoc'); ?></a>&nbsp;
@@ -749,7 +803,7 @@ if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_fold
 <?php
 
 	// Create directory
-	if (!$is_certificate_mode && !is_my_shared_folder($_user['user_id'], $curdirpath)) {
+	if (!$is_certificate_mode && !is_my_shared_folder($_user['user_id'], $curdirpath, $current_session_id)) {
 ?>
 	<a href="<?php echo api_get_self(); ?>?<?php echo api_get_cidreq(); ?>&curdirpath=<?php echo $curdirpathurl.$req_gid; ?>&amp;createdir=1">
 		<?php Display::display_icon('folder_new.gif', get_lang('CreateDir')); echo get_lang('CreateDir'); ?></a>&nbsp;
@@ -761,19 +815,22 @@ if ($is_allowed_to_edit || $group_member_with_upload_rights || is_my_shared_fold
 
 if (!is_null($docs_and_folders)) {
 
-	// Download zipped folder
+	// Show download zipped folder icon
 	global $total_size;
 	if (!$is_certificate_mode && $total_size != 0 && (api_get_setting('students_download_folders') == 'true' || api_is_allowed_to_edit() || api_is_platform_admin())) {
-?>
-	<a href="<?php echo api_get_self(); ?>?<?php echo api_get_cidreq(); ?>&action=downloadfolder&path=<?php echo $curdirpathurl; ?>">
-		<?php Display::display_icon('zip_save.gif', get_lang('Save').' (ZIP)'); echo get_lang('Save').' (ZIP)'; ?></a>&nbsp;
-<?php
+		
+		//don't show icon into shared folder, and don´t show into main path (root)
+		if (!is_shared_folder($curdirpath, $current_session_id) && $curdirpath!='/' || api_is_allowed_to_edit() || api_is_platform_admin())
+		{
+	    	echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=downloadfolder&path='.$curdirpathurl.'">'.Display::display_icon('zip_save.gif', get_lang('Save').' (ZIP)'). get_lang('Save').' (ZIP)</a>&nbsp';
+		}
+
 	}
 }
 
 // Slideshow by Patrick Cool, May 2004
 require 'document_slideshow.inc.php';
-if ($image_present) {
+if ($image_present && !isset($_GET['keyword'])  ) {
 	echo '<a href="slideshow.php?'.api_get_cidreq().'&curdirpath='.$curdirpathurl.'"><img src="../img/images_gallery.gif" border="0" title="'.get_lang('ViewSlideshow').'"/>'.get_lang('ViewSlideshow').'</a>';
 }
 echo '</div>';
@@ -810,27 +867,33 @@ $default_column = $is_allowed_to_edit ? 2 : 1;
 $tablename = $is_allowed_to_edit ? 'teacher_table' : 'student_table';
 $table = new SortableTableFromArrayConfig($sortable_data, $default_column, 20, $tablename, $column_show, $column_order, 'ASC');
 
-$query_vars['curdirpath'] = $curdirpath;
+if(isset($_GET['keyword'])){
+	$query_vars['keyword'] = Security::remove_XSS($_GET['keyword']);
+}else{
+	$query_vars['curdirpath'] = $curdirpath;
+}
 
 if (isset($_SESSION['_gid'])) {
 	$query_vars['gidReq'] = $_SESSION['_gid'];
 }
 $query_vars['cidReq'] = api_get_course_id();
 $table->set_additional_parameters($query_vars);
+
 $column = 0;
 
 if (($is_allowed_to_edit || $group_member_with_upload_rights) && count($docs_and_folders) > 1) {
-	$table->set_header($column++, '', false);
+	$table->set_header($column++, '', false,array ('style' => 'width:30px;'));
 }
-$table->set_header($column++, get_lang('Type'));
+$table->set_header($column++, get_lang('Type'),true,array ('style' => 'width:30px;'));
+
 $table->set_header($column++, get_lang('Name'));
 
 //$column_header[] = array(get_lang('Comment'), true); // Display comment under the document name
-$table->set_header($column++, get_lang('Size'));
-$table->set_header($column++, get_lang('Date'));
+$table->set_header($column++, get_lang('Size'),true,array ('style' => 'width:50px;'));
+$table->set_header($column++, get_lang('Date'),true,array ('style' => 'width:150px;'));
 // Admins get an edit column
 if ($is_allowed_to_edit || $group_member_with_upload_rights) {
-	$table->set_header($column++, get_lang('Modify'), false);
+	$table->set_header($column++, get_lang('Modify'), false,array ('style' => 'width:150px;'));
 }
 
 // Actions on multiple selected documents
@@ -849,4 +912,5 @@ if (!empty($table_footer)) {
 }
 
 // Footer
-Display::display_footer();
+Display::display_footer()
+?>

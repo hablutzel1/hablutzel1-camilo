@@ -1,20 +1,21 @@
-<?php //$id:$
+<?php
+/* For licensing terms, see /license.txt */
 /**
  * Defines the OpenofficeDocument class, which is meant as a conversion
  * tool from Office text documents (.doc, .sxw, .odt, .docx) to
  * learning paths
- * @package dokeos.learnpath
+ * @package chamilo.learnpath
  * @author  Eric Marguin <eric.marguin@dokeos.com>
- * @license GNU/GPL - See Doke
+ * @license GNU/GPL
 /**
  * Defines the "OpenofficeText" child of class "learnpath"
- * @package dokeos.learnpath.OpenofficeDocument
+ * @package chamilo.learnpath.OpenofficeDocument
  */
-require_once('openoffice_document.class.php');
+require_once 'openoffice_document.class.php';
 if (api_get_setting('search_enabled')=='true') {
-	require_once(api_get_path(LIBRARY_PATH) . 'specific_fields_manager.lib.php');
-	require_once(api_get_path(LIBRARY_PATH).'search/DokeosIndexer.class.php');
-	require_once(api_get_path(LIBRARY_PATH).'search/IndexableChunk.class.php');
+	require_once api_get_path(LIBRARY_PATH).'specific_fields_manager.lib.php';
+	require_once api_get_path(LIBRARY_PATH).'search/DokeosIndexer.class.php';
+	require_once api_get_path(LIBRARY_PATH).'search/IndexableChunk.class.php';
 }
 
 class OpenofficeText extends OpenofficeDocument {

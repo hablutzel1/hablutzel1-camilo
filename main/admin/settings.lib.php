@@ -5,7 +5,7 @@
 *
 * @author Julio Montoya <gugli100@gmail.com>
 * @author Guillaume Viguier <guillaume@viguierjust.com>
-* 
+*
 * @since Chamilo 1.8.7
 * @package chamilo.admin
 */
@@ -221,7 +221,7 @@ function handle_stylesheets()
 	$form->addElement('text','name_stylesheet',get_lang('NameStylesheet'),array('size' => '40', 'maxlength' => '40'));
 	$form->addRule('name_stylesheet', get_lang('ThisFieldIsRequired'), 'required');
 	$form->addElement('file', 'new_stylesheet', get_lang('UploadNewStylesheet'));
-	$allowed_file_types = array ('css');
+	$allowed_file_types = array ('css', 'zip', 'jpeg', 'jpg', 'png', 'gif');
 	$form->addRule('new_stylesheet', get_lang('InvalidExtension').' ('.implode(',', $allowed_file_types).')', 'filetype', $allowed_file_types);
 	$form->addRule('new_stylesheet', get_lang('ThisFieldIsRequired'), 'required');
 	$form->addElement('style_submit_button', 'stylesheet_upload', get_lang('Ok'), array('class'=>'save'));
@@ -282,10 +282,10 @@ function handle_stylesheets()
 <?php
 	echo '<form name="stylesheets" method="post" action="'.api_get_self().'?category='.Security::remove_XSS($_GET['category']).'">';
 	echo '<br /><select name="style" onChange="load_preview(this)" >';
-	
+
 	$list_of_styles = array();
 	$list_of_names  = array();
-	
+
 	if ($handle = @opendir(api_get_path(SYS_PATH).'main/css/')) {
 		$counter=1;
 		while (false !== ($style_dir = readdir($handle))) {
@@ -304,7 +304,7 @@ function handle_stylesheets()
 
 					if ($is_style_changeable) {
 						$list_of_styles[$style_dir] = "<option  value=\"".$style_dir."\" ".$selected." /> $show_name </option>";
-						$list_of_names[$style_dir]  = $show_name;						
+						$list_of_names[$style_dir]  = $show_name;
 						//echo "<input type=\"radio\" name=\"style\" value=\"".$style_dir."\" ".$selected." onClick=\"parent.preview.location='style_preview.php?style=".$style_dir."';\"/>";
 						//echo '<a href="style_preview.php?style='.$style_dir.'" target="preview">'.$show_name.'</a>';
 					} else {
@@ -318,12 +318,13 @@ function handle_stylesheets()
 		@closedir($handle);
 	}
 	//Sort styles in alphabetical order
-	asort($list_of_names);	
+	asort($list_of_names);
 	foreach($list_of_names as $style_dir=>$item) {
 		echo $list_of_styles[$style_dir];
 	}
-	
-	echo '</select><br />';
+
+	//echo '</select><br />';
+	echo '</select>&nbsp;&nbsp;';
 	//var_dump($list_of_names);
 	if ($is_style_changeable){
 		echo '<button class="save" type="submit" name="submit_stylesheets"> '.get_lang('SaveSettings').' </button></form>';
@@ -351,8 +352,80 @@ function upload_stylesheet($values,$picture)
 		mkdir(api_get_path(SYS_CODE_PATH).'css/'.$style_name.'/', api_get_permissions_for_new_directories());
 	}
 
-	// move the file in the folder
-	move_uploaded_file($picture['tmp_name'], api_get_path(SYS_CODE_PATH).'css/'.$style_name.'/'.$picture['name']);
+	$info = pathinfo($picture['name']);
+	if($info['extension'] == 'zip') {
+		// Try to open the file and extract it in the theme
+		$zip = new ZipArchive();
+		if($zip->open($picture['tmp_name'])) {
+			// Make sure all files inside the zip are images or css
+			$numFiles = $zip->numFiles;
+			$valid = true;
+			$single_directory = true;
+			$invalid_files = array();
+
+			for($i =0; $i < $numFiles; $i++) {
+				$file = $zip->statIndex($i);
+				if(substr($file['name'], -1) != "/") {
+					$path_parts = pathinfo($file['name']);
+					if(!in_array($path_parts['extension'], array('jpg', 'jpeg', 'png', 'gif', 'css'))) {
+						$valid = false;
+						$invalid_files[] = $file['name'];
+					}
+				}
+
+				if(strpos($file['name'], "/") === false) {
+					$single_directory = false;
+				}
+			}
+			if (!$valid) {
+				$error_string = '<ul>';
+				foreach($invalid_files as $invalid_file) {
+					$error_string .= '<li>'.$invalid_file.'</li>';
+				}
+				$error_string .= '</ul>';
+				Display::display_error_message(get_lang('ErrorStylesheetFilesExtensionsInsideZip').$error_string, false);
+			} else {
+				// If the zip does not contain a single directory, extract it
+				if (!$single_directory) {
+					// Extract zip file
+					$zip->extractTo(api_get_path(SYS_CODE_PATH).'css/'.$style_name.'/');
+				} else {
+					$extraction_path = api_get_path(SYS_CODE_PATH).'css/'.$style_name.'/';
+					for($i = 0; $i < $numFiles; $i++) {
+						$entry = $zip->getNameIndex($i);
+						if ( substr($entry, -1) == '/') continue;
+
+						$pos_slash = strpos($entry, '/');
+						$entry_without_first_dir = substr($entry, $pos_slash + 1);
+						// If there is still a slash, we need to make sure the directories are created
+						if(strpos($entry_without_first_dir, '/') !== false) {
+							if(!is_dir($extraction_path.dirname($entry_without_first_dir))) {
+								// Create it
+								@mkdir($extraction_path.dirname($entry_without_first_dir), $mode = 0777, true);
+							}
+						}
+
+						$fp = $zip->getStream($entry);
+						$ofp = fopen( $extraction_path. dirname($entry_without_first_dir).'/'.basename($entry), 'w');
+
+						while ( ! feof($fp)) {
+							fwrite($ofp, fread($fp, 8192));
+						}
+
+						fclose($fp);
+						fclose($ofp);
+					}
+				}
+			}
+			$zip->close();
+
+		} else {
+			Display::display_error_message(get_lang('ErrorReadingZip').$info['extension'], false);
+		}
+	} else {
+		// Simply move the file
+		move_uploaded_file($picture['tmp_name'], api_get_path(SYS_CODE_PATH).'css/'.$style_name.'/'.$picture['name']);
+	}
 }
 
 /**
@@ -877,9 +950,9 @@ function select_timezone_value() {
 
 /**
  * Returns an array containing the list of options used to populate the gradebook_number_decimals variable
- * 
+ *
  * @return array List of gradebook_number_decimals options
- * 
+ *
  * @author Guillaume Viguier <guillaume.viguier@beeznest.com>
  */
 function select_gradebook_number_decimals() {
@@ -889,9 +962,9 @@ function select_gradebook_number_decimals() {
 /**
  * Updates the gradebook score custom values using the scoredisplay class of the
  * gradebook module
- * 
+ *
  * @param array List of gradebook score custom values
- * 
+ *
  * @author Guillaume Viguier <guillaume.viguier@beeznest.com>
  */
 function update_gradebook_score_display_custom_values($values) {

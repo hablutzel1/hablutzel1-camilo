@@ -9,7 +9,9 @@
  */
 
 
-/*	CONSTANTS */
+/**
+ * Constants declaration
+ */
 
 //USER STATUS CONSTANTS
 /** global status of a user: student */
@@ -22,15 +24,16 @@ define('SESSIONADMIN', 3);
 define('DRH', 4);
 /** global status of a user: human ressource manager */
 define('ANONYMOUS', 6);
-/** global status of a user: low security, it's necessary for inserting data from the teacher */
+/** global status of a user: low security, necessary for inserting data from
+ * the teacher through HTMLPurifier */
 define('COURSEMANAGERLOWSECURITY', 10);
 
 // table of status
-$_status_list[STUDENT] = 'user';
-$_status_list[COURSEMANAGER] = 'teacher';
-$_status_list[SESSIONADMIN] = 'session_admin';
-$_status_list[DRH] = 'drh';
-$_status_list[ANONYMOUS] = 'anonymous';
+$_status_list[COURSEMANAGER] = 'teacher'; //1
+$_status_list[SESSIONADMIN] = 'session_admin'; //3
+$_status_list[DRH] = 'drh'; //4
+$_status_list[STUDENT] = 'user'; //5
+$_status_list[ANONYMOUS] = 'anonymous'; //6
 
 
 //COURSE VISIBILITY CONSTANTS
@@ -209,7 +212,9 @@ define('COURSE_RELATION_TYPE_RRHH',	1);
 define('SESSION_RELATION_TYPE_RRHH', 1);
 
 
-/*	MAIN API EXTENSIONS */
+/**
+ * Inclusion of internationalization libraries
+ */
 
 require_once dirname(__FILE__).'/internationalization.lib.php';
 
@@ -952,7 +957,7 @@ function api_get_cidreq() {
  *	['extLink']['name']
  *	['categoryCode']
  *	['categoryName']
- * 
+ *
  *	Now if the course_code is given, the returned array gives info about that
  *   particular course, not specially the current one.
  * @todo	same behaviour as api_get_user_info so that api_get_course_id becomes absolete too
@@ -989,9 +994,9 @@ function api_get_course_info($course_code = null) {
 			$_course['visibility'   ]        = $cData['visibility'      ];
 			$_course['subscribe_allowed']    = $cData['subscribe'       ];
 			$_course['unubscribe_allowed']   = $cData['unsubscribe'     ];
-			
+
 			//The real_id is an integer. Is mandatory for future implementations
-			$_course['real_id'     ]         = $cData['id']; 
+			$_course['real_id'     ]         = $cData['id'];
 		}
 		return $_course;
 	}
@@ -1018,7 +1023,7 @@ function api_get_course_info($course_code = null) {
  *	Now if the course_code is given, the returned array gives info about that
  *   particular course, not specially the current one.
  */
- 
+
 function api_get_course_info_by_id($id = null) {
 	if (!empty($id)) {
 		$id = intval($id);
@@ -1034,10 +1039,10 @@ function api_get_course_info_by_id($id = null) {
 		if (Database::num_rows($result) > 0) {
 			global $_configuration;
 			$cData = Database::fetch_array($result);
-			
-			$_course['id'           ]         = $cData['code'           ]; 
+
+			$_course['id'           ]         = $cData['code'           ];
 			//Added
-			$_course['code'         ]         = $cData['code'           ]; 
+			$_course['code'         ]         = $cData['code'           ];
 			$_course['name'         ]         = $cData['title'          ];
 			$_course['official_code']         = $cData['visual_code'    ]; // use in echo
 			$_course['sysCode'      ]         = $cData['code'           ]; // use as key in db
@@ -1053,12 +1058,12 @@ function api_get_course_info_by_id($id = null) {
 
 			$_course['visibility'   ]        = $cData['visibility'      ];
 			$_course['subscribe_allowed']    = $cData['subscribe'       ];
-			$_course['unubscribe_allowed']   = $cData['unsubscribe'     ];	
-			
-			$_course['real_id'     ]         = $cData['id']; 
+			$_course['unubscribe_allowed']   = $cData['unsubscribe'     ];
+
+			$_course['real_id'     ]         = $cData['id'];
 			$_course['db_name'       ]       = $cData['db_name'        ];
-			$_course['title'         ]       = $cData['title'          ]; 	
-			
+			$_course['title'         ]       = $cData['title'          ];
+
 		}
 		return $_course;
 	}
@@ -1448,7 +1453,7 @@ function api_get_session_id() {
  * @return  int     O if no active session, the session ID otherwise
  */
 function api_get_group_id() {
-	return empty($_SESSION['_gid']) ? 0 : intval($_SESSION['_gid']);	
+	return empty($_SESSION['_gid']) ? 0 : intval($_SESSION['_gid']);
 }
 
 
@@ -1539,7 +1544,7 @@ function api_get_session_visibility($session_id) {
 function api_get_session_visibility_by_user($session_id, $course_code, $user_id) {
 	$visibility = 0; // Means that the session is still available.
 	if (!empty($session_id) && !empty($user_id)){
-		$sesion_id 		= intval(Database::escape_string($session_id));		
+		$sesion_id 		= intval(Database::escape_string($session_id));
 		$user_id 		= intval(Database::escape_string($user_id));
 		$course_code	= Database::escape_string($course_code);
 		$tbl_session = Database::get_main_table(TABLE_MAIN_SESSION_REL_COURSE_REL_USER);
@@ -1568,7 +1573,7 @@ function api_get_session_image($session_id, $status_id) {
 	$session_img = '';
 	if ((int)$status_id != 5) { //check whether is not a student
 		if ($session_id > 0) {
-			$session_img = "&nbsp;".Display::return_icon('star.png', get_lang('ResourceSession'), array('align' => 'absmiddle'));
+			$session_img = "&nbsp;".Display::return_icon('star.png', get_lang('SessionSpecificResource'), array('align' => 'absmiddle'));
 		}
 	}
 	return $session_img;
@@ -1585,7 +1590,7 @@ function api_get_session_condition($session_id, $and = true, $with_base_content 
 	$session_id = intval($session_id);
 	//condition to show resources by session
 	$condition_session = '';
-	$condition_add = $and == false ? " WHERE " : " AND ";
+	$condition_add = $and ? " AND " : " WHERE ";
 
 	if ($with_base_content) {
 		$condition_session = $condition_add." (session_id = $session_id OR session_id = 0) ";
@@ -1974,12 +1979,12 @@ function api_is_allowed_to_edit($tutor = false, $coach = false, $session_coach =
 	$is_allowed_coach_to_edit = api_is_coach();
 	$session_visibility = api_get_session_visibility($my_session_id);
 	$is_courseAdmin = api_is_course_admin() || api_is_platform_admin();
-	if (!$is_courseAdmin && $tutor == true) {	// If we also want to check if the user is a tutor...
+	if (!$is_courseAdmin && $tutor) {	// If we also want to check if the user is a tutor...
 		$is_courseAdmin = $is_courseAdmin || api_is_course_tutor();
 	}
-	if (!$is_courseAdmin && $coach == true) {	// If we also want to check if the user is a coach...';
+	if (!$is_courseAdmin && $coach) {	// If we also want to check if the user is a coach...';
 		// Check if session visibility is read only for coachs
-		if ($session_visibility==SESSION_VISIBLE_READ_ONLY) {
+		if ($session_visibility == SESSION_VISIBLE_READ_ONLY) {
 			$is_allowed_coach_to_edit = false;
 		}
 
@@ -1990,7 +1995,7 @@ function api_is_allowed_to_edit($tutor = false, $coach = false, $session_coach =
 		}
 
 	}
-	if (!$is_courseAdmin && $session_coach == true) {
+	if (!$is_courseAdmin && $session_coach) {
 		$is_courseAdmin = $is_courseAdmin || api_is_coach();
 	}
 
@@ -2290,17 +2295,24 @@ function api_get_datetime($time = null) {
 
 /**
  * Gets item visibility from the item_property table
+ *
+ * Getting the visibility is done by getting the last updated visibility entry,
+ * using the largest session ID found if session 0 and another was found (meaning
+ * the only one that is actually from the session, in case there are results from
+ * session 0 *AND* session n).
  * @param	array	Course properties array (result of api_get_course_info())
  * @param	string	Tool (learnpath, document, etc)
  * @param	int		The item ID in the given tool
+ * @param	int		The session ID (optional)
  * @return	int		-1 on error, 0 if invisible, 1 if visible
  */
-function api_get_item_visibility($_course, $tool, $id) {
+function api_get_item_visibility($_course, $tool, $id, $session=0) {
 	if (!is_array($_course) || count($_course) == 0 || empty($tool) || empty($id)) { return -1; }
 	$tool = Database::escape_string($tool);
 	$id = Database::escape_string($id);
+	$session = (int) $session;
 	$TABLE_ITEMPROPERTY = Database::get_course_table(TABLE_ITEM_PROPERTY, $_course['dbName']);
-	$sql = "SELECT visibility FROM $TABLE_ITEMPROPERTY WHERE tool = '$tool' AND ref = $id";
+	$sql = "SELECT visibility FROM $TABLE_ITEMPROPERTY WHERE tool = '$tool' AND ref = $id AND (id_session = $session OR id_session = 0) ORDER BY id_session DESC, lastedit_date DESC";
 	$res = Database::query($sql);
 	if ($res === false || Database::num_rows($res) == 0) { return -1; }
 	$row = Database::fetch_array($res);
@@ -2342,7 +2354,7 @@ function api_item_property_update($_course, $tool, $item_id, $lastedit_type, $us
 	$to_filter 		= '';
 	$time 			= time();
 	$time 			= date('Y-m-d H:i:s', $time);
-	
+
 	if (!empty($session_id)) {
 		$session_id = intval($session_id);
 	} else {
@@ -2390,10 +2402,10 @@ function api_item_property_update($_course, $tool, $item_id, $lastedit_type, $us
 			$to_filter = " AND to_group_id='$to_group_id' $condition_session"; // Set filter to intended group
 		}
 	}
-	
+
 	// Update if possible
 	$set_type = '';
-	
+
 	switch ($lastedit_type) {
 		case 'delete' : // delete = make item only visible for the platform admin
 			$visibility = '2';
@@ -2469,7 +2481,7 @@ function api_item_property_update($_course, $tool, $item_id, $lastedit_type, $us
 			$sql = "UPDATE $TABLE_ITEMPROPERTY
 					SET lastedit_date='$time', lastedit_user_id='$user_id' $set_type
 					WHERE $filter";
-	}	
+	}
 	$res = Database::query($sql);
 	// Insert if no entries are found (can only happen in case of $lastedit_type switch is 'default')
 	if (Database::affected_rows() == 0) {
@@ -2732,7 +2744,7 @@ function api_return_html_area($name, $content = '', $height = '', $width = '100%
  */
 function api_max_sort_value($user_course_category, $user_id) {
 	$tbl_course_user = Database::get_main_table(TABLE_MAIN_COURSE_USER);
-	
+
 	$sql_max = "SELECT max(sort) as max_sort FROM $tbl_course_user WHERE user_id='".intval($user_id)."' AND relation_type<>".COURSE_RELATION_TYPE_RRHH." AND user_course_cat='".Database::escape_string($user_course_category)."'";
 	$result_max = Database::query($sql_max);
 	if (Database::num_rows($result_max) == 1) {
@@ -3014,7 +3026,7 @@ function copy_folder_course_session($pathname, $base_path_document,$session_id,$
 
 		if (!file_exists($new_pathname)) {
 			$path = Database::escape_string($path);
-			
+
 			$sql = "SELECT * FROM $table WHERE path = '$path' AND filetype = 'folder' AND session_id = '$session_id'";
 			$rs1  = Database::query($sql);
 			$num_rows = Database::num_rows($rs1);
@@ -3214,9 +3226,12 @@ function api_status_exists($status_asked) {
 }
 
 /**
- * Checks whether status given in parameter exists in the platform
- * @param mixed the status (can be either int either string)
- * @return true if the status exists, else returns false
+ * Checks whether status given in parameter exists in the platform. The function
+ * returns the status ID or false if it does not exist, but given the fact there
+ * is no "0" status, the return value can be checked against
+ * if(api_status_key()) to know if it exists.
+ * @param   mixed   The status (can be either int or string)
+ * @return  mixed   Status ID if exists, false otherwise
  */
 function api_status_key($status) {
 	global $_status_list;
@@ -4491,8 +4506,8 @@ function api_send_mail($to, $subject, $message, $additional_headers = null, $add
 /**
  * Function used to protect a "global" admin script.
  * The function blocks access when the user has no global platform admin rights.
- * Global admins are the admins that are registered in the main.admin table AND the users who have access to the "principal" portal. 
- * That means that there is a record in the main.access_url_rel_user table with his user id and the access_url_id=1 
+ * Global admins are the admins that are registered in the main.admin table AND the users who have access to the "principal" portal.
+ * That means that there is a record in the main.access_url_rel_user table with his user id and the access_url_id=1
  *
  * @author Julio Montoya
  */

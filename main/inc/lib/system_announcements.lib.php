@@ -115,7 +115,7 @@ class SystemAnnouncementManager
 			echo '<table align="center">';
 				echo '<tr>';
 					echo '<td>';
-						SystemAnnouncementManager :: display_fleche($user_id);
+						SystemAnnouncementManager :: display_arrow($user_id);
 					echo '</td>';
 				echo '</tr>';
 			echo '</table>';
@@ -138,7 +138,7 @@ class SystemAnnouncementManager
 			echo '<table align="center">';
 				echo '<tr>';
 					echo '<td>';
-						SystemAnnouncementManager :: display_fleche($user_id);
+						SystemAnnouncementManager :: display_arrow($user_id);
 					echo '</td>';
 				echo '</tr>';
 			echo '</table>';
@@ -146,7 +146,7 @@ class SystemAnnouncementManager
 		}
 	}
 
-	public static function display_fleche($user_id)
+	public static function display_arrow($user_id)
 	{
 		$start = (int)$_GET['start'];
 		$nb_announcement = SystemAnnouncementManager :: count_nb_announcement($start,$user_id);
@@ -220,10 +220,16 @@ class SystemAnnouncementManager
 	}
 	/**
 	 * Adds an announcement to the database
-	 * @param string $title Title of the announcement
-	 * @param string $content Content of the announcement
-	 * @param string $date_start Start date (YYYY-MM-DD HH:II: SS)
-	 * @param string $date_end End date (YYYY-MM-DD HH:II: SS)
+	 * @param string Title of the announcement
+	 * @param string Content of the announcement
+	 * @param string Start date (YYYY-MM-DD HH:II: SS)
+	 * @param string End date (YYYY-MM-DD HH:II: SS)
+	 * @param int    Whether the announcement should be visible to teachers (1) or not (0)
+	 * @param int    Whether the announcement should be visible to students (1) or not (0)
+	 * @param int    Whether the announcement should be visible to anonymous users (1) or not (0)
+	 * @param string The language for which the announvement should be shown. Leave null for all langages
+	 * @param int    Whether to send an e-mail to all users (1) or not (0)
+	 * @return bool  True on success, false on failure
 	 */
 	public static function add_announcement($title, $content, $date_start, $date_end, $visible_teacher = 0, $visible_student = 0, $visible_guest = 0, $lang = null, $send_mail=0)
 	{
@@ -260,13 +266,18 @@ class SystemAnnouncementManager
 		$content = str_replace('src=\"/home/', 'src=\"'.api_get_path(WEB_PATH).'home/', $content);
 		$content = str_replace('file=/home/', 'file='.api_get_path(WEB_PATH).'home/', $content);
 
-		$lang = is_null($lang) ? 'NULL' : "'".Database::escape_string($lang)."'";
+		$langsql = is_null($lang) ? 'NULL' : "'".Database::escape_string($lang)."'";
 		$sql = "INSERT INTO ".$db_table." (title,content,date_start,date_end,visible_teacher,visible_student,visible_guest, lang)
-				VALUES ('".$title."','".$content."','".$start."','".$end."','".$visible_teacher."','".$visible_student."','".$visible_guest."',".$lang.")";
+				VALUES ('".$title."','".$content."','".$start."','".$end."','".$visible_teacher."','".$visible_student."','".$visible_guest."',".$langsql.")";
 		if ($send_mail==1) {
-			SystemAnnouncementManager::send_system_announcement_by_email($title, $content,$visible_teacher, $visible_student);
+			SystemAnnouncementManager::send_system_announcement_by_email($title, $content,$visible_teacher, $visible_student, $lang);
 		}
-		return Database::query($sql);
+		$res = Database::query($sql);
+		if ($res === false) {
+			Debug::log_s(mysql_error());
+			return false;
+		}
+		return true;
 	}
 	/**
 	 * Updates an announcement to the database
@@ -275,6 +286,7 @@ class SystemAnnouncementManager
 	 * @param string  $content : content of the announcement
 	 * @param array $date_start: start date of announcement (0 => day ; 1 => month ; 2 => year ; 3 => hour ; 4 => minute)
 	 * @param array $date_end : end date of announcement (0 => day ; 1 => month ; 2 => year ; 3 => hour ; 4 => minute)
+	 * @return	bool	True on success, false on failure
 	 */
 	public static function update_announcement($id, $title, $content, $date_start, $date_end, $visible_teacher = 0, $visible_student = 0, $visible_guest = 0,$lang=null, $send_mail=0)
 	{
@@ -287,7 +299,7 @@ class SystemAnnouncementManager
 		$a_arrayED = explode('-',$a_dateE[0]);
 		$a_arrayEH = explode(':',$a_dateE[1]);
 		$date_end = array_merge($a_arrayED,$a_arrayEH);
-		$lang = is_null($lang) ? 'NULL' : "'".Database::escape_string($lang)."'";
+		$langsql = is_null($lang) ? 'NULL' : "'".Database::escape_string($lang)."'";
 		$db_table = Database :: get_main_table(TABLE_MAIN_SYSTEM_ANNOUNCEMENTS);
 		if (!checkdate($date_start[1], $date_start[2], $date_start[0])) {
 			Display :: display_normal_message(get_lang('InvalidStartDate'));
@@ -311,24 +323,34 @@ class SystemAnnouncementManager
 		$content = str_replace('file=/home/', 'file='.api_get_path(WEB_PATH).'home/', $content);
 
 		$id = intval($id);
-		$sql = "UPDATE ".$db_table." SET lang=$lang,title='".$title."',content='".$content."',date_start='".$start."',date_end='".$end."', ";
+		$sql = "UPDATE ".$db_table." SET lang=$langsql,title='".$title."',content='".$content."',date_start='".$start."',date_end='".$end."', ";
 		$sql .= " visible_teacher = '".$visible_teacher."', visible_student = '".$visible_student."', visible_guest = '".$visible_guest."' WHERE id='".$id."'";
 
 		if ($send_mail==1) {
-			SystemAnnouncementManager::send_system_announcement_by_email($title, $content,$visible_teacher, $visible_student);
+			SystemAnnouncementManager::send_system_announcement_by_email($title, $content,$visible_teacher, $visible_student, $lang);
 		}
-		return Database::query($sql);
+		$res = Database::query($sql);
+		if ($res === false) {
+			Debug::log_s(mysql_error());
+			return false;
+		}
+		return true;
 	}
 	/**
 	 * Deletes an announcement
 	 * @param 	int $id The identifier of the announcement that should be
-	 * @return	resource
+	 * @return	bool	True on success, false on failure
 	 */
 	public static function delete_announcement($id) {
 		$db_table = Database :: get_main_table(TABLE_MAIN_SYSTEM_ANNOUNCEMENTS);
 		$id = intval($id);
 		$sql = "DELETE FROM ".$db_table." WHERE id='".$id."'";
-		return Database::query($sql);
+		$res = Database::query($sql);
+		if ($res === false) {
+			Debug::log_s(mysql_error());
+			return false;
+		}
+		return true;
 	}
 	/**
 	 * Gets an announcement
@@ -346,41 +368,58 @@ class SystemAnnouncementManager
 	 * Change the visibility of an announcement
 	 * @param 	int $announcement_id
 	 * @param 	int $user For who should the visibility be changed (possible values are VISIBLE_TEACHER, VISIBLE_STUDENT, VISIBLE_GUEST)
-	 * @return 	resource
+	 * @return 	bool	True on success, false on failure
 	 */
-	public static function set_visibility($announcement_id, $user, $visible)
-	{
+	public static function set_visibility($announcement_id, $user, $visible) {
 		$db_table 			= Database::get_main_table(TABLE_MAIN_SYSTEM_ANNOUNCEMENTS);
 		$visible			= intval($visible);
 		$announcement_id 	= intval($announcement_id);
 
 		$field = ($user == VISIBLE_TEACHER ? 'visible_teacher' : ($user == VISIBLE_STUDENT ? 'visible_student' : 'visible_guest'));
 		$sql = "UPDATE ".$db_table." SET ".$field." = '".$visible."' WHERE id='".$announcement_id."'";
-		return Database::query($sql);
+		$res = Database::query($sql);
+		if ($res === false) {
+			Debug::log_s(mysql_error());
+			return false;
+		}
+		return true;
 	}
 
-	public static function send_system_announcement_by_email($title, $content, $teacher, $student)
-	{
+	/**
+	 * Send a system announcement by e-mail to all teachers/students depending on parameters
+	 * @param	string	Title
+	 * @param	string	Content
+	 * @param	int		Whether to send to all teachers (1) or not (0)
+	 * @param	int		Whether to send to all students (1) or not (0)
+	 * @param	string	Language (optional, considered for all languages if left empty)
+	 */
+	public static function send_system_announcement_by_email($title, $content, $teacher, $student, $language=null) {
 		global $_user;
 		global $_setting;
 		global $charset;
 		$user_table = Database :: get_main_table(TABLE_MAIN_USER);
 		
-		if ($teacher <> 0 AND $student == '0') {
+		if ($teacher <> 0 AND $student == 0) {
 			$sql = "SELECT firstname, lastname, email, status FROM $user_table WHERE email<>'' AND status = '1' AND active = 1";
 		}
-		if ($teacher == '0' AND $student <> '0') {
+		if ($teacher == 0 AND $student <> 0) {
 			$sql = "SELECT firstname, lastname, email, status FROM $user_table WHERE email<>'' AND status = '5' AND active = 1 ";
 		}
-		if ($teacher<>'0' AND $student <> '0') {
+		if ($teacher<> 0 AND $student <> 0) {
 			$sql = "SELECT firstname, lastname, email FROM $user_table WHERE email<>'' AND active = 1 ";
+		}
+		if (!empty($language)) { //special condition because language was already treated for SQL insert before
+			$sql .= " AND language = '".Database::escape_string($language)."' ";
 		}
 		if ($teacher == '0' AND $student == '0') {
 			return true;
 		}
 		$result = Database::query($sql);
+		if ($result === false) {
+			return false;
+		}
 		while($row = Database::fetch_array($result,'ASSOC')) {
-			@api_mail_html(api_get_person_name($row['firstname'], $row['lastname'], null, PERSON_NAME_EMAIL_ADDRESS), $row['email'], api_html_entity_decode(stripslashes($title), ENT_QUOTES, $charset), api_html_entity_decode(stripslashes(str_replace(array('\r\n', '\n', '\r'),'',$content)), ENT_QUOTES, $charset), api_get_person_name($_user['firstName'], $_user['lastName'], null, PERSON_NAME_EMAIL_ADDRESS), api_get_setting('emailAdministrator'), api_get_setting('emailAdministrator'));
+			$res = @api_mail_html(api_get_person_name($row['firstname'], $row['lastname'], null, PERSON_NAME_EMAIL_ADDRESS), $row['email'], api_html_entity_decode(stripslashes($title), ENT_QUOTES, $charset), api_html_entity_decode(stripslashes(str_replace(array('\r\n', '\n', '\r'),'',$content)), ENT_QUOTES, $charset), api_get_person_name(api_get_setting('administratorName'), api_get_setting('administratorSurname'), null, PERSON_NAME_EMAIL_ADDRESS), api_get_setting('emailAdministrator'));
 		}
 	}
 }

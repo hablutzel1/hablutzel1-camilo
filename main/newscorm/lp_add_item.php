@@ -26,9 +26,9 @@ api_protect_course_script();
 //the main_api.lib.php, database.lib.php and display.lib.php
 //libraries are included by default
 
-include('learnpath_functions.inc.php');
-//include('../resourcelinker/resourcelinker.inc.php');
-include('resourcelinker.inc.php');
+include 'learnpath_functions.inc.php';
+//include '../resourcelinker/resourcelinker.inc.php';
+include 'resourcelinker.inc.php';
 //rewrite the language file, sadly overwritten by resourcelinker.inc.php
 // name of the language file that needs to be included
 $language_file = 'learnpath';
@@ -50,7 +50,7 @@ function FCKeditor_OnComplete( editorInstance ) {
 }
 
 function check_for_title() {
-		if (temp==true) {
+		if (temp) {
 			// This functions shows that you can interact directly with the editor area
 			// DOM. In this way you have the freedom to do anything you want with it.
 
@@ -119,7 +119,7 @@ function InnerDialogLoaded() {
 $htmlHeadXtra[] = $_SESSION['oLP']->create_js();
 /*
 	Constants and variables
-*/ 
+*/
 
 $is_allowed_to_edit = api_is_allowed_to_edit(null,true);
 

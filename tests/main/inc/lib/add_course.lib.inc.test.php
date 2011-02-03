@@ -1,12 +1,11 @@
 <?php
 require_once(api_get_path(LIBRARY_PATH).'add_course.lib.inc.php');
-require_once(api_get_path(LIBRARY_PATH).'debug.lib.inc.php');
 require_once(api_get_path(LIBRARY_PATH).'course.lib.php');
 
 class TestAddCourse extends UnitTestCase {
 
 	function TestAddCourse() {
-        $this->UnitTestCase('Courses creation tests');
+        $this->UnitTestCase('Courses creation - main/inc/lib/add_course.lib.inc.test.php');
     }
 
 
@@ -26,9 +25,9 @@ class TestAddCourse extends UnitTestCase {
 							 $course_datos['tutor_name'], $course_datos['category_code'],
 							 $course_datos['course_language'],$course_datos['course_admin_id'],
 							 $course_datos['db_prefix'], $course_datos['firstExpirationDelay']);
-		$this->assertTrue(is_bool($res));
-
-	}
+		//should be code string if succeeded (false if failed)
+		$this->assertTrue(is_string($res));
+    }
 
     function testRegisterCourse() {
 	    global $_configuration;
@@ -137,8 +136,6 @@ class TestAddCourse extends UnitTestCase {
 		$this->assertTrue($res === 0);
 	}
 
-
-
 	function TestString2Binary(){
 		$variable = true;
 		$res = string2binary($variable);
@@ -151,25 +148,6 @@ class TestAddCourse extends UnitTestCase {
 		$res = checkArchive($pathToArchive);
 		$this->assertTrue($res === TRUE);
 	}
-
-
-/*	 // 1 excepcion de permisos
-	function TestReadPropertiesInArchive(){
-		ob_start();
-		$archive='/archive.ini';
-		$uid = api_get_user_id();
-		printVar(dirname($archive), "Zip : ");
-		$perm = '777';
-		$res = readPropertiesInArchive($archive, $isCompressed = TRUE);
-		if(is_array($res)){
-	 		$this->assertTrue(is_array($res));
-	 	}else{
-	 		$this->assertNull($res);
-	 	}
-	 	ob_end_clean();
-		//var_dump($res);
-		}
-*/
 
     public function TestDeleteCourse(){
 		$code = 'testcourse';

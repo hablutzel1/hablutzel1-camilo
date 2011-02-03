@@ -256,7 +256,7 @@ if (api_get_setting('profile', 'language') !== 'true') {
 
 //	EXTENDED PROFILE  this make the page very slow!
 if (api_get_setting('extended_profile') == 'true') {
-	if ($_GET['type'] == 'extended') {
+	if (!isset($_GET['type']) || (isset($_GET['type']) && $_GET['type'] == 'extended')) {
 		//$form->addElement('html', '<a href="javascript: void(0);" onclick="javascript: show_extend();"> show_extend_profile</a>');
 		$form->addElement('static', null, '<em>'.get_lang('OptionalTextFields').'</em>');
 		//	MY COMPETENCES
@@ -294,7 +294,6 @@ if (is_profile_editable() && api_get_setting('profile', 'password') == 'true') {
 
 // EXTRA FIELDS
 $extra = UserManager::get_extra_fields(0, 50, 5, 'ASC');
-
 $extra_data = UserManager::get_extra_user_data(api_get_user_id(), true);
 foreach ($extra as $id => $field_details) {
 	if ($field_details[6] == 0) {
@@ -430,6 +429,17 @@ EOF;
 			break;
 		case USER_FIELD_TYPE_TIMEZONE:
 			$form->addElement('select', 'extra_'.$field_details[1], $field_details[3], api_get_timezones(), '');
+			if ($field_details[7] == 0)	$form->freeze('extra_'.$field_details[1]);
+			break;
+		case USER_FIELD_TYPE_SOCIAL_PROFILE:
+			// get the social network's favicon
+			$icon_path = UserManager::get_favicon_from_url($extra_data['extra_'.$field_details[1]], $field_details[4]);
+			// special hack for hi5
+			$leftpad = '1.7'; $top = '0.4'; $domain = parse_url($icon_path, PHP_URL_HOST); if ($domain == 'www.hi5.com' or $domain == 'hi5.com') { $leftpad = '3'; $top = '0';}
+			// print the input field
+			$form->addElement('text', 'extra_'.$field_details[1], $field_details[3], array('size' => 60, 'style' => 'background-image: url(\''.$icon_path.'\'); background-repeat: no-repeat; background-position: 0.4em '.$top.'em; padding-left: '.$leftpad.'em; '));
+			$form->applyFilter('extra_'.$field_details[1], 'stripslashes');
+			$form->applyFilter('extra_'.$field_details[1], 'trim');
 			if ($field_details[7] == 0)	$form->freeze('extra_'.$field_details[1]);
 			break;
 	}
@@ -579,7 +589,7 @@ if (!empty($_SESSION['change_email'])) {
 	}
 	$form->removeElement('productions_list');
 	$file_deleted = true;
-} 
+}
 
 if ($form->validate()) {
 
@@ -602,7 +612,7 @@ if ($form->validate()) {
 		$_SESSION['is_not_password'] = 'success';
 	}
 
-	if (!check_user_email($user_data['email']) && !empty($user_data['password0']) && ($wrong_current_password==false)) {
+	if (!check_user_email($user_data['email']) && !empty($user_data['password0']) && !$wrong_current_password) {
 		$changeemail = $user_data['email'];
 	}
 
@@ -714,17 +724,13 @@ if ($form->validate()) {
 }
 
 
-if (isset($_GET['show'])) {
-
-	if ((api_get_setting('allow_social_tool') == 'true' && api_get_setting('allow_message_tool') == 'true') || (api_get_setting('allow_social_tool') == 'true')) {
-
+//if (isset($_GET['show'])) {
+	//if ((api_get_setting('allow_social_tool') == 'true' && api_get_setting('allow_message_tool') == 'true') || (api_get_setting('allow_social_tool') == 'true')) {
 		//$interbreadcrumb[] = array ('url' => 'javascript: void(0);', 'name' => get_lang('SocialNetwork'));
-
-	} elseif ((api_get_setting('allow_social_tool') == 'false' && api_get_setting('allow_message_tool') == 'true')) {
-
+	//} elseif ((api_get_setting('allow_social_tool') == 'false' && api_get_setting('allow_message_tool') == 'true')) {
 		//$interbreadcrumb[] = array('url' => 'javascript: void(0);', 'name' => get_lang('MessageTool'));
-	}
-}
+	//}
+//}
 
 /*
 ==============================================================================
@@ -823,10 +829,10 @@ if (api_get_setting('allow_social_tool') == 'true') {
 			echo '<div id="social-content-online">';
 				if (api_get_setting('extended_profile') == 'true') {
 					$show = isset($_GET['show']) ? '&amp;show='.Security::remove_XSS($_GET['show']) : '';
-					if (isset($_GET['type']) && $_GET['type'] == 'extended') {
-						echo '<a href="profile.php?type=reduced'.$show.'"><span class="social-menu-text1">'.Display::return_icon('edit.gif', get_lang('EditNormalProfile')).'&nbsp;'.get_lang('EditNormalProfile').'</span></a>';
+					if (isset($_GET['type']) && $_GET['type'] == 'reduced') {
+						echo '<a href="profile.php?type=extended '.$show.'"><span class="social-menu-text1">'.Display::return_icon('edit.gif', get_lang('EditExtendProfile')).'&nbsp;'.get_lang('EditExtendProfile').'</span></a>';
 					} else {
-						echo '<a href="profile.php?type=extended'.$show.'"><span class="social-menu-text1">'.Display::return_icon('edit.gif', get_lang('EditExtendProfile')).'&nbsp;'.get_lang('EditExtendProfile').'</span></a>';
+						echo '<a href="profile.php?type=reduced'.$show.'"><span class="social-menu-text1">'.Display::return_icon('edit.gif', get_lang('EditNormalProfile')).'&nbsp;'.get_lang('EditNormalProfile').'</span></a>';
 					}
 				}
 			echo '</div>';

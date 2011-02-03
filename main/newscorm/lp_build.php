@@ -1,37 +1,14 @@
-<?php // $Id: index.php 16620 2008-10-25 20:03:54Z yannoo $
-/*
-==============================================================================
-	Dokeos - elearning and course management software
-
-	Copyright (c) 2004-2008 Dokeos SPRL
-	Copyright (c) 2003 Ghent University (UGent)
-
-	For a full list of contributors, see "credits.txt".
-	The full license can be read in "license.txt".
-
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
-
-	See the GNU General Public License for more details.
-
-	Contact: Dokeos, rue Notre Dame, 152, B-1140 Evere, Belgium, info@dokeos.com
-==============================================================================
-*/
-
-
+<?php
+/* For licensing terms, see /license.txt */
 /**
-==============================================================================
-* This is a learning path creation and player tool in Dokeos - previously learnpath_handler.php
-*
-* @author Patrick Cool
-* @author Denes Nagy
-* @author Roan Embrechts, refactoring and code cleaning
-* @author Yannick Warnier <ywarnier@beeznest.org> - cleaning and update for new SCORM tool
-* @package dokeos.learnpath
-==============================================================================
-*/
+ * This is a learning path creation and player tool in Dokeos - previously learnpath_handler.php
+ *
+ * @author Patrick Cool
+ * @author Denes Nagy
+ * @author Roan Embrechts, refactoring and code cleaning
+ * @author Yannick Warnier <ywarnier@beeznest.org> - cleaning and update for new SCORM tool
+ * @package chamilo.learnpath
+ */
 
 /*
 ==============================================================================
@@ -52,9 +29,9 @@ api_protect_course_script();
 //the main_api.lib.php, database.lib.php and display.lib.php
 //libraries are included by default
 
-include('learnpath_functions.inc.php');
-//include('../resourcelinker/resourcelinker.inc.php');
-include('resourcelinker.inc.php');
+include 'learnpath_functions.inc.php';
+//include '../resourcelinker/resourcelinker.inc.php';
+include 'resourcelinker.inc.php';
 //rewrite the language file, sadly overwritten by resourcelinker.inc.php
 // name of the language file that needs to be included
 $language_file = "learnpath";
@@ -218,7 +195,7 @@ echo '<table cellpadding="0" cellspacing="0" class="lp_build">';
 				}
 					// Display::display_normal_message(get_lang('LPCreatedAddChapterStep'), false);
 					$gradebook = Security::remove_XSS($_GET['gradebook']);
-					$learnpathadded = Display::return_icon('gallery/creative.gif','',array('align'=>'right'));
+					//$learnpathadded = Display::return_icon('gallery/creative.gif','',array('align'=>'right'));
 					$learnpathadded .= '<p><strong>'.get_lang('LearnPathAddedTitle').'</strong><br /><br />';
 					$learnpathadded .= '<a href="lp_controller.php?'.api_get_cidreq().'&amp;action=build&amp;lp_id='.Security::remove_XSS($_GET['lp_id']).'" target="_parent">'.Display::return_icon('learnpath_build.gif', get_lang('Build'),array('style'=> 'vertical-align: middle;')).' '.get_lang('Build')."</a>: ".get_lang('BuildComment').'<br />';
 					$learnpathadded .= '<a href="lp_controller.php?cidReq=' . Security::remove_XSS($_GET['cidReq']) . '&amp;gradebook='.$gradebook.'&amp;action=admin_view&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="'.get_lang("BasicOverview").'">'.Display::return_icon('learnpath_organize.gif', get_lang('BasicOverview'),array('style'=> 'vertical-align: middle;')).' '.get_lang('BasicOverview').'</a>: '.get_lang('BasicOverviewComment').'<br />';

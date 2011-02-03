@@ -51,7 +51,7 @@ $htmlHeadXtra[] = '<script src="../inc/lib/javascript/jquery.js" type="text/java
 $htmlHeadXtra[] = '<script type="text/javascript">
 
 function check_unzip() {
-	if(document.upload.unzip.checked==true){
+	if(document.upload.unzip.checked){
 		document.upload.if_exists[0].disabled=true;
 		document.upload.if_exists[1].checked=true;
 		document.upload.if_exists[2].disabled=true;
@@ -198,7 +198,7 @@ if (isset($_SESSION['_gid']) && $_SESSION['_gid'] != '') { // If the group id is
 	} else {
 		api_not_allowed(true);
 	}
-} elseif ($is_allowed_to_edit || is_my_shared_folder($_user['user_id'], $path)) { // Admin for "regular" upload, no group documents. And check if is my shared folder
+} elseif ($is_allowed_to_edit || is_my_shared_folder($_user['user_id'], $path,api_get_session_id())) { // Admin for "regular" upload, no group documents. And check if is my shared folder
 	$to_group_id = 0;
 	$req_gid = '';
 } else { // No course admin and no group member...
@@ -488,7 +488,7 @@ if ($is_certificate_mode) {
 }
 
 // Link to create a folder
-if (!isset($_GET['createdir']) && !is_my_shared_folder($_user['user_id'], $path) && !$is_certificate_mode) {
+if (!isset($_GET['createdir']) && !is_my_shared_folder($_user['user_id'], $path, api_get_session_id()) && !$is_certificate_mode) {
 	echo '<a href="'.api_get_self().'?path='.$path.'&amp;createdir=1">'.Display::return_icon('folder_new.gif', get_lang('CreateDir')).get_lang('CreateDir').'</a>';
 }
 echo '</div>';
@@ -502,6 +502,7 @@ if (!$is_certificate_mode) {
 $form = new FormValidator('upload', 'POST', api_get_self(), '', 'enctype="multipart/form-data"');
 $form->addElement('hidden', 'curdirpath', $path);
 $form->addElement('file', 'user_upload', get_lang('File'), 'id="user_upload" size="45"');
+$form->addElement('html', '<div class="row" style="font-size:smaller;font-style:italic;"><div class="label">&nbsp;</div><div class="formw">'.get_lang('MaxFileSize').': '.ini_get('upload_max_filesize').'<br/>'.get_lang('DocumentQuota').': '.(round(DocumentManager::get_course_quota()/1000000)-round(documents_total_space($_course)/1000000)).' M</div></div>');
 
 if (api_get_setting('use_document_title') == 'true') {
 	$form->addElement('text', 'title', get_lang('Title'), array('size' => '20', 'style' => 'width:300px', 'id' => 'title_file'));
