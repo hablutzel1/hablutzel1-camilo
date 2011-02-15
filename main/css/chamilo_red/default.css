@@ -392,6 +392,7 @@ input[text] {
     /* padding: 0px; */
     margin: 0px;
     margin-bottom:15px;
+    font-size:135%;
 }
 
 /*****************************************************
@@ -3093,7 +3094,7 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
     font-size:135%;
 }
 .session_course_item a {
-    font-size:135%;
+    /*font-size:135%;*/
 }
 #maincontent .courseslist li {
     margin-bottom:8px;

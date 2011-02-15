@@ -2584,7 +2584,7 @@ class CourseManager {
                     if ($course_visibility != COURSE_VISIBILITY_CLOSED || $course['status'] == COURSEMANAGER) {
                         $course_title = '<a href="'.api_get_path(WEB_COURSE_PATH).$course['directory'].'/?id_session=0&amp;autoreg=1">'.$course['title'].'</a>';
                     } else {
-                        $course_title = $course['title']." ".get_lang('CourseClosed');
+                        $course_title = $course['title']." ".Display::tag('span',get_lang('CourseClosed'), array('class'=>'item_closed'));
                     }
 
                     echo '<div style="float: left; margin-right: 10px;">'.$status_icon.'</div><span class="userportal-course-item-title">'.$course_title.'</span><br />';
@@ -2756,7 +2756,7 @@ class CourseManager {
             if ($course_visibility != COURSE_VISIBILITY_CLOSED || $course['status'] == COURSEMANAGER) {
                 $course_title = '<a href="'.api_get_path(WEB_COURSE_PATH).$course['directory'].'/?id_session=0">'.$course['title'].'</a>';
             } else {
-                $course_title = $course['title']." ".get_lang('CourseClosed');
+                $course_title = $course['title']." ".Display::tag('span',get_lang('CourseClosed'), array('class'=>'item_closed'));
             }
             // Start displaying the course block itself.
             echo '<div style="float: left; margin-right: 10px;">'.$status_icon.'</div><span class="userportal-course-item-title">'.$course_title.'</span><br />';
@@ -2913,7 +2913,7 @@ class CourseManager {
     
         $s_htlm_status_icon = '';
     
-        $s_htlm_status_icon =Display::return_icon('blackboard_blue.png', get_lang('Course'), array('width' => '48px'));
+        $s_htlm_status_icon = Display::return_icon('blackboard_blue.png', get_lang('Course'), array('width' => '48px'));
         /*
         if ($s_course_status == 1) {
             $s_htlm_status_icon = Display::return_icon('course.gif', get_lang('Course')).' '.Display::return_icon('teachers.gif', get_lang('Status').': '.get_lang('Teacher'), array('style' => 'width: 11px; height: 11px;'));
@@ -2926,7 +2926,6 @@ class CourseManager {
         }
         */
         // Display course entry.
-        $result.="\n\t";
         $result .= '<li class="'.$class.'"><div class="coursestatusicons">'.$s_htlm_status_icon.'</div>';
         // Show a hyperlink to the course, unless the course is closed and user is not course admin.
         if ($session_accessible) {
@@ -2942,7 +2941,7 @@ class CourseManager {
                     $result .= '<a href="'.api_get_path(WEB_COURSE_PATH).$course_directory.'/">'.$course_display_title.'</a>';
                 }
             } else {
-                $result .= $course_display_title.'  '.get_lang('CourseClosed');
+                $result .= $course_display_title.' '.Display::tag('span',get_lang('CourseClosed'), array('class'=>'item_closed'));                
             }
         } else {
         	$result .= $course_display_title;
