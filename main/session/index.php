@@ -28,7 +28,7 @@ $this_section = SECTION_COURSES;
 $htmlHeadXtra[] = api_get_jquery_ui_js(true);
 $interbreadcrumb[] = array ('url' => '#', 'name' => get_lang('Course'));
 
-Display :: display_header($nameTools);
+Display :: display_header(get_lang('Session'));
 
 $session_id     = intval($_GET['session_id']);
 if (empty($session_id)) {
@@ -318,10 +318,12 @@ $(function() {
 		window.location.href=ui.tab;
     });
     
+    //Generate tabs with jquery-ui
     $('#tabs').tabs();
     $( "#sub_tab" ).tabs();     
          
 <?php 
+     //Displays js code to use a jqgrid
      echo Display::grid_js('list_default',  $url,           $columns,        $column_model,$extra_params,array(), '');
      echo Display::grid_js('list_course',   $url_course,    $columns,        $column_model,$extra_params_course,array(),'');
      echo Display::grid_js('list_week',     $url_week,      $column_week,    $column_week_model, $extra_params_week,array(),'');     
