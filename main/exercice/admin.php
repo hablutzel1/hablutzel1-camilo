@@ -259,9 +259,9 @@ if (!empty($gradebook) && $gradebook=='view') {
 
 $interbreadcrumb[] = array("url" => "exercice.php","name" => get_lang('Exercices'));
 if (isset($_GET['newQuestion']) || isset($_GET['editQuestion']) ) {
-    $interbreadcrumb[] = array("url" => "admin.php?exerciseId=".$objExercise->id, "name" => cut($objExercise->exercise, EXERCISE_MAX_NAME_BREADCRUMB));
+    $interbreadcrumb[] = array("url" => "admin.php?exerciseId=".$objExercise->id, "name" => $objExercise->name);
 } else {
-    $interbreadcrumb[] = array("url" => "#", "name" => cut($objExercise->exercise, EXERCISE_MAX_NAME_BREADCRUMB));
+    $interbreadcrumb[] = array("url" => "#", "name" => $objExercise->name);
 }
 
 // shows a link to go back to the question pool
@@ -434,7 +434,7 @@ if (isset($_GET['hotspotadmin']) || isset($_GET['newQuestion']) || isset($_GET['
 if (!isset($_GET['hotspotadmin']) && !isset($_GET['newQuestion']) && !isset($_GET['myid']) &&  !isset($_GET['editQuestion'])) {
     echo '<a href="exercice.php?'.api_get_cidReq().'">'.Display::return_icon('back.png', get_lang('BackToExercisesList'),'','32').'</a>';
 }
-echo '<a href="exercice_submit.php?'.api_get_cidreq().'&exerciseId='.$objExercise->id.'&preview=1">'.Display::return_icon('preview_view.png', get_lang('Preview'),'','32').'</a>';
+echo '<a href="exercise_submit.php?'.api_get_cidreq().'&exerciseId='.$objExercise->id.'&preview=1">'.Display::return_icon('preview_view.png', get_lang('Preview'),'','32').'</a>';
 
 echo Display::url(Display::return_icon('test_results.png', get_lang('Results'),'','32'), 'exercice.php?'.api_get_cidReq().'&show=result&exerciseId='.$objExercise->id);
 

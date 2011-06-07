@@ -13,6 +13,8 @@ define('SOCIAL_LEFT_PLUGIN',	1);
 define('SOCIAL_CENTER_PLUGIN',	2);
 define('SOCIAL_RIGHT_PLUGIN',	3);
 
+define('CUT_GROUP_NAME', 50);
+
 require_once api_get_path(LIBRARY_PATH).'usermanager.lib.php';
 require_once api_get_path(LIBRARY_PATH).'message.lib.php';
 
@@ -805,20 +807,26 @@ class SocialManager extends UserManager {
 					$url = '#';
 				}
 				$image_array = UserManager::get_user_picture_path_by_id($uid, 'system', false, true);
+				
+				// reduce image
+                $name = api_get_person_name($user_info['firstName'], $user_info['lastName']);
                 
                 if ($image_array['file'] == 'unknown.jpg') {
                     $friends_profile['file'] = api_get_path(WEB_CODE_PATH).'img/unknown_180_100.jpg'; 
+                    $table_row[] = '<a href="'.$url.'"><img title = "'.$name.'" class="social-home-anonymous-online" alt="'.$name.'" src="'.$friends_profile['file'].'"></a>';
                 } else {
-                    $friends_profile = UserManager::get_picture_user($uid, $image_array['file'], 80, USER_IMAGE_SIZE_ORIGINAL );    
-                }                
-				
-				// reduce image
-				$name = api_get_person_name($user_info['firstName'], $user_info['lastName']);
-
-				$table_row[] = '<a href="'.$url.'"><img title = "'.$name.'" class="social-home-users-online" alt="'.$name.'" src="'.$friends_profile['file'].'"></a>';
+                    $friends_profile = UserManager::get_picture_user($uid, $image_array['file'], 80, USER_IMAGE_SIZE_ORIGINAL );
+                    
+                    $img = '<img title = "'.$name.'" alt="'.$name.'" src="'.$friends_profile['file'].'">';
+                    
+                    $clip = 'clip_vertical';                    
+                    if ($friends_profile['original_height'] > $friends_profile['original_width']) {
+                        $clip = 'clip_horizontal';    
+                    }                    
+                    $table_row[] = Display::url(Display::div(Display::div($img, array('class'=>$clip)), array('class'=>'clip-wrapper')) , $url);    
+                }				
 				$table_row[] = '<a href="'.$url.'">'.(cut($user_info['firstName'],16)).'<br />'.cut($user_info['lastName'],18).'</a>';
-
-				$user_anonymous = api_get_anonymous_id();
+				
 				$table_data[] = $table_row;
 			}
 			$table_header[] = array(get_lang('UserPicture'), false, 'width="90"');
