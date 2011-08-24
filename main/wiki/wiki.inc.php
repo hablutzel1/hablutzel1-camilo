@@ -233,11 +233,11 @@ function make_wiki_link_clickable($input) {
             if (checktitle(strtolower(str_replace(' ','_',$link))))
             {
                 $link = api_html_entity_decode($link);
-                $input_array[$key]='<a href="'.api_get_path(WEB_PATH).'main/wiki/index.php?'.api_get_cidreq().'&action=addnew&amp;title='.api_htmlentities(urlencode($link)).'&group_id='.$_clean['group_id'].'" class="new_wiki_link">'.$title.$titleg_ex.'</a>';
+                $input_array[$key]='<a href="'.api_get_path(WEB_PATH).'main/wiki/index.php?'.api_get_cidreq().'&action=addnew&amp;title='.api_htmlentities(urlencode($link)).'&group_id='.$_clean['group_id'].'" class="new_wiki_link">'.$title.'</a>';
             }
             else
             {
-                $input_array[$key]='<a href="'.api_get_path(WEB_PATH).'main/wiki/index.php?'.api_get_cidreq().'&action=showpage&amp;title='.urlencode(strtolower(str_replace(' ','_',$link))).'&group_id='.$_clean['group_id'].'" class="wiki_link">'.$title.$titleg_ex.'</a>';
+                $input_array[$key]='<a href="'.api_get_path(WEB_PATH).'main/wiki/index.php?'.api_get_cidreq().'&action=showpage&amp;title='.urlencode(strtolower(str_replace(' ','_',$link))).'&group_id='.$_clean['group_id'].'" class="wiki_link">'.$title.'</a>';
             }
             unset($input_array[$key-1]);
             unset($input_array[$key+1]);
@@ -587,7 +587,7 @@ return true;
         echo '</tr>';
         echo '<tr>';
         //echo '<td><textarea name="task" cols="60" rows="4" >'.stripslashes($row['task']).'</textarea></td>';	// TODO: ¿delete?
-        echo '<td>'.api_disp_html_area('task', $row['task'], '', '', null, array('ToolbarSet' => 'wiki_task', 'Width' => '580', 'Height' => '200')).'</td>';
+        echo '<td>'.api_disp_html_area('task', '', '', '', null, array('ToolbarSet' => 'wiki_task', 'Width' => '580', 'Height' => '200')).'</td>';
         echo '</tr>';
         echo '</table>';
         echo '</div>';
@@ -1813,6 +1813,7 @@ function auto_add_page_users($assignment_type) {
 
     //data about teacher
     $userinfo=Database::get_user_info_from_id(api_get_user_id());
+    $name = api_get_person_name($userinfo['firstname'], $userinfo['lastname']);
     require_once api_get_path(INCLUDE_PATH).'/lib/usermanager.lib.php';
     if (api_get_user_id()<>0) {
         $image_path = UserManager::get_user_picture_path_by_id(api_get_user_id(),'web',false, true);
@@ -1994,7 +1995,7 @@ function display_wiki_search_results($search_term, $search_content=0)
                 $showdelete=' <a href="'.api_get_self().'?'.api_get_cidreq().'&action=delete&title='.api_htmlentities(urlencode($obj->reflink)).'&group_id='.api_htmlentities($_GET['group_id']).'">'.Display::return_icon('delete.png', get_lang('Delete'),'',22);
             }
             $row[] = '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=edit&title='.api_htmlentities(urlencode($obj->reflink)).'&group_id='.api_htmlentities($_GET['group_id']).'">'.Display::return_icon('edit.png', get_lang('EditPage'),'',22).'</a> <a href="'.api_get_self().'?'.api_get_cidreq().'&action=discuss&title='.api_htmlentities(urlencode($obj->reflink)).'&group_id='.api_htmlentities($_GET['group_id']).'">
-			'.Display::return_icon('discuss.png', get_lang('Discuss'),'',22).'</a> <a href="'.api_get_self().'?'.api_get_cidreq().'&action=history&title='.api_htmlentities(urlencode($obj->reflink)).'&group_id='.api_htmlentities($_GET['group_id']).'">'.Display::return_icon('history.png', get_lang('History'),'',22).'</a> <a href="'.api_get_self().'?cidReq='.$_course[id].'&action=links&title='.api_htmlentities(urlencode($obj->reflink)).'&group_id='.api_htmlentities($_GET['group_id']).'">'.Display::return_icon('what_link_here.png', get_lang('LinksPages'),'',22).'</a>'.$showdelete;
+			'.Display::return_icon('discuss.png', get_lang('Discuss'),'',22).'</a> <a href="'.api_get_self().'?'.api_get_cidreq().'&action=history&title='.api_htmlentities(urlencode($obj->reflink)).'&group_id='.api_htmlentities($_GET['group_id']).'">'.Display::return_icon('history.png', get_lang('History'),'',22).'</a> <a href="'.api_get_self().'?'.api_get_cidreq().'&action=links&title='.api_htmlentities(urlencode($obj->reflink)).'&group_id='.api_htmlentities($_GET['group_id']).'">'.Display::return_icon('what_link_here.png', get_lang('LinksPages'),'',22).'</a>'.$showdelete;
 		
             $rows[] = $row;
         }
