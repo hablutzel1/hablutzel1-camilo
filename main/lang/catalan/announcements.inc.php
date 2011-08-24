@@ -1,0 +1,60 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$Announcement = "Anuncis";
+$langAnnEmpty = "Els anuncis s'han esborrat";
+$AnnouncementModified = "L'anunci s'ha modificat";
+$AnnouncementAdded = "L'anunci s'ha afegit";
+$AnnouncementDeleted = "L'anunci s'ha esborrat";
+$AnnouncementPublishedOn = "Publicat el";
+$AddAnnouncement = "Anunci nou";
+$langContent = "Contingut";
+$AnnouncementDeleteAll = "Elimina tots els anuncis";
+$professorMessage = "Missatge del professor";
+$langEmailSent = "i enviat als estudiants registrats";
+$EmailOption = "Envia aquest anunci per correu electrònic";
+$langOn = "Hi ha";
+$langRegUser = "usuaris inscrits al curs";
+$langUnvalid = "tenen una adreça de correu invàlida o una adreça de correu sense especificar";
+$langModifAnn = "Modifica aquest anunci";
+$langModify = "Modifica";
+$langDelete = "Elimina";
+$langTitle = "Títol";
+$langHelp = "ajuda";
+$langOk = "Accepta";
+$langAddIntro = "Afegeix un text d'introducció";
+$langBackList = "Tornar a la llista";
+$langSelMess = "Advertència a alguns usuaris";
+$EmailTitle = "Títol de l'anunci";
+$langUserlist = "Llista d'usuaris";
+$langSelectedUsers = "Usuaris seleccionats";
+$langSubmit = "Envia";
+$langPleaseEnterMessage = "Heu d'introduir el text del missatge.";
+$langPleaseSelectUsers = "Heu de seleccionar algun usuari.";
+$Teachersubject = "Missatge enviat als seus estudiants";
+$langMessages = "Missatges:";
+$langMessageToSelectedUsers = "Envia missatges a determinats usuaris";
+$langIntroText = "Per enviar un missatge, seleccioneu els grups d'usuaris (marcats amb una G davant) o usuaris individuals (marcats amb una U) de la llista de l'esquerra.";
+$langDown = "Baixa";
+$langMsgSent = "El missatge s'ha enviat als alumnes seleccionats";
+$langSelUser = "selecciona usuaris";
+$langMessageToSelectedGroups = "Missatge per als grups seleccionats";
+$langSelectedGroups = "grups seleccionats";
+$langMsg = "Missatges";
+$langYes = "sí";
+$MsgText = "Missatge";
+$AnnouncementDeletedAll = "Tots els anuncis s'han esborrats";
+$AnnouncementMoved = "L'anunci s'ha mogut";
+$NoAnnouncements = "No hi ha anuncis";
+$SelectEverybody = "Selecciona Tots";
+$SelectedUsersGroups = "grup d'usuaris seleccionats";
+$LearnerMessage = "Missatge d'un alumne";
+$TitleIsRequired = "El títol és obligatori";
+$AnnounceSentByEmail = "Anunci enviat per correu electrònic";
+$AnnounceSentToUserSelection = "Anunci enviat a una selecció d'usuaris";
+$SendAnnouncement = "Envia anunci";
+$ModifyAnnouncement = "Modifica anunci";
+$ButtonPublishAnnouncement = "Envia anunci";
+$YourAccountIsActiveYouCanLoginAndCheckYourCourses = "Benvolgut/da usuari/a <br><br>No està actiu a la plataforma, si us plau entreu novament i revisi els seus cursos";
+?>
