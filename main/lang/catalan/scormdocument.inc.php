@@ -1,0 +1,65 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$langChapter = "Capítol";
+$langDocumentList = "Llista de tots els documents";
+$langOrganisationList = "Taula de continguts";
+$langEditTOC = "Edita la taula de continguts";
+$langEditDocument = "Edita";
+$langCreateDocument = "Crea un document";
+$langMissingImagesDetected = "S'ha detectat que falten imatges";
+$langPublish = "Publica";
+$langScormcontentstudent = "Aquest és un curs amb format SCORM. Si vol veure-ho, feu clic aquí: <input type=button name=scormbutton value='Comença' onclick='openscorm()'>";
+$langScormcontent = "Aquest és un contingut SCORM<br><input type=button name=scormbutton value='Comença' onclick='openscorm()'>";
+$langDownloadAndZipEnd = " L'arxiu zip s'ha enviat i descomprimit al servidor";
+$langZipNoPhp = "L'arxiu zip no pot contenir arxius amb format .PHP";
+$langGroupForumLink = "Fòrum de grup";
+$langGroupSpace = "Àrea de grup";
+$langNotScormContent = "No és un arxiu ZIP SCORM!";
+$langNoText = "Si us plau, introduïu el contingut de text / contingut HTML";
+$langNoFileName = "Si us plau, introduïu el nom del fitxer";
+$langMaxFileSize = "La grandària màxima d'arxiu és";
+$langFileName = "Nom de l'arxiu";
+$langFileError = "L'arxiu que vol pujar no és vàlid.";
+$langDown = "Baixa";
+$langViMod = "Visibilitat modificada";
+$langAddComment = "Afegeix/modifica un comentari a";
+$langImpossible = "Operació impossible";
+$langNewDir = "Nom del nou directori";
+$langTo = "a";
+$langNoSpace = "L'enviament ha fallat. No hi ha prou espai al directori";
+$langDownloadEnd = "S'ha realitzat l'enviament";
+$langFileExists = "Operació impossible, hi ha un arxiu amb el mateix nom.";
+$langDocCopied = "Document copiat";
+$langDocDeleted = "Document eliminat";
+$langElRen = "Arxiu rebatejat";
+$langDirMv = "Element mogut";
+$langComMod = "Comentari modificat";
+$langRename = "Canvia el nom";
+$langCopy = "Copia el contingut del curs";
+$langNameDir = "Nom del nou directori";
+$langDownloadFile = "Envia un arxiu";
+$learning_path_access = "Per esborrar/modificar/mostrar/amagar/afegir una lliçó, feu clic a 'Constructor de lliçons'.";
+$langRoot = "arrel";
+$langBuilder = "Constructor de lliçons";
+$lang_edit_learnpath = "Edita la lliçó";
+$lang_add_title_and_desc = "Edita títol i descripció";
+$lang_add_learnpath = "Crea una lliçó SCORM";
+$lang_learnpath_added = "La lliçó ha estat creada amb èxit. Ara pot afegir seccions i objectes d'aprenentatge.";
+$lang_delete_learnpath = "Suprimeix la lliçó";
+$lang_learnpath_edited = "La lliçó s'ha editat amb èxit";
+$lang_learnpath_deleted = "La lliçó s'ha eliminat";
+$lang_no_publish = "No publiquis";
+$lang_publish = "Publica";
+$lang_no_published = "no publicat";
+$lang_published = "publicat";
+$lang_description = "Descripció";
+$lang_title = "Títol";
+$langScormBuilder = "Constructor de lliçons a format SCORM";
+$langCreateDoc = "Crea un document";
+$langOrganiseDocuments = "Crea taula de continguts";
+$langUncompress = "Descomprimeix l'arxiu (.zip) al servidor";
+$ExportShort = "Exportació SCORM";
+$progress = "Progrés";
+?>
