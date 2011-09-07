@@ -1023,18 +1023,10 @@ class Exercise {
 			$form->addElement('html','<div id="end_date_div" style="display:none;">');
 
 			$form->addElement('datepicker', 'end_time', '', array('form_name'=>'exercise_admin'), 5);
-
-			//$form->addElement('select', 'enabletimercontroltotalminutes',get_lang('ExerciseTimerControlMinutes'),$time_minutes_option);
 			$form->addElement('html','</div>');
 
-			$check_option=$this->selectType();
-
-			if ($check_option==1 && isset($_GET['exerciseId'])) {
-				$diplay = 'none';
-			} else {
-				$diplay = 'block';
-			}
-				
+			//$check_option=$this->selectType();
+			$diplay = 'block';							
 			$form->addElement('checkbox', 'propagate_neg',get_lang('PropagateNegativeResults'),null);
 				
 			$form->addElement('html','<div id="divtimecontrol"  style="display:'.$diplay.';">');
@@ -1046,6 +1038,7 @@ class Exercise {
 			$expired_date = (int)$this->selectExpiredTime();
 
 			if(($expired_date!='0')) {
+				
 				$form->addElement('html','<div id="timercontrol" style="display:block;">');
 			} else {
 				$form->addElement('html','<div id="timercontrol" style="display:none;">');
@@ -1128,7 +1121,7 @@ class Exercise {
 				$defaults['end_time']   = ($this->end_time!='0000-00-00 00:00:00')?$this->end_time : date('Y-m-d 12:00:00',time()+84600);
 
 				//Get expired time
-				if($this->expired_time != '0') {
+				if($this->expired_time != '0') {					
 					$defaults['enabletimercontrol'] = 1;
 					$defaults['enabletimercontroltotalminutes'] = $this->expired_time;
 				} else {
@@ -1534,13 +1527,13 @@ class Exercise {
 		array_map('intval', $questionList);
 		
 		$weight = Database::escape_string($weight);
-		if ($this->type == ONE_PER_PAGE) {
+		//if ($this->type == ONE_PER_PAGE) {
 			$sql = "INSERT INTO $track_exercises ($sql_fields exe_exo_id, exe_user_id, exe_cours_id, status,session_id, data_tracking, start_date, orig_lp_id, orig_lp_item_id, exe_weighting)
                     VALUES($sql_fields_values '".$this->id."','" . api_get_user_id() . "','" . api_get_course_id() . "','incomplete','" . api_get_session_id() . "','" . implode(',', $questionList) . "', '" . api_get_utc_datetime() . "', '$safe_lp_id', '$safe_lp_item_id', '$weight' )";
-		} else {
+		/*} else {
 			$sql = "INSERT INTO $track_exercises ($sql_fields exe_exo_id, exe_user_id, exe_cours_id, status, session_id, start_date, orig_lp_id, orig_lp_item_id)
                     VALUES($sql_fields_values '".$this->id."','".api_get_user_id()."','".api_get_course_id()."','incomplete','".api_get_session_id()."','".api_get_utc_datetime()."', '$safe_lp_id', '$safe_lp_item_id')";
-		}
+		}*/
 		Database::query($sql);
 		$id = Database::insert_id();
 		return $id;		
@@ -1553,6 +1546,7 @@ class Exercise {
 		$html = $label = '';
 		$confirmation_alert = $this->type == ALL_ON_ONE_PAGE? " onclick=\"javascript:if(!confirm('".get_lang("ConfirmYourChoice")."')) return false;\" ":"";
 		$hotspot_get = isset($_POST['hotspot']) ? Security::remove_XSS($_POST['hotspot']):null;
+		$all_button = '';
 	
 		if ($this->selectFeedbackType() == EXERCISE_FEEDBACK_TYPE_DIRECT && $this->type == ONE_PER_PAGE) {			
 			$html .='<script>
@@ -1568,26 +1562,28 @@ class Exercise {
 			//User
 			if (api_is_allowed_to_session_edit()) {
 				if ($this->type == ALL_ON_ONE_PAGE || $nbrQuestions == $questionNum) {
-					$label = get_lang('ValidateAnswer');
+					$label = get_lang('ReviewQuestions');
 					$class = 'accept';
 				} else {
 					$label = get_lang('NextQuestion');
 					$class = 'next';
 				}
-				 
-				/*if ($this->type == ALL_ON_ONE_PAGE && $nbrQuestions > 1) {
-					$all_button = '<a href="javascript://" class="a_button orange medium" onclick="save_now_all(); ">'.get_lang('SaveForNow').'</a>';
-					$all_button .= '&nbsp;<span id="save_all_reponse"></span>';
-					$html .= $all_button;
-				}*/
-	
-				if ($this->type == ONE_PER_PAGE) {
-					$all_button = '<a href="javascript://" class="a_button blue medium" onclick="save_now('.$question_id.'); ">'.$label.'</a>';
+				if ($this->type == ONE_PER_PAGE) {					
+					//Next question
+					$all_button .= '<a href="javascript://" class="a_button blue medium" onclick="save_now('.$question_id.'); ">'.$label.'</a>';
+					
+					if ($questionNum != 1) {
+						$prev_question = $questionNum - 2;
+						$all_button .= '<a href="javascript://" class="a_button white small" onclick="previous_question('.$prev_question.'); "> << </a>';
+					}
+					
 					//$all_button .= '&nbsp;<span id="save_all_reponse"></span>';
 					$all_button .= '<span id="save_for_now_'.$question_id.'"></span>&nbsp;';
+					
+					
 					$html .= $all_button;
 				} else {
-					$all_button = '<a href="javascript://" class="a_button green" onclick="validate_all(); ">'.get_lang('ValidateAnswer').'</a>';
+					$all_button = '<a href="javascript://" class="a_button green" onclick="validate_all(); ">'.get_lang('ReviewQuestions').'</a>';
 					$all_button .= '&nbsp;<span id="save_all_reponse"></span>';
 					$html .= $all_button;
 				}
@@ -1607,45 +1603,46 @@ class Exercise {
 		$time_left = intval($time_left);
 		return "<script type=\"text/javascript\">
 	
-			$(document).ready(function(){
+			$(document).ready(function() {
 	
-			function get_expired_date_string(expired_time) {
-		        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-		        var day, month, year, hours, minutes, seconds, date_string;
-		        var obj_date = new Date(expired_time);
-		        day     = obj_date.getDate();
-		        if (day < 10) day = '0' + day;
-			        month   = obj_date.getMonth();
-			        year    = obj_date.getFullYear();
-			        hours   = obj_date.getHours();
-		        if (hours < 10) hours = '0' + hours;
-		        minutes = obj_date.getMinutes();
-		        if (minutes < 10) minutes = '0' + minutes;
-		        seconds = obj_date.getSeconds();
-		        if (seconds < 10) seconds = '0' + seconds;
-		        date_string = months[month] +' ' + day + ', ' + year + ' ' + hours + ':' + minutes + ':' + seconds;
-		        return date_string;
-		      }
+				function get_expired_date_string(expired_time) {
+			        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+			        var day, month, year, hours, minutes, seconds, date_string;
+			        var obj_date = new Date(expired_time);
+			        day     = obj_date.getDate();
+			        if (day < 10) day = '0' + day;
+				        month   = obj_date.getMonth();
+				        year    = obj_date.getFullYear();
+				        hours   = obj_date.getHours();
+			        if (hours < 10) hours = '0' + hours;
+			        minutes = obj_date.getMinutes();
+			        if (minutes < 10) minutes = '0' + minutes;
+			        seconds = obj_date.getSeconds();
+			        if (seconds < 10) seconds = '0' + seconds;
+			        date_string = months[month] +' ' + day + ', ' + year + ' ' + hours + ':' + minutes + ':' + seconds;
+			        return date_string;
+				}
 	
-	      function onExpiredTimeExercise() { 
-	        $('#wrapper-clock').hide(); $('#exercise_form').hide();
-	        $('#expired-message-id').show();
-	        $('#exercise_form').submit();	     		
-	      }
+				function onExpiredTimeExercise() { 
+        			$('#wrapper-clock').hide(); 
+        			$('#exercise_form').hide();
+        			$('#expired-message-id').show();
+        			$('#exercise_form').submit();	     		
+	      		}
 	
-	      var current_time = new Date().getTime();
-	      var time_left    = parseInt(".$time_left.");
-	      var expired_time = current_time + (time_left*1000);
-	      var expired_date = get_expired_date_string(expired_time);
-	
-	       $('#text-content').epiclock({
-	         mode: EC_COUNTDOWN,
-	         format: 'x{ : } i{ : } s{}',
-	         target: expired_date,
-	         onTimer: function(){ onExpiredTimeExercise(); }
-	       }).clocks(EC_RUN);
+				var current_time = new Date().getTime();
+				var time_left    = parseInt(".$time_left.");
+				var expired_time = current_time + (time_left*1000);
+				var expired_date = get_expired_date_string(expired_time);
+					
+	       		$('#text-content').epiclock({
+	         		mode: EC_COUNTDOWN,
+	         		format: 'x{ : } i{ : } s{}',
+	         		target: expired_date,
+	         		onTimer: function(){ onExpiredTimeExercise(); }
+	       		}).clocks(EC_RUN);
 	       
-	       $('#submit_save').click(function () {});
+	       		$('#submit_save').click(function () {});
 	    });
 	    </script>";
 	}
