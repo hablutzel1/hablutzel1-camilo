@@ -1,4 +1,4 @@
-<?php //$id: $
+<?php
 /* For licensing terms, see /chamilo_license.txt */
 /**
  * @package chamilo.social
@@ -87,19 +87,9 @@ echo '<div id="social-content">';
                         <div><p><strong>'.get_lang('Email').'</strong><br /><span class="social-groups-text4">'.($user_info['email']?$user_info['email']:'').'</span></p></div>
                         <div class="box_description_group_actions" ><a href="'.api_get_path(WEB_PATH).'main/auth/profile.php">'.Display::return_icon('profile_edit.png', get_lang('EditProfile'), array('hspace'=>'6')).get_lang('EditProfile').'</a></div>';
                 echo '</div>';
-                /*
-			echo '<div class="rounded_div" style="width:280px">';
-            if (count($user_online_list) > 0) {
-                echo' <div class="clear"></div>
-                        <h3>'.get_lang('UsersOnline').'</strong> </p></h3>';
-                                echo '<center>'.SocialManager::display_user_list($user_online_list).'</center>';
-                
-            }            
-            echo '</div>';*/
-            
+                 
             //Search box
-			echo '<div class="social-box-right">';
-			echo '<br />';
+			echo '<div class="social-box-right">';			
 			echo UserManager::get_search_form('');
 			echo '<br />';
 
@@ -111,6 +101,8 @@ echo '<div id="social-content">';
 			if (!empty($results)) {
     			foreach ($results as $result) {
     				$id = $result['id'];    				
+    				$result['description'] = Security::remove_XSS($result['description'], STUDENT, true);
+    				$result['name'] = Security::remove_XSS($result['name'], STUDENT, true);
     			    if ($result['count'] == 1 ) {
                         $result['count'] = '1 '.get_lang('Member');
                     } else {
@@ -129,6 +121,8 @@ echo '<div id="social-content">';
 			
 			$groups_pop = array();
 			foreach ($results as $result) {
+				$result['description'] = Security::remove_XSS($result['description'], STUDENT, true);
+				$result['name'] = Security::remove_XSS($result['name'], STUDENT, true);
 				$id = $result['id'];
                 $group_url = "groups.php?id=$id";
 				

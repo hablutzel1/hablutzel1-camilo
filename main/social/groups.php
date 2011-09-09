@@ -179,7 +179,7 @@ if ($group_id != 0 ) {
 echo '<div id="social-content">';
 	echo '<div id="social-content-left">';
 		//this include the social menu div
-		if ($group_id != 0 ) {
+		if ($group_id != 0 ) {									
 			SocialManager::show_social_menu('groups',$group_id);
 		} else {
 			$show_menu = 'browse_groups';
@@ -219,10 +219,9 @@ if ($group_id != 0 ) {
 	echo '<div class="head_group">';    
 		echo '<div id="social-group-details">';
 				//Group's title
-				echo '<h1><a href="groups.php?id='.$group_id.'">'.$group_info['name'].'</a></h1>';
-				//Group's description
-				echo '<div class="social-group-details-info">'.$group_info['description'].'</div>';
-				echo '<div class="social-group-details-info"><a target="_blank" href="'.$group_info['url'].'">'.$group_info['url'].'</a></div>';
+				echo '<h1><a href="groups.php?id='.$group_id.'">'.Security::remove_XSS($group_info['name'], STUDENT, true).'</a></h1>';
+				
+				//echo '<div class="social-group-details-info"><a target="_blank" href="'.$group_info['url'].'">'.$group_info['url'].'</a></div>';
 				
 				//Privacy
 				if (!$is_group_member) {
@@ -330,6 +329,8 @@ if ($group_id != 0 ) {
 		if (is_array($results) && count($results) > 0) {
 			foreach ($results as $result) {
 				$id = $result['id'];
+				$result['name'] = Security::remove_XSS($result['name'], STUDENT, true);
+				$result['description'] = Security::remove_XSS($result['description'], STUDENT, true);
 				$my_group_list[] = $id;
 				$url_open  = '<a href="groups.php?id='.$id.'">';
 				$url_close = '</a>';
@@ -373,7 +374,8 @@ if ($group_id != 0 ) {
 		$results = GroupPortalManager::get_groups_by_age(4,false);
 		$grid_newest_groups = array();
 		foreach ($results as $result) {
-		    
+			$result['name'] = Security::remove_XSS($result['name'], STUDENT, true);
+			$result['description'] = Security::remove_XSS($result['description'], STUDENT, true);
 			$id = $result['id'];
 			$url_open  = '<a href="groups.php?id='.$id.'">';
 			$url_close = '</a>';
@@ -417,6 +419,8 @@ if ($group_id != 0 ) {
 
 		if (is_array($results) && count($results) > 0) {
 			foreach ($results as $result) {
+				$result['name'] = Security::remove_XSS($result['name'], STUDENT, true);
+				$result['description'] = Security::remove_XSS($result['description'], STUDENT, true);
 				$id = $result['id'];
 				$url_open  = '<a href="groups.php?id='.$id.'">';
 				$url_close = '</a>';
