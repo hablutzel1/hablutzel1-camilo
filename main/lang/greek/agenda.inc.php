@@ -1,0 +1,59 @@
+<?php
+/*
+for more information: see languages.txt in the lang folder.
+*/
+$AgendaAdd = "Προσθήκη ενός γεγονότος";
+$ShowAllEvents = "Προβολή όλων των γεγονότων";
+$ShowCurrent = "Προβολή γεγονότων αυτού του μήνα";
+$AddCalendarItem = "Προσθήκη ενός γεγονότος";
+$Day = "Μέρα";
+$Month = "Μήνας";
+$Year = "Έτος";
+$Hour = "Ώρα";
+$Minutes = "Λεπτά";
+$Detail = "Λεπτομέρεια";
+$EditSuccess = "Το γεγονός τροποποιήθηκε";
+$AddSuccess = "Το γεγονός προστέθηκε";
+$AgendaDeleteSuccess = "Το γεγονός διαγράφηκε";
+$NoAgendaItems = "Δεν υπάρχουν γεγονότα στην Αντζέντα";
+$lang_september = "Σεπτέμβριος";
+$langClassName = " Όνομα τάξης";
+$lang_agenda = "Ατζέντα";
+$ModifyCalendarItem = "Τροποποίηση";
+$ItemTitle = "Τίτλος";
+$langDay = "Μέρα";
+$month_default = "Εξ ορισμού μήνας";
+$langYear = "Έτος";
+$year_default = "Εξ ορισμού έτος";
+$langHour = "Ώρα";
+$hour_default = "Εξ ορισμού ώρα";
+$langMinute = "Λεπτά";
+$langLasting = "Διάρκεια";
+$langOldToNew = "Τα παλαιότερα πρώτα";
+$langNewToOld = "Τα νεώτερα πρώτα";
+$langNow = "τώρα";
+$langAddEvent = "Προσθήκη ενός γεγονότος";
+$langDetail = "Λεπτομέρειες";
+$MonthView = "Mήνας";
+$WeekView = "Εβδομάδα";
+$DayView = "Ημέρα";
+$AddPersonalItem = "Προσθήκη ενός προσωπικού γεγονότος";
+$Week = "Εβδομάδα";
+$Date = "Ημερομηνία";
+$Time = "Ώρα";
+$AddPersonalCalendarItem = "Προσθήκη ενός προσωπικού γεγονότος";
+$ModifyPersonalCalendarItem = "Τροποποίηση προσωπικού γεγονότος";
+$PeronalAgendaItemAdded = "Προστέθηκε επιτυχώς το προσωπικό γεγονός που καταχώρισες";
+$PeronalAgendaItemEdited = "Τροποποιήθηκε επιτυχώς το προσωπικό γεγονός";
+$PeronalAgendaItemDeleted = "Διαγράφηκε επιτυχώς το προσωπικό γεγονός";
+$ViewPersonalItem = "Προβολή προσωπικών γεγονότων";
+$UserGroupFilter = "Διαχώρισε βάση ομάδας/χρήστη";
+$ShowAll = "Εμφάνιση Όλων";
+$Print = "Εκτύπωση";
+$NewAnnouncement = "Νέα ανακοίνωση";
+$RepeatDaily = "Καθημερινά";
+$RepeatWeekly = "Εβδομαδιαία";
+$RepeatMonthlyByDate = "Μηνιαία, ανά ημερομηνία";
+$RepeatMonthlyByDay = "Μηνιαία, ανά ημέρα";
+$RepeatYearly = "Ετήσια";
+?>
