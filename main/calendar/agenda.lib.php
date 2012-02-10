@@ -300,21 +300,26 @@ class Agenda {
 		$delta = intval($delta);
 		
 		$event = $this->get_event($id);
+        
+        $all_day = 0;
+        if ($day_delta == 0 && $minute_delta == 0) {
+            $all_day = 1;
+        }        
 		
 		if (!empty($event)) {
 			switch($this->type) {
 				case 'personal':
-					$sql = "UPDATE $this->tbl_personal_agenda SET date = DATE_ADD(date, INTERVAL $delta MINUTE), enddate = DATE_ADD(enddate, INTERVAL $delta MINUTE) 
+					$sql = "UPDATE $this->tbl_personal_agenda SET all_day = $all_day, date = DATE_ADD(date, INTERVAL $delta MINUTE), enddate = DATE_ADD(enddate, INTERVAL $delta MINUTE) 
 							WHERE id=".intval($id);					
 					$result = Database::query($sql);				
 					break;
 				case 'course':
-					$sql = "UPDATE $this->tbl_course_agenda SET start_date = DATE_ADD(start_date,INTERVAL $delta MINUTE), end_date = DATE_ADD(end_date, INTERVAL $delta MINUTE)
+					$sql = "UPDATE $this->tbl_course_agenda SET all_day = $all_day, start_date = DATE_ADD(start_date,INTERVAL $delta MINUTE), end_date = DATE_ADD(end_date, INTERVAL $delta MINUTE)
 							WHERE c_id = ".$this->course['real_id']." AND id=".intval($id);
 					$result = Database::query($sql);					
 					break;
 				case 'admin':
-					$sql = "UPDATE $this->tbl_global_agenda SET start_date = DATE_ADD(start_date,INTERVAL $delta MINUTE), end_date = DATE_ADD(end_date, INTERVAL $delta MINUTE)
+					$sql = "UPDATE $this->tbl_global_agenda SET all_day = $all_day, start_date = DATE_ADD(start_date,INTERVAL $delta MINUTE), end_date = DATE_ADD(end_date, INTERVAL $delta MINUTE)
 							WHERE id=".intval($id);
 					$result = Database::query($sql);
 					break;
@@ -333,14 +338,14 @@ class Agenda {
 		$event = null;
 		switch ($this->type) {
 			case 'personal':				
-				$sql = " SELECT * FROM ".$this->tbl_personal_agenda." WHERE id=".$id." AND user = ".api_get_user_id();
+				$sql = " SELECT * FROM ".$this->tbl_personal_agenda." WHERE id = $id AND user = ".api_get_user_id();
 				$result = Database::query($sql);				
 				if (Database::num_rows($result)) {
 					$event = Database::fetch_array($result, 'ASSOC');
 				}
 				break;
 			case 'course':
-				$sql = " SELECT * FROM ".$this->tbl_course_agenda." WHERE id=".$id;
+				$sql = " SELECT * FROM ".$this->tbl_course_agenda." WHERE c_id = ".$this->course['real_id']." AND id = ".$id;
 				$result = Database::query($sql);
 				if (Database::num_rows($result)) {
 					$event = Database::fetch_array($result, 'ASSOC');
@@ -469,8 +474,6 @@ class Agenda {
 		$events = array();
 		if (Database::num_rows($result)) {
 			while ($row = Database::fetch_array($result, 'ASSOC')) {
-                                 
-                //session_id = {$row['ref']} AND
                 //to gather sent_tos
                 $sql = "SELECT to_user_id, to_group_id
                     FROM ".$tbl_property." ip
@@ -498,6 +501,20 @@ class Agenda {
 				}
 				$event = array();
 				$event['id'] 	  		= 'course_'.$row['id'];
+                
+                $attachment = get_attachment($row['id'], $course_id);
+                
+                $has_attachment = '';
+                
+                if (!empty($attachment)) {
+                    $has_attachment =  Display::return_icon('attachment.gif',get_lang('Attachment'));
+                    $user_filename  = $attachment['filename'];                    
+                    $full_file_name = 'download.php?file='.$attachment['path'].'&course_id='.$course_id;                    
+                    $event['attachment'] = $has_attachment.Display::url($user_filename, $full_file_name);                                           
+                } else {
+                    $event['attachment'] = '';
+                }
+                
 				$event['title'] 		= $row['title'];
 				$event['className'] 	= 'course';
 				$event['allDay'] 	  	= 'false';
@@ -536,7 +553,9 @@ class Agenda {
                             $sent_to[] = $group_name_list[$group_item];        
                         }
                     }
-                    $event['sent_to'] = implode(', ', $sent_to);
+                    $sent_to = implode('@@', $sent_to);                    
+                    $sent_to =  str_replace('@@', '</div><div class="label_tag notice">', $sent_to);
+                    $event['sent_to'] = '<div class="label_tag notice">'.$sent_to.'</div>';
                     $event['type']    = 'group';    
                 }
 
@@ -548,16 +567,20 @@ class Agenda {
                         $sent_to = array();
                         foreach($user_to_array as $item) {
                             $user_info = api_get_user_info($item);   
-                            $sent_to[] = $user_info['complete_name'];        
+                            // add username as tooltip for $event['sent_to'] - ref #4226
+                            $username = api_htmlentities(sprintf(get_lang('LoginX'), $user_info['username']), ENT_QUOTES);                            
+                            $sent_to[] = "<span title='".$username."'>".$user_info['complete_name']."</span>";        
                         }
-                    }
-                    $event['sent_to'] = implode(', ', $sent_to);
-//                    $event['sent_to'] = $row['to_user_id'];
+                    }                    
+                    $sent_to = implode('@@', $sent_to);                    
+                    $sent_to =  str_replace('@@', '</div><div class="label_tag notice">', $sent_to);
+                    $event['sent_to'] = '<div class="label_tag notice">'.$sent_to.'</div>';
+
                 }
                 
                 //Event sent to everyone!
                 if (empty($event['sent_to'])) {
-                    $event['sent_to'] = get_lang('Everyone');
+                    $event['sent_to'] = '<div class="label_tag notice">'.get_lang('Everyone').'</div>';
                 }
                 
                 
@@ -565,9 +588,9 @@ class Agenda {
 				
 				$event['allDay'] = isset($row['all_day']) && $row['all_day'] == 1 ? $row['all_day'] : 0;					
 	
-				$my_events[] = $event;	
+				//$my_events[] = $event;
 	
-				$this->events[] = $event;
+				$this->events[] = $event;                
 			}
 		}
 		return $events;
@@ -632,7 +655,7 @@ class Agenda {
     * @return html code
     */
     function construct_not_selected_select_form($group_list=null, $user_list=null,$to_already_selected=array()) {
-        $html = '<select id="users_to_send_id" name="users_to_send[]" size="5" multiple="multiple" style="width:250px" class="chzn-select">';
+        $html = '<select id="users_to_send_id" data-placeholder="'.get_lang('Select').'" name="users_to_send[]" multiple="multiple" style="width:250px" class="chzn-select">';
     
         // adding the groups to the select form
         
@@ -659,10 +682,13 @@ class Agenda {
         if (is_array($group_list)) {
             $html .= '<optgroup label="'.get_lang('Users').'">';
         }
-        foreach($user_list as $this_user) {
+        foreach ($user_list as $this_user) {
             // $to_already_selected is the array containing the users (and groups) that are already selected
             if (!is_array($to_already_selected) || !in_array("USER:".$this_user['user_id'],$to_already_selected)) {
-                $html .= "<option value=\"USER:".$this_user['user_id']."\">".api_get_person_name($this_user['firstname'], $this_user['lastname'])." (".$this_user['username'].")</option>";
+                $username = api_htmlentities(sprintf(get_lang('LoginX'), $this_user['username']), ENT_QUOTES);
+                // @todo : add title attribute $username in the jqdialog window. wait for a chosen version to inherit title attribute
+                // from <option> to <li>
+                $html .= '<option title="'.$username.'" value="USER:'.$this_user['user_id'].'">'.api_get_person_name($this_user['firstname'], $this_user['lastname']).' ('.$this_user['username'].') </option>';
             }
         }
         if (is_array($group_list)) {

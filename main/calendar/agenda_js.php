@@ -8,7 +8,7 @@
  */
 
 // name of the language file that needs to be included
-$language_file = array('agenda','group');
+$language_file = array('agenda', 'group', 'announcements');
 
 // use anonymous mode when accessing this course tool
 $use_anonymous = true;
@@ -17,7 +17,7 @@ require_once '../inc/global.inc.php';
 require_once 'agenda.lib.php';
 require_once 'agenda.inc.php';
 
-$htmlHeadXtra[] = api_get_jquery_ui_js();
+$htmlHeadXtra[] = api_get_jquery_libraries_js(array('jquery-ui','jquery-ui-i18n'));
 $htmlHeadXtra[] = api_get_js('qtip2/jquery.qtip.min.js');
 $htmlHeadXtra[] = api_get_js('fullcalendar/fullcalendar.min.js');
 $htmlHeadXtra[] = api_get_css(api_get_path(WEB_LIBRARY_PATH).'javascript/fullcalendar/fullcalendar.css');
@@ -71,6 +71,17 @@ $tpl->assign('button_text', 		json_encode(array(	'today'	=> get_lang('Today'),
 														'week'	=> get_lang('Week'), 
 														'day'	=> get_lang('Day'))));
 
+//see http://docs.jquery.com/UI/Datepicker/$.datepicker.formatDate
+
+$tpl->assign('js_format_date', 	'D d M yy');
+$region_value = api_get_language_isocode();
+
+if ($region_value == 'en') {
+    $region_value = 'en-GB';
+}
+$tpl->assign('region_value', 	$region_value);
+
+
 if (api_is_allowed_to_edit(false,true) OR (api_get_course_setting('allow_user_edit_agenda') && !api_is_anonymous()) && api_is_allowed_to_session_edit(false,true)) {
     if ($type == 'course') {
         $actions = display_courseadmin_links();
@@ -89,15 +100,18 @@ $tpl->assign('type_label', get_lang(ucfirst($type).'Calendar'));
 $tpl->assign('can_add_events', $can_add_events);
 
 //Setting AJAX caller
-$agenda_ajax_url = api_get_path(WEB_AJAX_PATH).'agenda.ajax.php?type='.$type.'&';
+$agenda_ajax_url = api_get_path(WEB_AJAX_PATH).'agenda.ajax.php?type='.$type;
 $tpl->assign('web_agenda_ajax_url', $agenda_ajax_url);
 
 $course_code  = api_get_course_id();
 
 
 if (api_is_allowed_to_edit() && $course_code != '-1' && $type == 'course') {
-    
-    $user_list  = CourseManager::get_user_list_from_course_code(api_get_course_id());
+    $order = 'lastname';
+    if (api_is_western_name_order) {
+        $order = 'firstname';    
+    }    
+    $user_list  = CourseManager::get_user_list_from_course_code(api_get_course_id(), api_get_session_id(), null, $order);
     $group_list = CourseManager::get_group_list_of_course(api_get_course_id(), api_get_session_id());
 
     $agenda = new Agenda();

@@ -1181,4 +1181,7 @@ $Matches = "Correspondances";
 $WelcomeUserXToTheSiteX = "%s, bienvenue sur %s";
 $CheckUsersWithId = "Utiliser l'ID utilisateur du fichier pour l'inscription";
 $MB = "MB";
+$GroupReply = "Réponse";
+$GroupReplies = "Réponses";
+$LoginX = "Identifiant : %s";
 ?>

@@ -18,7 +18,17 @@ function clean_user_select() {
         .end();
 }
 
+var region_value = '{$region_value}';
 $(document).ready(function() {
+
+    /*$("body").delegate(".datetime", "focusin", function(){
+        $(this).datepicker({
+            stepMinute: 10,            
+            dateFormat: 'dd/mm/yy',
+            timeFormat: 'hh:mm:ss'            
+        });
+    });*/
+
 	
 	var date = new Date();
 	var d = date.getDate();
@@ -29,7 +39,9 @@ $(document).ready(function() {
 		autoOpen: false,
 		modal	: false, 
 		width	: 550, 
-		height	: 450
+		height	: 450,
+        zIndex: 20000 // added because of qtip2
+
    	});
 
 	var title = $( "#title" ),
@@ -68,6 +80,8 @@ $(document).ready(function() {
             //$("#users_to_send_id").trigger("liszt:updated");            
         }
     });
+    
+    $.datepicker.setDefaults( $.datepicker.regional[region_value] );
 	
 	var calendar = $('#calendar').fullCalendar({
 		header: {
@@ -80,12 +94,13 @@ $(document).ready(function() {
 		monthNamesShort:{$month_names_short},
 		dayNames: 		{$day_names},
 		dayNamesShort: 	{$day_names_short},		
+        firstHour: 8,
+        firstDay: 1, 
 		selectable	: true,
 		selectHelper: true,
 		//add event
 		select: function(start, end, allDay, jsEvent, view) {
-			/* When selecting one day or several days */
-			
+			/* When selecting one day or several days */			
 			var start_date 	= Math.round(start.getTime() / 1000);
 			var end_date 	= Math.round(end.getTime() / 1000);
 			
@@ -103,19 +118,23 @@ $(document).ready(function() {
 			$("#users_to_send_id").trigger("liszt:updated");
 			
 			if ({$can_add_events} == 1) {							
-				var url = '{$web_agenda_ajax_url}a=add_event&start='+start_date+'&end='+end_date+'&all_day='+allDay+'&view='+view.name;
+				var url = '{$web_agenda_ajax_url}&a=add_event&start='+start_date+'&end='+end_date+'&all_day='+allDay+'&view='+view.name;
+                
+                var start_date_value = $.datepicker.formatDate('{$js_format_date}', start);
+                var end_date_value  = $.datepicker.formatDate('{$js_format_date}', end);
 				
-				$('#start_date').html(start.toDateString() + " " +  start.toTimeString().substr(0, 8));
+				$('#start_date').html(start_date_value + " " +  start.toTimeString().substr(0, 8));
+                
 				if (view.name != 'month') {
-					$('#start_date').html(start.toDateString() + " " +  start.toTimeString().substr(0, 8));
+					$('#start_date').html(start_date_value + " " +  start.toTimeString().substr(0, 8));
 					if (start.toDateString() == end.toDateString()) {					
 						$('#end_date').html(' - '+end.toTimeString().substr(0, 8));
 					} else {
-						$('#end_date').html(' - '+end.toDateString()+" " + end.toTimeString().substr(0, 8));
+						$('#end_date').html(' - '+start_date_value+" " + end.toTimeString().substr(0, 8));
 					}
 				} else {
-					$('#start_date').html(start.toDateString());
-					$('#end_date').html(' - ' + end.toDateString());					
+					$('#start_date').html(start_date_value);
+					$('#end_date').html(' ');					
 				}
 				$('#color_calendar').html('{$type_label}');
 				$('#color_calendar').removeClass('group_event');
@@ -154,6 +173,19 @@ $(document).ready(function() {
 			}
 		},	
 		eventRender: function(event, element) {
+        
+            if (event.attachment) {
+                element.qtip({
+                    show: {
+                        event: false, // Don't specify a show event...
+                        ready: true // ... but show the tooltip when ready
+                    },
+                    hide: false, // Don't specify a hide event either!
+		            content: event.attachment,
+		            position: { at:'top right' , my:'bottom right'},	
+		        }).removeData('qtip'); // this is an special hack to add multipl qtip in the same target!
+            }
+            
 			if (event.description) {
 				element.qtip({
 		            content: event.description,
@@ -201,8 +233,8 @@ $(document).ready(function() {
 				
 				$("#dialog-form").dialog("open");
 	
-				var url = '{$web_agenda_ajax_url}a=edit_event&id='+calEvent.id+'&start='+start_date+'&end='+end_date+'&all_day='+calEvent.allDay+'&view='+view.name;
-				var delete_url = '{$web_agenda_ajax_url}a=delete_event&id='+calEvent.id;
+				var url = '{$web_agenda_ajax_url}&a=edit_event&id='+calEvent.id+'&start='+start_date+'&end='+end_date+'&all_day='+calEvent.allDay+'&view='+view.name;
+				var delete_url = '{$web_agenda_ajax_url}&a=delete_event&id='+calEvent.id;
 				
 				$("#dialog-form").dialog({				
 					buttons: {
@@ -253,12 +285,12 @@ $(document).ready(function() {
 			}
 		},
 		editable: true,		
-		events: "{$web_agenda_ajax_url}a=get_events",		
+		events: "{$web_agenda_ajax_url}&a=get_events",
 		eventDrop: function(event, day_delta, minute_delta, all_day, revert_func) {		
 			$.ajax({
 				url: '{$web_agenda_ajax_url}',
 				data: {
-					a: 'move_event', id: event.id, day_delta: day_delta, minute_delta: minute_delta
+					a:'move_event', id: event.id, day_delta: day_delta, minute_delta: minute_delta
 				}
 			});
 		},
@@ -309,6 +341,8 @@ $(document).ready(function() {
 			</div>
 			<div class="formw">
 				<span id="start_date"></span><span id="end_date"></span>
+                <!-- <input type="text" id="start_date_input" class="datetime"/>
+                <input type="text" id="end_date_input" class="datetime"/> -->
 			</div>					
 		</div>
 		<div class="row">

@@ -250,7 +250,7 @@ if (api_get_setting('extended_profile') == 'true') {
 	if (!isset($_GET['type']) || (isset($_GET['type']) && $_GET['type'] == 'extended')) {
 		$width_extended_profile = 500;
 		//$form->addElement('html', '<a href="javascript: void(0);" onclick="javascript: show_extend();"> show_extend_profile</a>');
-		$form->addElement('static', null, '<em>'.get_lang('OptionalTextFields').'</em>');
+		//$form->addElement('static', null, '<em>'.get_lang('OptionalTextFields').'</em>');
 		//	MY COMPETENCES
 		$form->add_html_editor('competences', get_lang('MyCompetences'), false, false, array('ToolbarSet' => 'Profile', 'Width' => $width_extended_profile, 'Height' => '130'));
 		//	MY DIPLOMAS
@@ -528,11 +528,11 @@ function check_user_password($password){
  * @return	bool true o false
  * @uses Gets user ID from global variable
  */
-function check_user_email($email){
-	global $_user;
+function check_user_email($email) {
 	$user_id = api_get_user_id();
 	if ($user_id != strval(intval($user_id)) || empty($email)) { return false; }
 	$table_user = Database :: get_main_table(TABLE_MAIN_USER);
+    $email = Database::escape_string($email);
 	$sql_password = "SELECT * FROM $table_user WHERE user_id='".$user_id."' AND email='".$email."'";
 	$result = Database::query($sql_password);
 	return Database::num_rows($result) != 0;
@@ -670,17 +670,25 @@ if ($form->validate()) {
 	$available_values_to_modify = array();
 	foreach($profile_list as $key => $status) {	    
 	    if ($status == 'true') {
-            if ($key == 'name') {
-               $available_values_to_modify[] = 'firstname';
-               $available_values_to_modify[] = 'lastname'; 
-            } elseif ($key == 'picture') {
-               $available_values_to_modify[] = 'picture_uri';               
-            } else {
-    	       $available_values_to_modify[] = $key;
-    	    } 
+            switch($key) {
+                case 'login':
+                    $available_values_to_modify[] = 'username';
+                    break;
+                case 'name':
+                    $available_values_to_modify[] = 'firstname';
+                    $available_values_to_modify[] = 'lastname'; 
+                    break;
+                case 'picture':
+                    $available_values_to_modify[] = 'picture_uri';
+                    break;
+                default:
+                    $available_values_to_modify[] = $key;
+                    break;
+            }            
 	    }
-	}	
-	//Fixing missing variables
+	}
+    
+	//Fixing missing variables    
     $available_values_to_modify = array_merge($available_values_to_modify, array('competences', 'diplomas', 'openarea', 'teach', 'openid'));
     
 	// build SQL query
@@ -856,9 +864,8 @@ $url_big_image      = $big_image.'?rnd='.time();
 if (api_get_setting('allow_social_tool') == 'true') {
 	echo '<div id="social-content">';
 		echo '<div id="social-content-left">';
-		SocialManager::show_social_menu('home', null, api_get_user_id(), false);
+		echo SocialManager::show_social_menu('home', null, api_get_user_id(), false);
 		echo '</div>';
-
 		echo '<div id="social-content-right">';
         $form->display();			
 	echo '</div>';

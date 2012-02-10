@@ -993,9 +993,15 @@ class CourseManager {
      * @param	bool	True for checking inside sessions too, by default is not checked
      * @return 	bool 	true if the user is registered in the course, false otherwise
      */
-    public static function is_user_subscribed_in_course($user_id, $course_code = null, $in_a_session = false) {
+    public static function is_user_subscribed_in_course($user_id, $course_code = null, $in_a_session = false, $session_id = null) {
 
         $user_id = intval($user_id);
+        
+        if (empty($session_id)) {
+            $session_id = api_get_session_id();
+        } else {
+            $session_id = intval($session_id);
+        }
 
         $condition_course = '';
         if (isset($course_code)) {
@@ -1005,10 +1011,11 @@ class CourseManager {
 
         $result = Database::fetch_array(Database::query("SELECT * FROM ".Database::get_main_table(TABLE_MAIN_COURSE_USER)."
                 WHERE user_id = $user_id AND relation_type<>".COURSE_RELATION_TYPE_RRHH." $condition_course "));
+        
         if (!empty($result)) {
             return true; // The user has been registered in this course.
         }
-
+        
         if (!$in_a_session) {
             return false; // The user has not been registered in this course.
         }
@@ -1024,7 +1031,7 @@ class CourseManager {
         }
 
         if (Database::num_rows(Database::query('SELECT 1 FROM '.Database::get_main_table(TABLE_MAIN_SESSION).
-                ' WHERE id='.intval($_SESSION['id_session']).' AND id_coach='.$user_id)) > 0) {
+                ' WHERE id='.$session_id.' AND id_coach='.$user_id)) > 0) {
             return true;
         }
 
@@ -1119,7 +1126,7 @@ class CourseManager {
      * @param string $order_by the field to order the users by. Valid values are 'lastname', 'firstname', 'username', 'email', 'official_code' OR a part of a SQL statement that starts with ORDER BY ...
      *  @return array
      */
-    public static function get_user_list_from_course_code($course_code, $with_session = true, $session_id = 0, $limit = '', $order_by = '') {        
+    public static function get_user_list_from_course_code($course_code, $session_id = 0, $limit = '', $order_by = '') {        
         // variable initialisation
         $session_id 	= intval($session_id);        
         $course_code 	= Database::escape_string($course_code);
@@ -1374,7 +1381,7 @@ class CourseManager {
         $virtual_course_list = self::get_virtual_courses_linked_to_real_course($course_code);
 
         //get users from real course
-        $user_list = self::get_user_list_from_course_code($course_code, $with_sessions, $session_id);
+        $user_list = self::get_user_list_from_course_code($course_code, $session_id);
         foreach ($user_list as $this_user) {
             $complete_user_list[] = $this_user;
         }
@@ -1382,7 +1389,7 @@ class CourseManager {
         //get users from linked courses
         foreach ($virtual_course_list as $this_course) {
             $course_code = $this_course['code'];
-            $user_list = self::get_user_list_from_course_code($course_code, $with_sessions, $session_id);
+            $user_list = self::get_user_list_from_course_code($course_code, $session_id);
             foreach ($user_list as $this_user) {
                 $complete_user_list[] = $this_user;
             }
@@ -3505,7 +3512,7 @@ class CourseManager {
      * @param id    url id
      * 
      **/    
-    public function update_course_ranking($course_id = null, $session_id = null, $url_id = null, $points_to_add = null, $add_access = true, $add_user = true) {        
+    public static function update_course_ranking($course_id = null, $session_id = null, $url_id = null, $points_to_add = null, $add_access = true, $add_user = true) {        
         //Course catalog stats modifications see #4191        
         $table_course_ranking       = Database::get_main_table(TABLE_STATISTIC_TRACK_COURSE_RANKING);
                 

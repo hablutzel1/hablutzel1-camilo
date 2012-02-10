@@ -5,7 +5,7 @@
  *
  *	@package chamilo.document
  *
- * @author Juan Carlos Ra�a Trabado
+ * @author Juan Carlos Raña Trabado
  * @since 30/january/2011
 */
 /**
@@ -44,12 +44,12 @@ $dirBaseDocuments = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document';
 $saveDir=$dirBaseDocuments.$_SESSION['paint_dir'];
 $contents = file_get_contents($urlcontents);
 
-//Verify that the URL is pointing to a file @ pixlr.com
-if (strpos($urlcontents, "pixlr.com") == 0){
+//Verify that the URL is pointing to a file @ pixlr.com domain or an ip @ pixlr.com
+if (strpos($urlcontents, "pixlr.com") == 0 && strpos($urlcontents, "69.164.195.250") == 0 && strpos($urlcontents, "173.255.196.130") == 0
+&& strpos($urlcontents, "173.255.196.177") == 0) {
   echo "Invalid referrer";
   exit;
 }
-
 //Verify that the file is an image
 $headers = get_headers($urlcontents, 1);
 $content_type = explode("/", $headers['Content-Type']);

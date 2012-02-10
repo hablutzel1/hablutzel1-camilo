@@ -258,6 +258,13 @@ if (!empty($track_exercise_info['data_tracking']) && !empty($track_exercise_info
 	}		
 }
 
+// Display the text when finished message if we are on a LP #4227
+$end_of_message = $objExercise->selectTextWhenFinished();
+if (!empty($end_of_message) && ($origin == 'learnpath')) {
+    Display::display_normal_message($end_of_message, false);
+    echo "<div class='clear'>&nbsp;</div>";
+}
+
 // for each question
 $total_weighting = 0;
 foreach ($questionList as $questionId) {
@@ -619,7 +626,9 @@ if ($is_allowedToEdit) {
 	}
 	if ($origin!='learnpath' && $origin!='student_progress') {
 		?>
-		<button type="submit" class="save" value="<?php echo get_lang('Ok'); ?>" onclick="getFCK('<?php echo $strids; ?>','<?php echo $marksid; ?>');"><?php echo get_lang('FinishTest'); ?></button>
+		<button type="submit" class="save" value="<?php echo get_lang('Ok'); ?>" onclick="getFCK('<?php echo $strids; ?>','<?php echo $marksid; ?>');">
+            <?php echo get_lang('CorrectTest'); ?>
+        </button>
 		</form>
 		<?php
 	}
@@ -631,7 +640,9 @@ if ($origin =='student_progress') {?>
 <?php
 } else if($origin=='myprogress') {
 ?>
-	<button type="button" class="save" onclick="top.location.href='../auth/my_progress.php?course=<?php echo api_get_course_id()?>'" value="<?php echo get_lang('Finish'); ?>" ><?php echo get_lang('Finish');?></button>
+	<button type="button" class="save" onclick="top.location.href='../auth/my_progress.php?course=<?php echo api_get_course_id()?>'" value="<?php echo get_lang('Finish'); ?>" >
+        <?php echo get_lang('Finish');?>
+    </button>
 <?php
 }
 

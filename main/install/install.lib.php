@@ -597,12 +597,19 @@ function database_server_connect() {
     @Database::query("set session sql_mode='';"); // Disabling special SQL modes (MySQL 5)
 }
 
+/**
+ * Database exists for the MYSQL user
+ * @param type $database_name
+ * @return boolean 
+ */
 function database_exists($database_name) {
+    $select_database = Database::select_db($database_name);
+    $show_database = false;
     $result = @Database::query("SHOW DATABASES LIKE '".Database::escape_string($database_name)."' ");
     if (Database::num_rows($result)) {
-        return true;
-    }
-    return false;
+        $show_database = true;
+    }    
+    return $select_database || $show_database;
 }
 
 /**
@@ -618,7 +625,7 @@ function test_db_connect($dbHostForm, $dbUsernameForm, $dbPassForm, $singleDbFor
     $dbConnect = -1;
     //Checking user credentials
     if (@Database::connect(array('server' => $dbHostForm, 'username' => $dbUsernameForm, 'password' => $dbPassForm)) !== false) {
-        $check_user_can_create_databases = true;
+        //$check_user_can_create_databases = true;
         //Checking if single database exist 
         
         /*if ($singleDbForm) {
@@ -653,7 +660,7 @@ function test_db_connect($dbHostForm, $dbUsernameForm, $dbPassForm, $singleDbFor
     } else {
         $dbConnect = -1;
     }    
-    return $dbConnect; //return "1"if no problems, "0" if, in case we can't create a new DB and "-1" if there is no connection.
+    return $dbConnect; //return 1, if no problems, "0" if, in case we can't create a new DB and "-1" if there is no connection.
 }
 
 /**
@@ -1121,6 +1128,11 @@ function display_requirements($installType, $badUpdatePath, $updatePath = '', $u
             <tr>
                 <td class="requirements-item"><a href="http://xapian.org/" target="_blank">Xapian</a> '.get_lang('support').' ('.get_lang('Optional').')</td>
                 <td class="requirements-value">'.check_extension('xapian', get_lang('Yes'), get_lang('No'), true).'</td>
+            </tr>
+            
+            <tr>
+                <td class="requirements-item"><a href="http://php.net/manual/en/book.curl.php" target="_blank">cURL</a> '.get_lang('support').' ('.get_lang('Optional').')</td>
+                <td class="requirements-value">'.check_extension('curl', get_lang('Yes'), get_lang('No'), true).'</td>
             </tr>
 
           </table>';
@@ -1731,9 +1743,37 @@ function display_database_settings_form($installType, $dbHostForm, $dbUsernameFo
                 <?php echo get_lang('CheckDatabaseConnection'); ?></button>
         </td>
         <?php
+        
         $dbConnect = test_db_connect($dbHostForm, $dbUsernameForm, $dbPassForm, $singleDbForm, $dbPrefixForm, $dbNameForm);        
+        
+        $database_exists_text = '';
+        
+        if (database_exists($dbNameForm)) {
+            $database_exists_text = '<div class="normal-message">'.get_lang('ADatabaseWithTheSameNameAlreadyExists').'</div>';
+        } else {            
+            if ($dbConnect == -1) {
+                 $database_exists_text = '<div class="warning-message">'.sprintf(get_lang('UserXCantHaveAccessInTheDatabaseX'), $dbUsernameForm, $dbNameForm).'</div>';                 
+            } else {
+                 //Try to create the database
+                $user_can_create_databases = false;            
+                $multipleDbCheck = @Database::query("CREATE DATABASE test_chamilo_connection");            
+                if ($multipleDbCheck !== false) {
+                    $multipleDbCheck = @Database::query("DROP DATABASE IF EXISTS test_chamilo_connection");                
+                    $user_can_create_databases = true;
+                }             
+
+                if ($user_can_create_databases) {
+                    $database_exists_text = '<div class="normal-message">'.sprintf(get_lang('DatabaseXWillBeCreated'), $dbNameForm, $dbUsernameForm).'</div>';
+                } else {
+                    $dbConnect = 0;
+                    $database_exists_text = '<div class="warning-message">'.sprintf(get_lang('DatabaseXCantBeCreatedUserXDoestHaveEnoughPermissions'), $dbNameForm, $dbUsernameForm).'</div>';                
+                }
+            }       
+        }         
+            
         if ($dbConnect == 1): ?>
         <td colspan="2">
+            <?php echo $database_exists_text ?>
             <div id="db_status" class="confirmation-message">                
                 Database host: <strong><?php echo Database::get_host_info(); ?></strong><br />
                 Database server version: <strong><?php echo Database::get_server_info(); ?></strong><br />
@@ -1742,13 +1782,15 @@ function display_database_settings_form($installType, $dbHostForm, $dbUsernameFo
                 <div style="clear:both;"></div>
             </div>
         </td>
-        <?php else: ?>
+        <?php else: ?>        
         <td colspan="2">
+            <?php echo $database_exists_text ?>
             <div id="db_status" style="float:left;" class="error-message">                
                 <div style="float:left;">
+                    <strong><?php echo get_lang('FailedConectionDatabase'); ?></strong><br />
 	                <strong>Database error: <?php echo Database::errno(); ?></strong><br />
 	                <?php echo Database::error().'<br />'; ?>
-	                <strong><?php echo get_lang('Details').': '. get_lang('FailedConectionDatabase'); ?></strong><br />
+	                
                 </div>
             </div>
         </td>
@@ -1777,14 +1819,14 @@ function display_database_settings_form($installType, $dbHostForm, $dbUsernameFo
  * Used by the display_configuration_settings_form function.
  */
 function display_configuration_parameter($install_type, $parameter_name, $form_field_name, $parameter_value, $display_when_update = 'true') {
-    echo "<tr>\n";
-    echo "<td>$parameter_name&nbsp;&nbsp;</td>\n";
+    echo "<tr>";
+    echo "<td>$parameter_name</td>";
     if ($install_type == INSTALL_TYPE_UPDATE && $display_when_update) {
         echo '<td><input type="hidden" name="'.$form_field_name.'" value="'.api_htmlentities($parameter_value, ENT_QUOTES).'" />'.$parameter_value."</td>\n";
     } else {
         echo '<td><input type="text" size="'.FORM_FIELD_DISPLAY_LENGTH.'" maxlength="'.MAX_FORM_FIELD_LENGTH.'" name="'.$form_field_name.'" value="'.api_htmlentities($parameter_value, ENT_QUOTES).'" />'."</td>\n";
     }
-    echo "</tr>\n";
+    echo "</tr>";
 }
 
 /**
@@ -1800,19 +1842,21 @@ function display_configuration_settings_form($installType, $urlForm, $languageFo
     echo '<div class="RequirementContent">';
     echo '<p>'.get_lang('ConfigSettingsInfo').' <strong>main/inc/conf/configuration.php</strong></p>';
     echo '</div>';
-
-    echo "</td></tr> <tr><td>";
+    
+    echo '<fieldset>';
+    echo '<legend>'.get_lang('Administrator').'</legend>';
     echo '<table class="data_table_no_border">';
     
-    //Parameter 7: administrator's login
+    //Parameter 1: administrator's login
+    
     display_configuration_parameter($installType, get_lang('AdminLogin'), 'loginForm', $loginForm, $installType == 'update');
-
-    //Parameter 8: administrator's password
+    
+    //Parameter 2: administrator's password
     if ($installType != 'update') {
         display_configuration_parameter($installType, get_lang('AdminPass'), 'passForm', $passForm, false);
     }    
     
-    //Parameters 4 and 5: administrator's names
+    //Parameters 3 and 4: administrator's names
     if (api_is_western_name_order()) {
         display_configuration_parameter($installType, get_lang('AdminFirstName'), 'adminFirstName', $adminFirstName);
         display_configuration_parameter($installType, get_lang('AdminLastName'), 'adminLastName', $adminLastName);
@@ -1820,6 +1864,20 @@ function display_configuration_settings_form($installType, $urlForm, $languageFo
         display_configuration_parameter($installType, get_lang('AdminLastName'), 'adminLastName', $adminLastName);
         display_configuration_parameter($installType, get_lang('AdminFirstName'), 'adminFirstName', $adminFirstName);
     }
+    
+    //Parameter 3: administrator's email
+    display_configuration_parameter($installType, get_lang('AdminEmail'), 'emailForm', $emailForm);
+
+    //Parameter 6: administrator's telephone
+    display_configuration_parameter($installType, get_lang('AdminPhone'), 'adminPhoneForm', $adminPhoneForm);
+    
+    echo '</table>';    
+    echo '</fieldset>';
+    
+    echo '<fieldset>';
+    echo '<legend>'.get_lang('Platform').'</legend>';
+    
+    echo '<table class="data_table_no_border">';    
     
     //First parameter: language
     echo "<tr>";
@@ -1833,9 +1891,10 @@ function display_configuration_settings_form($installType, $urlForm, $languageFo
         echo "</td>\n";
     }
     echo "</tr>\n";
-
+    
+    
     //Second parameter: Chamilo URL
-    echo "<tr>\n";
+    echo "<tr>";
     echo '<td>'.get_lang('ChamiloURL').' (<font color="red">'.get_lang('ThisFieldIsRequired')."</font>)&nbsp;&nbsp;</td>";
 
     if ($installType == 'update') {
@@ -1844,13 +1903,6 @@ function display_configuration_settings_form($installType, $urlForm, $languageFo
         echo '<td><input type="text" size="40" maxlength="100" name="urlForm" value="'.api_htmlentities($urlForm, ENT_QUOTES).'" />'."</td>";
     }
     echo "</tr>";
-
-    //Parameter 3: administrator's email
-    display_configuration_parameter($installType, get_lang('AdminEmail'), 'emailForm', $emailForm);
-
-    //Parameter 6: administrator's telephone
-    display_configuration_parameter($installType, get_lang('AdminPhone'), 'adminPhoneForm', $adminPhoneForm);
-
 
 
     //Parameter 9: campus name
@@ -1912,16 +1964,21 @@ function display_configuration_settings_form($installType, $urlForm, $languageFo
       <td><input type="hidden" name="allowSelfRegProf" value="<?php echo $allowSelfRegProf; ?>" /><?php echo $allowSelfRegProf? get_lang('Yes') : get_lang('No'); ?></td>
       <?php else: ?>
       <td>
-        <input class="checkbox" type="radio" name="allowSelfRegProf" value="1" id="allowSelfRegProf1" <?php echo $allowSelfRegProf ? 'checked="checked" ' : ''; ?>/> <label for="allowSelfRegProf1"><?php echo get_lang('Yes'); ?></label>
-        <input class="checkbox" type="radio" name="allowSelfRegProf" value="0" id="allowSelfRegProf0" <?php echo $allowSelfRegProf ? '' : 'checked="checked" '; ?>/> <label for="allowSelfRegProf0"><?php echo get_lang('No'); ?></label>
+        <input class="checkbox" type="radio" name="allowSelfRegProf" value="1" id="allowSelfRegProf1" <?php echo $allowSelfRegProf ? 'checked="checked" ' : ''; ?>/>
+            <label for="allowSelfRegProf1"><?php echo get_lang('Yes'); ?></label>
+        <input class="checkbox" type="radio" name="allowSelfRegProf" value="0" id="allowSelfRegProf0" <?php echo $allowSelfRegProf ? '' : 'checked="checked" '; ?>/>
+            <label for="allowSelfRegProf0"><?php echo get_lang('No'); ?></label>
       </td>
       <?php endif; ?>
 
     </tr>
     <tr>
-      <td><button type="submit" class="back" name="step3" value="&lt; <?php echo get_lang('Previous'); ?>" /><?php echo get_lang('Previous'); ?></button></td>
-      <td align="right"><input type="hidden" name="is_executable" id="is_executable" value="-" /><button class="next" type="submit" name="step5" value="<?php echo get_lang('Next'); ?> &gt;" /><?php echo get_lang('Next'); ?></button></td>
+        <td>
+            <button type="submit" class="back" name="step3" value="&lt; <?php echo get_lang('Previous'); ?>" /><?php echo get_lang('Previous'); ?></button>
+        </td>
+        <td align="right"><input type="hidden" name="is_executable" id="is_executable" value="-" /><button class="next" type="submit" name="step5" value="<?php echo get_lang('Next'); ?> &gt;" /><?php echo get_lang('Next'); ?></button></td>
     </tr>
+    </fieldset>
     </table>
     <?php
 }

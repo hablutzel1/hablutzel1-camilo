@@ -38,37 +38,16 @@ $htmlHeadXtra[] ='
 			pause			: 10000
 		});
 	});
-	
-	if(navigator.cookieEnabled==false){
-        document.writeln("'.addslashes(Display::return_message(get_lang("NoCookies"), 'error')).'");
-	}
-	
+
 </script>
 
 <noscript>
-	'.addslashes(Display::return_message(get_lang("NoJavascript"), 'error')).'
-</noscript>
+	'.Display::return_message(get_lang("NoJavascript"), 'error').'
+</noscript>';
 
-';
+//set cookie for check if client browser are cookies enabled
+setcookie("TestCookie", "cookies_yes", time()+3600);
 
-//@todo add this in the template
-
-//check if javascript is enabled
-/*
-echo '<noscript>';
-echo Display::display_error_message(get_lang("NoJavascript"));
-echo '</noscript>';
-*/
-//check if cookies are enabled
-/*
-?>
-<script language="JavaScript">
-if(navigator.cookieEnabled==false){
-        document.writeln('<?php Display::display_error_message(get_lang("NoCookies")); ?>');
-}
-</script>
-<?php
-*/
 $controller = new IndexManager($header_title);
 
 //Actions
@@ -182,7 +161,6 @@ if (!api_is_anonymous()) {
 }
 
 $controller->tpl->assign('hot_courses',             $controller->return_hot_courses());
-
 $controller->tpl->assign('announcements_block', 	$controller->return_announcements());
 $controller->tpl->assign('home_page_block', 		$controller->return_home_page());
 $controller->tpl->assign('notice_block',			$controller->return_notice());

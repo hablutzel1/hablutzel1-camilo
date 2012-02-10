@@ -3,23 +3,27 @@
 
 // Load Smarty library
 require_once api_get_path(LIBRARY_PATH).'smarty/Smarty.class.php';
+require_once api_get_path(LIBRARY_PATH).'banner.lib.php';
 
 class Template extends Smarty {
 	
 	var $style = 'default'; //see the template folder 
+    var $title =  null;
 	var $show_header;
 	var $show_footer;
     var $help;
+    var $menu_navigation = array();
 	
 	function __construct($title = '', $show_header = true, $show_footer = true) {
+        parent::__construct();
 		$this->title = $title;
 		
 		//Smarty 3 configuration
-		$this->setPluginsDir(api_get_path(LIBRARY_PATH).'smarty/plugins');
+        $this->setTemplateDir(api_get_path(SYS_CODE_PATH).'template/');
+        $this->setCompileDir(api_get_path(SYS_ARCHIVE_PATH));
+        $this->setConfigDir(api_get_path(SYS_ARCHIVE_PATH));		
 		$this->setCacheDir(api_get_path(SYS_ARCHIVE_PATH));
-		$this->setCompileDir(api_get_path(SYS_ARCHIVE_PATH));
-		$this->setTemplateDir(api_get_path(SYS_CODE_PATH).'template/');
-		$this->setConfigDir(api_get_path(SYS_ARCHIVE_PATH));
+        $this->setPluginsDir(api_get_path(LIBRARY_PATH).'smarty/plugins');		
 		
 		//Caching settings
 		$this->caching 			= false;
@@ -48,7 +52,8 @@ class Template extends Smarty {
 		//$this->loadPlugin('smarty_function_get_lang');
 		
 		//To the the smarty installation
-		//$this->testInstall();					
+		//$this->testInstall();
+        
 		$this->set_header_parameters();
 		$this->set_footer_parameters();
         
@@ -112,6 +117,7 @@ class Template extends Smarty {
 		$this->show_footer = $status;
 		$this->assign('show_footer', $status);
 	}
+    
 	/**
 	 * Sets the header visibility
 	 * @param bool true if we show the header
@@ -194,7 +200,10 @@ class Template extends Smarty {
 		global $_plugins, $lp_theme_css, $mycoursetheme, $user_theme, $platform_theme;
 		global $httpHeadXtra, $htmlHeadXtra, $_course, $_user, $text_dir, $plugins, $_user, 
 				$_cid, $interbreadcrumb, $charset, $language_file, $noPHP_SELF;		
-		global $menu_navigation;
+		        
+        $navigation            = return_navigation_array();        
+        $this->menu_navigation = $navigation['menu_navigation'];
+         
 		global $_configuration, $show_learn_path;
 		
 		$this->assign('system_charset', api_get_system_encoding());
@@ -207,7 +216,7 @@ class Template extends Smarty {
 		
         $this->assign('online_button',  Security::remove_XSS(Display::return_icon('online.png')));
 		$this->assign('offline_button', Security::remove_XSS(Display::return_icon('offline.png')));
-		
+   	
 		// Get language iso-code for this page - ignore errors				
 		$this->assign('document_language', api_get_language_isocode());
 		
@@ -270,7 +279,10 @@ class Template extends Smarty {
 		);
 		
 		if (api_get_setting('allow_global_chat') == 'true') {
-			$js_files[] = 'chat/js/chat.js';
+            
+            if (!api_is_anonymous()) {
+                $js_files[] = 'chat/js/chat.js';
+            }
 		}
 		
 		if (api_get_setting('accessibility_font_resize') == 'true') {
@@ -308,7 +320,7 @@ class Template extends Smarty {
 			$css_file_to_string .= api_get_css($css_file);
 		}
 	
-		global $this_section;
+		global $this_section;        
 		$this->assign('css_file_to_string', $css_file_to_string);
 		$this->assign('js_file_to_string',  $js_file_to_string);		
 		$this->assign('text_direction',	    api_get_text_direction());			
@@ -340,14 +352,12 @@ class Template extends Smarty {
 		    }
 		}
 		$this->assign('favico', $favico);
-		
-		//old banner.inc.php		
-		require_once api_get_path(LIBRARY_PATH).'banner.lib.php';
-		
-		global $my_session_id;
+				
+		/*global $my_session_id;
 		$session_id     = api_get_session_id();
 		$session_name   = api_get_session_name($my_session_id);
-		
+		*/
+        
 		$help_content = '';
         if (api_get_setting('enable_help_link') == 'true') { 
     		if (!empty($help)) {

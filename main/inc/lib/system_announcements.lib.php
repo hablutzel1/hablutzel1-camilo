@@ -24,39 +24,41 @@ class SystemAnnouncementManager {
 	public static function display_announcements($visible, $id = -1) {
 		$user_selected_language = api_get_interface_language();
 		$db_table = Database :: get_main_table(TABLE_MAIN_SYSTEM_ANNOUNCEMENTS);		
-    $tbl_announcement_group = Database :: get_main_table(TABLE_MAIN_SYSTEM_ANNOUNCEMENTS_GROUPS);
-    $temp_user_groups = GroupPortalManager::get_groups_by_user(api_get_user_id(),0);
-    $groups =array();
-    foreach ($temp_user_groups as $user_group) {
-      $groups = array_merge($groups, array($user_group['id']));
-      $groups = array_merge($groups, GroupPortalManager::get_parent_groups($user_group['id']));
-    }
-    //checks if tables exists to not break platform not updated
-    $ann_group_db_ok =false;
-    if( Database::num_rows(Database::query("SHOW TABLES LIKE 'announcement_rel_group'")) > 0)
-       $ann_group_db_ok =true;
+        $tbl_announcement_group = Database :: get_main_table(TABLE_MAIN_SYSTEM_ANNOUNCEMENTS_GROUPS);
+        $temp_user_groups = GroupPortalManager::get_groups_by_user(api_get_user_id(),0);
+        $groups =array();
+        foreach ($temp_user_groups as $user_group) {
+            $groups = array_merge($groups, array($user_group['id']));
+            $groups = array_merge($groups, GroupPortalManager::get_parent_groups($user_group['id']));
+        }
+        //checks if tables exists to not break platform not updated
+        $ann_group_db_ok =false;
+        if( Database::num_rows(Database::query("SHOW TABLES LIKE 'announcement_rel_group'")) > 0)
+        $ann_group_db_ok =true;
 
-    $groups_string = '('.implode($groups,',').')';
-    $sql = "SELECT *, DATE_FORMAT(date_start,'%d-%m-%Y %h:%i:%s') AS display_date" 
-      ." FROM  $db_table"
-      ." WHERE (lang='$user_selected_language'"
-      ." OR lang IS NULL)"
-      ." AND ((NOW() BETWEEN date_start AND date_end) OR date_end='0000-00-00') ";
-		switch ($visible) {
-			case VISIBLE_GUEST :
-				$sql .= " AND visible_guest = 1 ";
-				break;
-			case VISIBLE_STUDENT :
-				$sql .= " AND visible_student = 1 ";
-				break;
-			case VISIBLE_TEACHER :
-				$sql .= " AND visible_teacher = 1 ";
-				break;
-		}	
-    if (count($groups) > 0 and $ann_group_db_ok ) {
-      $sql .= " OR id IN (SELECT announcement_id FROM $tbl_announcement_group "
-        ." WHERE group_id in $groups_string) ";
-    }
+        $groups_string = '('.implode($groups,',').')';
+        $sql = "SELECT *, DATE_FORMAT(date_start,'%d-%m-%Y %h:%i:%s') AS display_date" 
+        ." FROM  $db_table"
+        ." WHERE (lang='$user_selected_language'"
+        ." OR lang IS NULL)"
+        ." AND ((NOW() BETWEEN date_start AND date_end) OR date_end='0000-00-00') ";
+        
+        switch ($visible) {
+            case VISIBLE_GUEST :
+                $sql .= " AND visible_guest = 1 ";
+                break;
+            case VISIBLE_STUDENT :
+                $sql .= " AND visible_student = 1 ";
+                break;
+            case VISIBLE_TEACHER :
+                $sql .= " AND visible_teacher = 1 ";
+                break;
+        }
+        
+        if (count($groups) > 0 and $ann_group_db_ok ) {
+            $sql .= " OR id IN (SELECT announcement_id FROM $tbl_announcement_group "
+                ." WHERE group_id in $groups_string) ";
+        }
 		global $_configuration;
 		$current_access_url_id = 1;
 		if ($_configuration['multiple_access_urls']) {
@@ -349,8 +351,7 @@ class SystemAnnouncementManager {
 			return false;
 		}
 		if ($add_to_calendar) {
-		    require_once 'calendar.lib.php';
-		    
+		    require_once 'calendar.lib.php';		    
 		    $agenda_id = agenda_add_item($title, $original_content, $date_start, $date_end);
 		}		
 		return Database::insert_id();
@@ -387,15 +388,15 @@ class SystemAnnouncementManager {
    * @return array array of group id
    **/
   public static function get_announcement_groups($announcement_id){
-    $tbl_announcement_group = Database :: get_main_table(TABLE_MAIN_SYSTEM_ANNOUNCEMENTS_GROUPS);
-    $tbl_group = Database :: get_main_table(TABLE_MAIN_GROUP);
-    //first delete all group associations for this announcement
+        $tbl_announcement_group = Database :: get_main_table(TABLE_MAIN_SYSTEM_ANNOUNCEMENTS_GROUPS);
+        $tbl_group = Database :: get_main_table(TABLE_MAIN_GROUP);
+        //first delete all group associations for this announcement
 
-    $res = Database::query("SELECT g.id as group_id , g.name as group_name  FROM $tbl_group g , $tbl_announcement_group ag"
-      ." WHERE announcement_id=".intval($announcement_id)
-      ." AND ag.group_id = g.id");
-    $groups = Database::fetch_array($res);
-    return $groups;
+        $res = Database::query("SELECT g.id as group_id , g.name as group_name  FROM $tbl_group g , $tbl_announcement_group ag"
+                                ." WHERE announcement_id=".intval($announcement_id)
+                                ." AND ag.group_id = g.id");
+        $groups = Database::fetch_array($res);
+        return $groups;
   }
 
 	/**
@@ -574,9 +575,11 @@ class SystemAnnouncementManager {
 	* @param int $visible VISIBLE_GUEST, VISIBLE_STUDENT or VISIBLE_TEACHER
 	* @param int $id The identifier of the announcement to display
 	*/
-	public static function display_announcements_slider($visible, $id = -1) {
+	public static function display_announcements_slider($visible, $id = null) {
 		$user_selected_language = Database::escape_string(api_get_interface_language());
 		$db_table 				= Database :: get_main_table(TABLE_MAIN_SYSTEM_ANNOUNCEMENTS);
+        
+        $cut_size = 500;
 		
 		$now  = api_get_utc_datetime();
 		
@@ -594,31 +597,32 @@ class SystemAnnouncementManager {
 				$sql .= " AND visible_teacher = 1 ";
 				break;
 		}
-		$sql .= " ORDER BY date_start DESC LIMIT 0,7";
-	
+        
+        if (isset($id) && !empty($id)) {
+            $id = intval($id);
+            $sql .= " AND id = $id ";            
+        }
+        
+		$sql .= " ORDER BY date_start DESC";            	    
 		$announcements = Database::query($sql);
 		$html = '';
-		if (Database::num_rows($announcements) > 0) {
-			$query_string = ereg_replace('announcement=[1-9]+', '', $_SERVER['QUERY_STRING']);
-			$query_string = ereg_replace('&$', '', $query_string);
-			$url = api_get_self();
-	
+		if (Database::num_rows($announcements) > 0) {				
 			$html .= '<div class="system_announcements">';
 			$html .=  '<h3>'.get_lang('SystemAnnouncements').'</h3>';
-			//echo '<div style="margin:10px;text-align:right;"><a href="news_list.php">'.get_lang('More').'</a></div>';
-			
 			$html .=  '<div id="container-slider">
 					<ul id="slider">';
-			while ($announcement = Database::fetch_object($announcements)) {				
-				if ($id != $announcement->id) {
-					$html .=  '<li><h1>'.$announcement->title.'</h1>'.$announcement->content.'</li>';
-				} else {
-					$html .=  '<li><h1>'.$announcement->title.'</h1>'.$announcement->content.'</li>';
-				}
+			while ($announcement = Database::fetch_object($announcements)) {                
+                $content = $announcement->content;
+                $url = api_get_path(WEB_PATH).'news_list.php?id='.$announcement->id;
+                if (empty($id)) { 
+                    if (api_strlen(strip_tags($content)) > $cut_size) {
+                        $content = cut($announcement->content, $cut_size).' '.Display::url(get_lang('More'), $url);
+                    }
+                }
+                $html .=  '<li><h1>'.$announcement->title.'</h1>'.$content.'</li>';                
 			}
 			$html .=  '</ul></div></div>';			
 		}
 		return $html;
-	}
-	
+	}	
 }

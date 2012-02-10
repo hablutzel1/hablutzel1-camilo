@@ -55,7 +55,7 @@ function initialize_item($lp_id, $user_id, $view_id, $next_item) {
             if ($debug > 2) { error_log('////Building new lp', 0); }
             unset($oLP);
             $code = api_get_course_id();
-            $mylp = & new learnpath($code,$lp_id,$user_id);
+            $mylp = new learnpath($code,$lp_id,$user_id);
         } else {
             if ($debug > 1) { error_log('////Reusing session lp', 0); }
             $mylp = & $oLP;
@@ -75,7 +75,7 @@ function initialize_item($lp_id, $user_id, $view_id, $next_item) {
         $mylpi = & $mylp->items[$next_item];
     } else {
         if ($debug > 1) { error_log('In initialize_item - generating new item object '.$next_item, 0); }
-        $mylpi =& new learnpathItem($next_item, $user_id);
+        $mylpi = new learnpathItem($next_item, $user_id);
         $mylpi->set_lp_view($view_id);
     }
     /*

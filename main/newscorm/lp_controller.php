@@ -202,13 +202,10 @@ $is_allowed_to_edit = api_is_allowed_to_edit(null, true);
 $action = (!empty($_REQUEST['action']) ? $_REQUEST['action'] : '');
 
 switch ($action) {
-
     case 'add_item':
-
         if (!$is_allowed_to_edit) {
             api_not_allowed(true);
         }
-
         if ($debug > 0) error_log('New LP - add item action triggered', 0);
 
         if (!$lp_found) {
@@ -459,7 +456,18 @@ switch ($action) {
         chdir($cwdir);
         require 'lp_list.php';
         break;
-
+        
+    case 'copy':
+        if (!$is_allowed_to_edit) {
+            api_not_allowed(true);
+        }
+        if ($debug > 0) error_log('New LP - export action triggered', 0);
+        if (!$lp_found) { error_log('New LP - No learnpath given for copy', 0); require 'lp_list.php'; }
+        else {
+            $_SESSION['oLP']->copy();            
+        }
+        require 'lp_list.php';
+        break;
     case 'export':
         if (!$is_allowed_to_edit) {
             api_not_allowed(true);
@@ -736,7 +744,6 @@ switch ($action) {
             require 'lp_view.php';
         }
         break;
-
     case 'previous':
         if ($debug > 0) error_log('New LP - previous action triggered', 0);
         if (!$lp_found) { error_log('New LP - No learnpath given for previous', 0); require 'lp_list.php'; }
@@ -745,7 +752,6 @@ switch ($action) {
             require 'lp_view.php';
         }
         break;
-
     case 'content':
         if ($debug > 0) error_log('New LP - content action triggered', 0);
         if ($debug > 0) error_log('New LP - Item id is '.$_GET['item_id'], 0);
@@ -757,8 +763,7 @@ switch ($action) {
             require 'lp_content.php';
         }
         break;
-
-    case 'view':
+    case 'view':        
         if ($debug > 0)
             error_log('New LP - view action triggered', 0);
         if (!$lp_found) {
@@ -768,11 +773,10 @@ switch ($action) {
             if ($debug > 0) {error_log('New LP - Trying to set current item to ' . $_REQUEST['item_id'], 0); }
             if ( !empty($_REQUEST['item_id']) ) {
                 $_SESSION['oLP']->set_current_item($_REQUEST['item_id']);
-            }
+            }           
             require 'lp_view.php';
         }
         break;
-
     case 'save':
         if ($debug > 0) error_log('New LP - save action triggered', 0);
         if (!$lp_found) { error_log('New LP - No learnpath given for save', 0); require 'lp_list.php'; }
@@ -795,7 +799,6 @@ switch ($action) {
             require 'lp_stats.php';
         }
         break;
-
     case 'list':
         if ($debug > 0) error_log('New LP - list action triggered', 0);
         if ($lp_found) {

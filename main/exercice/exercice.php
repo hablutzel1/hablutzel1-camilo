@@ -35,12 +35,12 @@ require_once 'exercise.lib.php';
 require_once 'question.class.php';
 require_once 'answer.class.php';
 require_once 'testcategory.class.php';
-require_once api_get_path(LIBRARY_PATH) . 'fileManage.lib.php';
-require_once api_get_path(LIBRARY_PATH) . 'fileUpload.lib.php';
+require_once api_get_path(LIBRARY_PATH).'fileManage.lib.php';
+require_once api_get_path(LIBRARY_PATH).'fileUpload.lib.php';
 require_once 'hotpotatoes.lib.php';
-require_once api_get_path(LIBRARY_PATH) . 'document.lib.php';
-require_once api_get_path(LIBRARY_PATH) . 'mail.lib.inc.php';
-require_once api_get_path(LIBRARY_PATH)."groupmanager.lib.php"; // for group filtering
+require_once api_get_path(LIBRARY_PATH).'document.lib.php';
+require_once api_get_path(LIBRARY_PATH).'mail.lib.inc.php';
+require_once api_get_path(LIBRARY_PATH).'groupmanager.lib.php'; // for group filtering
 
 /*	Constants and variables */
 $is_allowedToEdit 			= api_is_allowed_to_edit(null,true);
@@ -52,7 +52,7 @@ $TBL_ITEM_PROPERTY 			= Database :: get_course_table(TABLE_ITEM_PROPERTY);
 $TBL_EXERCICE_QUESTION 		= Database :: get_course_table(TABLE_QUIZ_TEST_QUESTION);
 $TBL_EXERCICES 				= Database :: get_course_table(TABLE_QUIZ_TEST);
 $TBL_TRACK_EXERCICES 		= Database :: get_statistic_table(TABLE_STATISTIC_TRACK_E_EXERCICES);
-$table_lp_item              = Database::get_course_table(TABLE_LP_ITEM);
+$table_lp_item              = Database :: get_course_table(TABLE_LP_ITEM);
 
 // document path
 $documentPath = api_get_path(SYS_COURSE_PATH) . $_course['path'] . "/document";
@@ -68,7 +68,6 @@ $exfile         = explode('/', $exercicePath);
 $exfile         = strtolower($exfile[sizeof($exfile) - 1]);
 $exercicePath   = substr($exercicePath, 0, strpos($exercicePath, $exfile));
 $exercicePath   = $exercicePath . "exercice.php";
-
    
 // Clear the exercise session
 if (isset ($_SESSION['objExercise'])) {
@@ -409,16 +408,17 @@ if ($total > $limit) {
  
     $i =1;
     $lis = '';
-$exercise_list = array();
+
 $online_icon  = Display::return_icon('online.png', get_lang('Visible'),array('width'=>'12px'));
 $offline_icon = Display::return_icon('offline.png',get_lang('Invisible'),array('width'=>'12px'));
 
+$exercise_list = array();
 while ($row = Database :: fetch_array($result,'ASSOC')) {
     $exercise_list[] = $row;
 } 
 
 echo '<table class="data_table">';    
-if (!empty($exercise_list)) {     
+if (!empty($exercise_list)) {  
     /*  Listing exercises  */
     
     if ($origin != 'learnpath') {
@@ -437,7 +437,7 @@ if (!empty($exercise_list)) {
         } else {
         	$headers = array(array('name' => get_lang('ExerciseName')), 
                              array('name' => get_lang('Status')), 
-                             array('name' => get_lang('Results')));
+                             );
         }
         
         $header_list = '';
@@ -459,7 +459,8 @@ if (!empty($exercise_list)) {
             $time_limits = false;                            
             if ($row['start_time'] != '0000-00-00 00:00:00' || $row['end_time'] != '0000-00-00 00:00:00') {
                 $time_limits = true;    
-            }                        
+            }
+            
             if ($time_limits) {
                 // check if start time
                 $start_time = false;
@@ -470,12 +471,12 @@ if (!empty($exercise_list)) {
                 if ($row['end_time'] != '0000-00-00 00:00:00') {
                     $end_time   = api_strtotime($row['end_time'],'UTC');  
                 }                                    
-                $now        = time();
+                $now             = time();
                 $is_actived_time = false;
                 
                 //If both "clocks" are enable
                 if ($start_time && $end_time) {                  
-                    if ($now > $start_time && $end_time > $now ) {
+                    if ($now > $start_time && $end_time > $now ) {                        
                         $is_actived_time = true;
                     }
                 } else {
@@ -492,8 +493,7 @@ if (!empty($exercise_list)) {
                     }
                 }                    
             }
-             
-			
+             			
 			//Blocking empty start times see BT#2800
         	global $_custom; 
 			if (isset($_custom['exercises_hidden_when_no_start_date']) && $_custom['exercises_hidden_when_no_start_date']) { 
@@ -549,9 +549,9 @@ if (!empty($exercise_list)) {
                     $class_tip = 'link_tooltip';
                 }
                 
-                $url = '<a '.$alt_title.' class="'.$class_tip.'" id="tooltip_'.$row['id'].'" href="overview.php?'.api_get_cidreq().$myorigin.$mylpid.$mylpitemid.'&exerciseId='.$row['id'].'"><img src="../img/quiz.gif" /> '.$title.' </a>'.$lp_blocked;
+                $url = '<a '.$alt_title.' class="'.$class_tip.'" id="tooltip_'.$row['id'].'" href="overview.php?'.api_get_cidreq().$myorigin.$mylpid.$mylpitemid.'&exerciseId='.$row['id'].'"><img src="../img/quiz.gif" /> '.$title.' </a>';
                            
-                $item =  Display::tag('td', $url.' '.$session_img);  
+                $item =  Display::tag('td', $url.' '.$session_img.$lp_blocked);  
                 
 
                 //count number exercice - teacher
@@ -628,6 +628,7 @@ if (!empty($exercise_list)) {
                 // --- Student only                 
                 
                 // if time is actived show link to exercise
+                
                 if ($time_limits) {                 
                     if ($is_actived_time) {
                         $url =  '<a '.$alt_title.'  href="overview.php?'.api_get_cidreq().$myorigin.$mylpid.$mylpitemid.'&exerciseId='.$row['id'].'">'.$cut_title.'</a>';
@@ -690,6 +691,8 @@ if (!empty($exercise_list)) {
                         }
                     } else {
                         //Quiz not ready due to time limits
+                        
+                        //@todo use the is_visible function                        
                         if ($row['start_time'] != '0000-00-00 00:00:00' && $row['end_time'] != '0000-00-00 00:00:00') {
                             $attempt_text =  sprintf(get_lang('ExerciseWillBeActivatedFromXToY'), api_convert_and_format_date($row['start_time']), api_convert_and_format_date($row['end_time']));
                         } else {
@@ -735,13 +738,15 @@ if (!empty($exercise_list)) {
                 $item .=  Display::tag('td', $attempt_text);
                                  
                 //See results
-                $actions = '<a class="'.$class_tip.'" id="tooltip_'.$row['id'].'" href="exercise_report.php?' . api_get_cidreq() . '&exerciseId='.$row['id'].'">'.$num.Display::return_icon('test_results.png', get_lang('Results'),'',22).' </a>';
+                //$actions = '<a class="'.$class_tip.'" id="tooltip_'.$row['id'].'" href="exercise_report.php?' . api_get_cidreq() . '&exerciseId='.$row['id'].'">'.$num.Display::return_icon('test_results.png', get_lang('Results'),'',22).' </a>';
             }                
             $class = 'row_even';
             if ($count % 2) {
                 $class = 'row_odd';
-            }                                        
-            $item .=  Display::tag('td', $actions);                    
+            }
+            
+            if ($is_allowedToEdit)
+                $item .=  Display::tag('td', $actions);                    
             echo Display::tag('tr',$item, array('class'=>$class));
                    
             $count++;

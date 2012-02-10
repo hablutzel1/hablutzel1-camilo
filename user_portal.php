@@ -44,9 +44,8 @@ api_block_anonymous_users(); // Only users who are logged in can proceed.
 
 //$load_dirs = api_get_setting('courses_list_document_dynamic_dropdown');
 $load_dirs = true;
-
-// This is the main function to get the course list.
-$personal_course_list = UserManager::get_personal_session_course_list(api_get_user_id());
+// Get the courses list
+$personal_course_list 	= UserManager::get_personal_session_course_list(api_get_user_id());
 
 // Check if a user is enrolled only in one course for going directly to the course after the login.
 if (api_get_setting('go_to_course_after_login') == 'true') {
@@ -184,17 +183,19 @@ if ($load_dirs) {
 
 /* Sniffing system */
 
-
 //store posts to sessions
-$_SESSION['sniff_screen_size_w']=Security::remove_XSS($_POST['sniff_navigator_screen_size_w']);
-$_SESSION['sniff__screen_size_h']=Security::remove_XSS($_POST['sniff_navigator_screen_size_h']);
-$_SESSION['sniff_type_mimetypes']=Security::remove_XSS($_POST['sniff_navigator_type_mimetypes']);
-$_SESSION['sniff_suffixes_mimetypes']=Security::remove_XSS($_POST['sniff_navigator_suffixes_mimetypes']);
-$_SESSION['sniff_list_plugins']=Security::remove_XSS($_POST['sniff_navigator_list_plugins']);
-$_SESSION['sniff_check_some_activex']=Security::remove_XSS($_POST['sniff_navigator_check_some_activex']);
-$_SESSION['sniff_check_some_plugins']=Security::remove_XSS($_POST['sniff_navigator_check_some_plugins']);
-$_SESSION['sniff_java']=Security::remove_XSS($_POST['sniff_navigator_java']);
-$_SESSION['sniff_java_sun_ver']=Security::remove_XSS($_POST['sniff_navigator_java_sun_ver']);
+if($_SESSION['sniff_navigator']!="checked") {
+	$_SESSION['sniff_navigator']=Security::remove_XSS($_POST['sniff_navigator']);
+	$_SESSION['sniff_screen_size_w']=Security::remove_XSS($_POST['sniff_navigator_screen_size_w']);
+	$_SESSION['sniff__screen_size_h']=Security::remove_XSS($_POST['sniff_navigator_screen_size_h']);
+	$_SESSION['sniff_type_mimetypes']=Security::remove_XSS($_POST['sniff_navigator_type_mimetypes']);
+	$_SESSION['sniff_suffixes_mimetypes']=Security::remove_XSS($_POST['sniff_navigator_suffixes_mimetypes']);
+	$_SESSION['sniff_list_plugins']=Security::remove_XSS($_POST['sniff_navigator_list_plugins']);
+	$_SESSION['sniff_check_some_activex']=Security::remove_XSS($_POST['sniff_navigator_check_some_activex']);
+	$_SESSION['sniff_check_some_plugins']=Security::remove_XSS($_POST['sniff_navigator_check_some_plugins']);
+	$_SESSION['sniff_java']=Security::remove_XSS($_POST['sniff_navigator_java']);
+	$_SESSION['sniff_java_sun_ver']=Security::remove_XSS($_POST['sniff_navigator_java_sun_ver']);
+}
 
 /* MAIN CODE */
 
@@ -205,7 +206,6 @@ $controller = new IndexManager(get_lang('MyCourses'));
 //@todo all this could be moved in the IndexManager
 
 $courses_list 			= $controller->return_courses_main_plugin();
-$personal_course_list 	= UserManager::get_personal_session_course_list(api_get_user_id());
 
 
 // Main courses and session list
@@ -214,26 +214,33 @@ $controller->return_courses_and_sessions($personal_course_list);
 $courses_and_sessions = ob_get_contents();
 ob_get_clean();
 
-//
 $controller->tpl->assign('content', 					$courses_and_sessions);
 
-$controller->tpl->assign('show_sniff', 					0);
+if($_SESSION['sniff_navigator']!="checked") {
+	$controller->tpl->assign('show_sniff', 					1);
+}
+else{
+	$controller->tpl->assign('show_sniff', 					0);
+}
 
-$sniff_notification = '';
+
 //check for flash and message
-if (stripos("flash_yes", $_SESSION['sniff_check_some_activex'])===0 || stripos("flash_yes", $_SESSION['sniff_check_some_plugins'])===0){
-	$sniff_notification = Display::return_message(get_lang('NoFlash'), 'warning', false);
-	
-	//js verification - To annoying of redirecting every time the page
-	//$controller->tpl->assign('sniff_notification',  $sniff_notification);
-}    
-
+$sniff_notification = '';
+$some_activex=$_SESSION['sniff_check_some_activex'];
+$some_plugins=$_SESSION['sniff_check_some_plugins'];
+if(!empty($some_activex) || !empty($some_plugins)){
+	if (! preg_match("/flash_yes/", $some_activex) && ! preg_match("/flash_yes/", $some_plugins)) {
+		$sniff_notification = Display::return_message(get_lang('NoFlash'), 'warning', true);
+		//js verification - To annoying of redirecting every time the page
+		$controller->tpl->assign('sniff_notification',  $sniff_notification);
+	}  
+}
 //$controller->tpl->assign('hot_courses',                 $controller->return_hot_courses());
 
 $controller->tpl->assign('plugin_courses_block', 		$controller->return_courses_main_plugin());
 $controller->tpl->assign('profile_block', 				$controller->return_profile_block());
 $controller->tpl->assign('account_block',				$controller->return_account_block());
-$controller->tpl->assign('navigation_course_links', 	$controller->return_navigation_course_links($menu_navigation));
+$controller->tpl->assign('navigation_course_links', 	$controller->return_navigation_course_links());
 $controller->tpl->assign('plugin_courses_right_block', 	$controller->return_plugin_courses_block());
 $controller->tpl->assign('reservation_block', 			$controller->return_reservation_block());
 $controller->tpl->assign('search_block', 				$controller->return_search_block());

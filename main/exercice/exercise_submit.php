@@ -48,7 +48,7 @@ api_protect_course_script(true);
 
 $is_allowedToEdit = api_is_allowed_to_edit(null,true);
 
-$htmlHeadXtra[] = api_get_jquery_js();
+$htmlHeadXtra[] = api_get_jquery_ui_js();
 
 if (api_get_setting('show_glossary_in_extra_tools') == 'true') {
     $htmlHeadXtra[] = api_get_js('glossary.js'); //Glossary
@@ -64,12 +64,9 @@ $learnpath_id 			= isset($_REQUEST['learnpath_id']) ? intval($_REQUEST['learnpat
 $learnpath_item_id 		= isset($_REQUEST['learnpath_item_id']) ? intval($_REQUEST['learnpath_item_id']) : 0;
 $learnpath_item_view_id	= isset($_REQUEST['learnpath_item_view_id']) ? intval($_REQUEST['learnpath_item_view_id']) : 0;
 $origin 				= isset($_REQUEST['origin']) ? Security::remove_XSS($_REQUEST['origin']) : '';
-
 $reminder 				= isset($_REQUEST['reminder']) ? intval($_REQUEST['reminder']) : 0;
 $remind_question_id 	= isset($_REQUEST['remind_question_id']) ? intval($_REQUEST['remind_question_id']) : 0;
-
 $exerciseId				= isset($_REQUEST['exerciseId']) ? intval($_REQUEST['exerciseId']) : 0;
-
 
 if (empty ($formSent)) {
     $formSent = $_REQUEST['formSent'];
@@ -229,7 +226,6 @@ if ($debug) { error_log("4. Setting the exe_id $exe_id");} ;
 //5. Getting user exercise info (if the user took the exam before) - generating exe_id
 //var_dump($safe_lp_id.' - '.$safe_lp_item_id.' - '.$safe_lp_item_view_id);
 $exercise_stat_info = $objExercise->get_stat_track_exercise_info($safe_lp_id, $safe_lp_item_id, $safe_lp_item_view_id);
-
 
 if (empty($exercise_stat_info)) {
 	$total_weight = 0;
@@ -638,19 +634,27 @@ if (!empty($exercise_description)) {
 }
 echo Display::div($exercise_header, array('class'=>'exercise_header'));*/
 
+$is_visible_return = $objExercise->is_visible($learnpath_id, $learnpath_item_id, $learnpath_item_view_id);
+if ($is_visible_return['value'] == false) {
+    echo $is_visible_return['message'];    
+    if ($origin != 'learnpath') {
+        Display :: display_footer();
+    }
+    exit;
+}
 
 $limit_time_exists = (($objExercise->start_time != '0000-00-00 00:00:00') || ($objExercise->end_time != '0000-00-00 00:00:00')) ? true : false;
 
-if ($limit_time_exists) {	
-    $exercise_start_time 	= api_strtotime($objExercise->start_time,'UTC');
-    $exercise_end_time 		= api_strtotime($objExercise->end_time,'UTC');
+if ($limit_time_exists) {	    
+    $exercise_start_time 	= api_strtotime($objExercise->start_time, 'UTC');
+    $exercise_end_time 		= api_strtotime($objExercise->end_time, 'UTC');
     $time_now 				= time();
     
     if ($objExercise->start_time != '0000-00-00 00:00:00') {
         $permission_to_start = (($time_now - $exercise_start_time) > 0) ? true : false;
     } else {
         $permission_to_start = true;
-    }         
+    }
     if ($_SERVER['REQUEST_METHOD'] != 'POST') {
         if ($objExercise->end_time != '0000-00-00 00:00:00') {
             $exercise_timeover = (($time_now - $exercise_end_time) > 0) ? true : false;

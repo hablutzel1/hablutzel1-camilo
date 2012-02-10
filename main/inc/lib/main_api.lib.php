@@ -28,8 +28,6 @@ define('ANONYMOUS', 6);
  * the teacher through HTMLPurifier */
 define('COURSEMANAGERLOWSECURITY', 10);
 
-
-
 // Table of status
 $_status_list[COURSEMANAGER]    = 'teacher';        // 1
 $_status_list[SESSIONADMIN]     = 'session_admin';  // 3
@@ -52,7 +50,9 @@ define('COURSE_VISIBILITY_OPEN_WORLD', 3);
 // SESSION VISIBILITY CONSTANTS
 define('SESSION_VISIBLE_READ_ONLY', 1);
 define('SESSION_VISIBLE', 2);
-define('SESSION_INVISIBLE', 3);
+define('SESSION_INVISIBLE', 3); // not available
+define('SESSION_AVAILABLE', 4);
+
 
 define('SUBSCRIBE_ALLOWED', 1);
 define('SUBSCRIBE_NOT_ALLOWED', 0);
@@ -904,11 +904,11 @@ function _api_format_user($user) {
     $result['lastName'] 		= $lastname;
 
     if (isset($user['email'])) {
-        $result['mail'] = $user['email'];
+        $result['mail']         = $user['email'];
     } else {
-        $result['mail'] = $user['mail'];
+        $result['mail']         = $user['mail'];
     }
-    $user_id = intval($user['user_id']);
+    $user_id                    = intval($user['user_id']);
     $result['picture_uri']      = $user['picture_uri'];
     $result['user_id']          = $user_id;
     $result['official_code']    = $user['official_code'];
@@ -921,6 +921,7 @@ function _api_format_user($user) {
     
     $result['theme']            = $user['theme'];
     $result['language']         = $user['language'];
+    
     if (!isset($user['lastLogin']) && !isset($user['last_login'])) {
         require_once api_get_path(LIBRARY_PATH).'tracking.lib.php';
         $timestamp = Tracking::get_last_connection_date($result['user_id'], false, true);
@@ -940,15 +941,17 @@ function _api_format_user($user) {
     
     //Getting user avatar
     
-	$picture_filename = trim($user['picture_uri']);
-	$avatar = api_get_path(WEB_CODE_PATH).'img/unknown.jpg';
-	$avatar_small = api_get_path(WEB_CODE_PATH).'img/unknown_22.jpg';
-	$dir = 'upload/users/'.$user_id.'/';
+	$picture_filename   = trim($user['picture_uri']);
+	$avatar             = api_get_path(WEB_CODE_PATH).'img/unknown.jpg';
+	$avatar_small       = api_get_path(WEB_CODE_PATH).'img/unknown_22.jpg';
+	$dir                = 'upload/users/'.$user_id.'/';
+    
 	if (!empty($picture_filename) && api_is_anonymous() ) {
 		if (api_get_setting('split_users_upload_directory') === 'true') {			
 			$dir = 'upload/users/'.substr((string)$user_id, 0, 1).'/'.$user_id.'/';			
 		}
 	}
+    
 	$image_sys_path = api_get_path(SYS_CODE_PATH).$dir.$picture_filename;
 	if (file_exists($image_sys_path) && !is_dir($image_sys_path)) {
 		$avatar = api_get_path(WEB_CODE_PATH).$dir.$picture_filename;
@@ -957,9 +960,14 @@ function _api_format_user($user) {
 	
     $result['avatar'] = $avatar;
     $result['avatar_small'] = $avatar_small;
+    
 	if (isset($user['user_is_online'])) {
 		$result['user_is_online'] = $user['user_is_online'] == true ? 1 : 0;
 	}	
+    if (isset($user['user_is_online_in_chat'])) {
+		$result['user_is_online_in_chat'] = intval($user['user_is_online_in_chat']);
+	}	
+    
     return $result;
 }
 
@@ -979,11 +987,22 @@ function api_get_user_info($user_id = '', $check_if_user_is_online = false) {
     if (Database::num_rows($result) > 0) {
         $result_array = Database::fetch_array($result);
 		if ($check_if_user_is_online) {
-			$result_array['user_is_online'] = user_is_online($user_id);
+            $use_status_in_platform = user_is_online($user_id);
+            
+			$result_array['user_is_online'] = $use_status_in_platform;
+            $user_online_in_chat = 0;
+            
+            if ($use_status_in_platform) {
+                $user_status = UserManager::get_extra_user_data_by_field($user_id, 'chat_user_status', false, true);                                                
+                if (intval($user_status['chat_user_status']) == 1) {
+                    $user_online_in_chat = 1;
+                }                
+            }            
+            $result_array['user_is_online_in_chat'] = $user_online_in_chat;
 		}
-        return _api_format_user($result_array);
-    }
-	
+        $user =  _api_format_user($result_array);        
+        return $user;
+    }	
     return false;
 }
 
@@ -1685,13 +1704,13 @@ function api_get_session_name($session_id) {
 function api_get_session_info($session_id) {
     $data = array();
     if (!empty($session_id)) {
-        $sesion_id = intval(Database::escape_string($session_id));
+        $session_id = intval($session_id);
         $tbl_session = Database::get_main_table(TABLE_MAIN_SESSION);
         $sql = "SELECT * FROM $tbl_session WHERE id = $session_id";
         $result = Database::query($sql);
 
-        if (Database::num_rows($result)>0) {
-            $data = Database::fetch_array($result, 'ASSOC');
+        if (Database::num_rows($result)>0) {            
+            $data = Database::fetch_array($result, 'ASSOC');            
         }
     }
     return $data;
@@ -1705,55 +1724,64 @@ function api_get_session_info($session_id) {
 function api_get_session_visibility($session_id) {
     $visibility = 0; //means that the session is still available
     if (!empty($session_id)) {
-        $sesion_id = intval(Database::escape_string($session_id));
+        $session_id = intval($session_id);
         $tbl_session = Database::get_main_table(TABLE_MAIN_SESSION);
 
         $is_coach = api_is_coach();
-
         $condition_date_end = "";
+        
         if ($is_coach) {
+            //@todo use api_get_utc_datetime()
             $condition_date_end = " AND (CURDATE() > (SELECT adddate(date_end,nb_days_access_after_end) FROM $tbl_session WHERE id = $session_id) AND date_end != '0000-00-00') ";
         } else {
-            $condition_date_end = " AND (date_end < CURDATE() AND date_end != '0000-00-00') ";
+            $condition_date_end = " ";
         }
 
-        $sql = "SELECT visibility FROM $tbl_session
-                WHERE id = $session_id $condition_date_end "; // session is old and is not unlimited
-
+        $sql = "SELECT visibility, date_start, date_end FROM $tbl_session
+                WHERE id = $session_id $condition_date_end ";
         $result = Database::query($sql);
 
-        if (Database::num_rows($result)>0) {
+        if (Database::num_rows($result) > 0 ) {
             $row = Database::fetch_array($result, 'ASSOC');
             $visibility = $row['visibility'];
+            
+            //I don't care the field visibility
+            if ($row['date_start'] == '0000-00-00' && $row['date_end'] == '0000-00-00') {
+                $visibility = SESSION_AVAILABLE;    
+            } else {
+                $time = time();
+                     
+                //If datestart is set
+                if (!empty($row['date_start']) && $row['date_start'] != '0000-00-00') {
+                    $row['date_start'] = $row['date_start'].' 00:00:00';   
+                  
+                    if ($time > api_strtotime($row['date_start'], 'UTC')) {                          
+                        $visibility = SESSION_AVAILABLE;                        
+                    } else {
+                        $visibility = SESSION_INVISIBLE;
+                    }
+                }
+                
+                //if date_end is set
+                if (!empty($row['date_end']) && $row['date_end'] != '0000-00-00') {                    
+                    $row['date_end'] = $row['date_end'].' 00:00:00';
+                    //only if date_start said that it was ok
+                    
+                    if ($visibility == SESSION_AVAILABLE) {
+                        $visibility = $row['visibility'];
+                        
+                        if ($time < api_strtotime($row['date_end'], 'UTC')) {
+                            //date still available
+                            $visibility = SESSION_AVAILABLE;
+                        } else {
+                            //session ends
+                            $visibility = $row['visibility'];
+                        }
+                    }
+                }                
+            }
         } else {
-            $visibility = 0;
-        }
-    }
-    return $visibility;
-}
-
-/**
- * Gets the visibility of an session of a course that a student have
- * @param int       session id
- * @param string    Chamilo course code
- * @param int       user id
- * @return int      0= Session available (in date), SESSION_VISIBLE_READ_ONLY = 1, SESSION_VISIBLE = 2, SESSION_INVISIBLE = 3
- */
-function api_get_session_visibility_by_user($session_id, $course_code, $user_id) {
-    $visibility = 0; // Means that the session is still available.
-    if (!empty($session_id) && !empty($user_id)){
-        $sesion_id      = intval(Database::escape_string($session_id));
-        $user_id        = intval(Database::escape_string($user_id));
-        $course_code    = Database::escape_string($course_code);
-        $tbl_session = Database::get_main_table(TABLE_MAIN_SESSION_REL_COURSE_REL_USER);
-        $sql = "SELECT visibility FROM $tbl_session
-                WHERE id_session = $session_id AND id_user = $user_id AND course_code = '$course_code'"; // session old
-        $result = Database::query($sql);
-        if (Database::num_rows($result) > 0) {
-            $row = Database::fetch_array($result, 'ASSOC');
-            $visibility = $row['visibility'];
-        } else {
-            $visibility = 0;
+            $visibility = SESSION_INVISIBLE;
         }
     }
     return $visibility;
@@ -1795,7 +1823,6 @@ function api_get_session_condition($session_id, $and = true, $with_base_content 
     } else {
         $condition_session = $condition_add." session_id = $session_id ";
     }
-
     return $condition_session;
 }
 
@@ -2368,23 +2395,24 @@ function api_is_allowed_to_session_edit($tutor = false, $coach = false) {
             // I'm in a session and I'm a student
             $session_id = api_get_session_id();
             // Get the session visibility
-            $session_visibility = api_get_session_visibility($session_id);  // if 0 the session is still available.
-            if ($session_visibility != 0) {
-                //@todo We could load the session_rel_course_rel_user permission to increase the level of detail.
-                //echo api_get_user_id();
-                //echo api_get_course_id();
+            $session_visibility = api_get_session_visibility($session_id);  // if 5 the session is still available.
+            
+            //@todo We could load the session_rel_course_rel_user permission to increase the level of detail.
+            //echo api_get_user_id();
+            //echo api_get_course_id();
 
-                switch ($session_visibility) {
-                    case SESSION_VISIBLE_READ_ONLY: // 1
-                        return false;
-                    case SESSION_VISIBLE:           // 2
-                        return true;
-                    case SESSION_INVISIBLE:         // 3
-                        return false;
-                }
-            } else {
-                return true;
+            switch ($session_visibility) {
+                case SESSION_VISIBLE_READ_ONLY: // 1
+                    return false;
+                case SESSION_VISIBLE:           // 2
+                    return true;
+                case SESSION_INVISIBLE:         // 3
+                    return false;
+                case SESSION_AVAILABLE:         //5
+                    return true;
+                    
             }
+            
         }
     }
 }
@@ -2579,8 +2607,13 @@ function api_not_allowed($print_headers = false) {
         exit;
     }    
 
-    //if no course ID was included in the requested URL, then the user has either lost his session or is anonymous, so redirect to homepage
-    $msg = Display::return_message(get_lang('NotAllowed').'<br /><br /><a href="'.$home_url.'">'.get_lang('PleaseLoginAgainFromHomepage').'</a><br />', 'error', false);
+    // Check if the cookies are enabled. If are enabled and if no course ID was included in the requested URL, then the user has either lost his session or is anonymous, so redirect to homepage
+	if( !isset($_COOKIE["TestCookie"]) && empty($_COOKIE["TestCookie"]) ) {
+		$msg = Display::return_message(get_lang('NoCookies').'<br /><br /><a href="'.$home_url.'">'.get_lang('BackTo').' '.get_lang('CampusHomepage').'</a><br />', 'error', false);
+	}
+	else {
+		$msg = Display::return_message(get_lang('NotAllowed').'<br /><br /><a href="'.$home_url.'">'.get_lang('PleaseLoginAgainFromHomepage').'</a><br />', 'error', false);
+	}
     $msg = Display::div($msg, array('align'=>'center'));
     $tpl->assign('content', $msg);	
     $tpl->display_one_col_template();
@@ -4536,7 +4569,9 @@ function replace_dangerous_char($filename, $strict = 'loose') {
     $filename = str_replace($search, $replace, $filename);
     if ($strict == 'strict') {
         //$filename = str_replace('-', '_', $filename); // See task #1848.
-        $filename = preg_replace('/[^0-9A-Za-z_.\-]/', '', $filename);
+        //$filename = preg_replace('/[^0-9A-Za-z_.\-]/', '', $filename);
+        //Removing "_" character see BT#3628
+        $filename = preg_replace('/[^0-9A-Za-z.\-_]/', '', $filename);        
     }
 
     // Length is to be limited, so the file name to be acceptable by some operating systems.
@@ -5391,7 +5426,7 @@ function api_get_jquery_js() {
  * 
  */
 function api_get_jquery_ui_js($include_jqgrid = false) {
-    $libraries[]='jquery-ui';
+    $libraries = array('jquery-ui');    
 	if ($include_jqgrid) {
 	   $libraries[]='jqgrid';	
 	}
@@ -5420,6 +5455,10 @@ function api_get_jquery_libraries_js($libraries) {
         //$js .= '<link rel="stylesheet" href="'.$js_path.'jquery-ui/'.$theme.'/jquery-ui-'.$jquery_ui_version.'.custom.css" type="text/css">';
         $js .= api_get_css($js_path.'jquery-ui/'.$theme.'/jquery-ui-'.$jquery_ui_version.'.custom.css');
         $js .= api_get_js('jquery-ui/'.$theme.'/jquery-ui-'.$jquery_ui_version.'.custom.min.js');
+    }
+    
+    if (in_array('jquery-ui-i18n', $libraries)) {
+        $js .= api_get_js('jquery-ui/jquery-ui-i18n.min.js');
     }
     
     //jqgrid js and css

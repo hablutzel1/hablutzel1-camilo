@@ -3614,10 +3614,22 @@ form .label {
     line-height: 18px;
     padding-top: 6px;
     text-align: right;
-    width: 130px;    
+    width: 150px;    
 }
 form .formw {
-    margin-left: 150px;
+    margin-left: 170px;
+}
+
+/* disabled inputs */
+input[disabled],
+select[disabled],
+textarea[disabled],
+input[readonly],
+select[readonly],
+textarea[readonly] {
+  background-color: #f5f5f5;
+  border-color: #ddd;
+  cursor: not-allowed;
 }
 
 .formw iframe {
@@ -3806,10 +3818,10 @@ form div.error input, form div.error textarea {
 
 .label_tag {
   padding: 1px 3px 2px;
-  margin-right:3px; 
+  margin:2px 3px 2px 0px; 
   /* padding:5px;*/
   background-color: #bfbfbf;
-  font-size: 9.75px;
+  font-size: 10px;
   font-weight: bold;
   color: #ffffff;  
   -webkit-border-radius: 3px;
@@ -3914,10 +3926,16 @@ form div.error input, form div.error textarea {
     line-height: 16px;
 }
 
+#install_form .data_table_no_border td {
+    width:30%;
+}
+
 .lp_content_type_label {
     font-style: italic;
     color:#999;
 }
+
+
 
 
 /* jsPlumb */
@@ -4260,4 +4278,10 @@ a:active{
     width:90%;
     margin-left: 14px;    
     margin-bottom: 10px;
+}
+
+
+/* Portal administration input text width */
+#settings input[type="text"] {
+    width:250px;
 }

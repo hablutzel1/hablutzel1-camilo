@@ -1076,7 +1076,7 @@ class Database {
      * @todo lot of stuff to do here
     */
 
-    public static function select($columns = '*' , $table_name,  $conditions = array(), $type_result = 'all', $option = 'ASSOC') {
+    public static function select($columns, $table_name,  $conditions = array(), $type_result = 'all', $option = 'ASSOC') {
         $conditions = self::parse_conditions($conditions);
 
         //@todo we could do a describe here to check the columns ...
@@ -1116,7 +1116,7 @@ class Database {
      * @param   array
      * @todo lot of stuff to do here
     */
-    private function parse_conditions($conditions) {
+    static function parse_conditions($conditions) {
         if (empty($conditions)) {
             return '';
         }
@@ -1205,7 +1205,7 @@ class Database {
         return $return_value;
     }
 
-    private function parse_where_conditions($coditions){
+    public static function parse_where_conditions($coditions){
         return self::parse_conditions(array('where'=>$coditions));
     }
 
@@ -1216,7 +1216,7 @@ class Database {
     public static function delete($table_name, $where_conditions) {
         $result = false;
         $where_return = self::parse_where_conditions($where_conditions);
-        $sql    = "DELETE FROM $table_name $where_return ";
+        $sql    = "DELETE FROM $table_name $where_return ";        
         $result = self::query($sql);
         $affected_rows = self::affected_rows();
         //@todo should return affected_rows for

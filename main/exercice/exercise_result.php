@@ -55,7 +55,6 @@ if ( empty ( $remind_list ) ) {             $remind_list            = $_REQUEST[
 $exe_id = isset($_REQUEST['exe_id']) ? intval($_REQUEST['exe_id']) : 0;
 
 if (empty($objExercise)) {
-	
 	//Redirect to the exercise overview
 	//Check if the exe_id exists
 	$objExercise = new Exercise();
@@ -153,8 +152,10 @@ if ($show_results || $show_only_score) {
 Display :: display_confirmation_message(get_lang('Saved').'<br />',false);
 
 // Display text when test is finished #4074
+// Don't display the text when finished message if we are from a LP #4227
+// but display it from page exercice_show.php
 $end_of_message = $objExercise->selectTextWhenFinished();
-if (!empty($end_of_message)) {
+if (!empty($end_of_message) && ($origin != 'learnpath')) {
     Display::display_normal_message($end_of_message, false);
     echo "<div class='clear'>&nbsp;</div>";
 }

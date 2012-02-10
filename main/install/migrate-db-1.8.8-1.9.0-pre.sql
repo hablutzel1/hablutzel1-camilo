@@ -15,7 +15,6 @@
 -- xxMAINxx
 
 INSERT INTO settings_current (variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url_changeable) VALUES ('filter_terms', NULL, 'textarea', 'Security', '', 'FilterTermsTitle', 'FilterTermsComment', NULL, NULL, 0);
-
 INSERT INTO settings_current (variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url_changeable) VALUES ('header_extra_content', NULL, 'textarea', 'Tracking', '', 'HeaderExtraContentTitle', 'HeaderExtraContentComment', NULL, NULL, 1),('footer_extra_content', NULL, 'textarea', 'Tracking', '', 'FooterExtraContentTitle', 'FooterExtraContentComment', NULL, NULL,1);
 
 ALTER TABLE personal_agenda ADD COLUMN all_day INTEGER NOT NULL DEFAULT 0;
@@ -29,6 +28,7 @@ INSERT INTO settings_current (variable, subkey, type, category, selected_value, 
 
 INSERT INTO settings_options (variable, value, display_text) VALUES ('htmlpurifier_wiki', 'true', 'Yes');
 INSERT INTO settings_options (variable, value, display_text) VALUES ('htmlpurifier_wiki', 'false', 'No');
+
 -- CAS feature
 INSERT INTO settings_current (variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url_changeable) VALUES('cas_activate', NULL, 'radio', 'CAS', 'false', 'CasMainActivateTitle', 'CasMainActivateComment', NULL, NULL, 0);
 INSERT INTO settings_options (variable, value, display_text) values ('cas_activate', 'true', 'Yes');
@@ -151,11 +151,14 @@ ALTER TABLE user_course_vote ADD INDEX idx_ucv_cuid (user_id, c_id);
 
 ALTER TABLE track_e_default  MODIFY COLUMN default_value TEXT;
 
+--User chat status
+INSERT INTO user_field (field_type, field_variable, field_display_text, field_visible, field_changeable) VALUES (1, 'user_chat_status','User chat status', 0, 0);
+
 -- Do not move this query
 UPDATE settings_current SET selected_value = '1.9.0.16427' WHERE variable = 'chamilo_database_version';
 
 -- xxSTATSxx
-ALTER TABLE track_e_exercices ADD COLUMN questions_to_check TEXT  NOT NULL DEFAULT '';
+ALTER TABLE track_e_exercices ADD COLUMN questions_to_check TEXT NOT NULL DEFAULT '';
 --CREATE TABLE track_filtered_terms (id int, user_id int, course_id int, session_id int, tool_id char(12), filtered_term varchar(255), created_at datetime);
 CREATE TABLE reports_keys ( id int unsigned NOT NULL AUTO_INCREMENT, course_id int unsigned DEFAULT NULL, tool_id int DEFAULT NULL, child_id int DEFAULT NULL, child_name varchar(64) DEFAULT NULL, subchild_id int DEFAULT NULL, subchild_name varchar(64) DEFAULT NULL, subsubchild_id int DEFAULT NULL, subsubchild_name varchar(64) DEFAULT NULL, link varchar(256) DEFAULT NULL, PRIMARY KEY (id), KEY course_id (course_id), KEY course_id_2 (course_id,tool_id,child_id,subchild_id,subsubchild_id));
 CREATE TABLE reports_values ( key_id int unsigned NOT NULL, user_id int unsigned DEFAULT NULL, session_id int DEFAULT NULL, attempt int DEFAULT NULL, score decimal(5,3) DEFAULT NULL, progress int DEFAULT NULL, report_time int DEFAULT NULL, KEY user_id (user_id), PRIMARY KEY (key_id,user_id,session_id,attempt));
@@ -165,6 +168,8 @@ ALTER TABLE stored_values ADD UNIQUE (user_id, sco_id, course_id, sv_key);
 CREATE TABLE stored_values_stack (user_id INT NOT NULL, sco_id INT NOT NULL, stack_order INT NOT NULL, course_id CHAR(40) NOT NULL, sv_key CHAR(64) NOT NULL, sv_value TEXT NOT NULL );
 ALTER TABLE stored_values_stack ADD KEY (user_id, sco_id, course_id, sv_key, stack_order);
 ALTER TABLE stored_values_stack ADD UNIQUE (user_id, sco_id, course_id, sv_key, stack_order);
+
+ALTER TABLE track_e_attempt ADD COLUMN filename VARCHAR(255) DEFAULT NULL;
 
 -- xxUSERxx
 
