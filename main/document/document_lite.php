@@ -860,9 +860,9 @@ $extra_params['height'] = 'auto';
 
 //With this function we can add actions to the jgrid (edit, delete, etc)
 $action_links = 'function action_formatter(cellvalue, options, rowObject) {
-                         return \'<a href="?action=edit&id=\'+options.rowId+\'">'.Display::return_icon('edit.png',get_lang('Edit'),'',22).'</a>'.
-                         '&nbsp;<a onclick="javascript:if(!confirm('."\'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES))."\'".')) return false;"  href="?action=copy&id=\'+options.rowId+\'">'.Display::return_icon('copy.png',get_lang('Copy'),'',22).'</a>'.
-                         '&nbsp;<a onclick="javascript:if(!confirm('."\'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES))."\'".')) return false;"  href="?action=delete&id=\'+options.rowId+\'">'.Display::return_icon('delete.png',get_lang('Delete'),'',22).'</a>'.
+                         return \'<a href="?action=edit&id=\'+options.rowId+\'">'.Display::return_icon('edit.png',get_lang('Edit'),'',ICON_SIZE_SMALL).'</a>'.
+                         '&nbsp;<a onclick="javascript:if(!confirm('."\'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES))."\'".')) return false;"  href="?action=copy&id=\'+options.rowId+\'">'.Display::return_icon('copy.png',get_lang('Copy'),'',ICON_SIZE_SMALL).'</a>'.
+                         '&nbsp;<a onclick="javascript:if(!confirm('."\'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES))."\'".')) return false;"  href="?action=delete&id=\'+options.rowId+\'">'.Display::return_icon('delete.png',get_lang('Delete'),'',ICON_SIZE_SMALL).'</a>'.
                          '\'; 
                  }';
 $js_content = Display::grid_js('documents',  '' ,$columns,$column_model, $extra_params, $sortable_data, $action_links,true);
@@ -887,7 +887,7 @@ if (!is_null($docs_and_folders)) {
 
 		//for student does not show icon into other shared folder, and does not show into main path (root)
 		if (is_my_shared_folder(api_get_user_id(), $curdirpath, $session_id) && $curdirpath!='/' || api_is_allowed_to_edit() || api_is_platform_admin()) {
-			$link =  '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=downloadfolder&amp;id='.$document_id.'">'.Display::return_icon('save_pack.png', get_lang('Save').' (ZIP)','','32').'</a>';
+			$link =  '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=downloadfolder&amp;id='.$document_id.'">'.Display::return_icon('save_pack.png', get_lang('Save').' (ZIP)','',ICON_SIZE_MEDIUM).'</a>';
 		}
 	}
 }

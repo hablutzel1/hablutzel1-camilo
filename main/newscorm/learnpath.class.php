@@ -2720,9 +2720,9 @@ class learnpath {
                 $html .= '<div id="actions_lp" class="actions_lp">';
                 if ($display_action_links_with_icons) {
                     $html .= '<div style = "text-align:center;">';
-                    $html .= "<a href='lp_controller.php?" . api_get_cidreq() . "&amp;action=build&amp;lp_id=" . $this->lp_id . "' target='_parent'>" . Display :: return_icon('build_learnpath.png', get_lang('Build'),'','32')."</a>";
-                    $html .= "<a href='lp_controller.php?" . api_get_cidreq() . "&amp;action=admin_view&amp;lp_id=" . $this->lp_id . "' target='_parent'>" . Display :: return_icon('move_learnpath.png', get_lang('BasicOverview'),'','32')."</a>";
-                    $html .= '<span>' . Display :: return_icon('view_remove_na.png', get_lang('Display'),'','32').'</span><br />';
+                    $html .= "<a href='lp_controller.php?" . api_get_cidreq() . "&amp;action=build&amp;lp_id=" . $this->lp_id . "' target='_parent'>" . Display :: return_icon('build_learnpath.png', get_lang('Build'),'',ICON_SIZE_MEDIUM)."</a>";
+                    $html .= "<a href='lp_controller.php?" . api_get_cidreq() . "&amp;action=admin_view&amp;lp_id=" . $this->lp_id . "' target='_parent'>" . Display :: return_icon('move_learnpath.png', get_lang('BasicOverview'),'',ICON_SIZE_MEDIUM)."</a>";
+                    $html .= '<span>' . Display :: return_icon('view_remove_na.png', get_lang('Display'),'',ICON_SIZE_MEDIUM).'</span><br />';
                     $html .= '<a href="lp_controller.php?' . api_get_cidreq() . '">'. get_lang('ReturnToLPList') . '</a>';
                     $html .= '</div>';
                 } else {
@@ -4823,26 +4823,26 @@ class learnpath {
 
             $gradebook = isset($_GET['gradebook']) ? Security :: remove_XSS($_GET['gradebook']) : null;
             $return .= '<div class="actions">';
-            $return .= '<a href="' . api_get_self() . '?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;gradebook=' . $gradebook . '&amp;action=build&amp;lp_id=' . $this->lp_id . '" title="' . get_lang('Build') . '">' . Display :: return_icon('build_learnpath.png', get_lang('Build'),'','32').'</a>';
+            $return .= '<a href="' . api_get_self() . '?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;gradebook=' . $gradebook . '&amp;action=build&amp;lp_id=' . $this->lp_id . '" title="' . get_lang('Build') . '">' . Display :: return_icon('build_learnpath.png', get_lang('Build'),'',ICON_SIZE_MEDIUM).'</a>';
             if ($update_audio == 'true') {
-                $return .='<a href="lp_controller.php?cidReq='.Security::remove_XSS($_GET['cidReq']) .'&amp;gradebook='.$gradebook.'&amp;action=admin_view&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="'.get_lang('BasicOverview').'">'.Display::return_icon('move_learnpath.png', get_lang('BasicOverview'),'','32').'</a>';
+                $return .='<a href="lp_controller.php?cidReq='.Security::remove_XSS($_GET['cidReq']) .'&amp;gradebook='.$gradebook.'&amp;action=admin_view&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="'.get_lang('BasicOverview').'">'.Display::return_icon('move_learnpath.png', get_lang('BasicOverview'),'',ICON_SIZE_MEDIUM).'</a>';
             } else {
-                $return .= Display :: return_icon('move_learnpath_na.png', get_lang('BasicOverview'),'',32);
+                $return .= Display :: return_icon('move_learnpath_na.png', get_lang('BasicOverview'),'',ICON_SIZE_MEDIUM);
             }
             
-            $return .= '<a href="lp_controller.php?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&action=view&lp_id=' . $this->lp_id . '">' . Display :: return_icon('view_left_right.png', get_lang('Display'),'','32').'</a>';
+            $return .= '<a href="lp_controller.php?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&action=view&lp_id=' . $this->lp_id . '">' . Display :: return_icon('view_left_right.png', get_lang('Display'),'',ICON_SIZE_MEDIUM).'</a>';
             $return .= ' '.Display :: return_icon('i.gif');	
             $return .= '<a href="' . api_get_self() . '?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;gradebook=' . $gradebook . '&amp;action=add_item&amp;type=step&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="' . get_lang('NewStep') . '">
-			 '. Display :: return_icon('add.png', get_lang('NewStep'),'','32').'</a>';
+			 '. Display :: return_icon('add.png', get_lang('NewStep'),'',ICON_SIZE_MEDIUM).'</a>';
             
             /*$return .= '<a href="' . api_get_self() . '?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;gradebook=' . $gradebook . '&amp;action=add_item&amp;type=chapter&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="' . get_lang('NewChapter') . '">
-			'. Display :: return_icon('add_learnpath_section.png', get_lang('NewChapter'),'','32').'</a>';*/
+			'. Display :: return_icon('add_learnpath_section.png', get_lang('NewChapter'),'',ICON_SIZE_MEDIUM).'</a>';*/
             if ($update_audio == 'true') {            
-                $return .= Display::url(Display :: return_icon('upload_audio_na.png', get_lang('UpdateAllAudioFragments'),'','32'),'#');
+                $return .= Display::url(Display :: return_icon('upload_audio_na.png', get_lang('UpdateAllAudioFragments'),'',ICON_SIZE_MEDIUM),'#');
             } else {
-                $return .= '<a href="' . api_get_self() . '?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;action=' . Security :: remove_XSS($_GET['action']) . '&amp;lp_id=' . $_SESSION['oLP']->lp_id . '&amp;updateaudio=true">' . Display :: return_icon('upload_audio.png', get_lang('UpdateAllAudioFragments'),'','32').'</a>';
+                $return .= '<a href="' . api_get_self() . '?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;action=' . Security :: remove_XSS($_GET['action']) . '&amp;lp_id=' . $_SESSION['oLP']->lp_id . '&amp;updateaudio=true">' . Display :: return_icon('upload_audio.png', get_lang('UpdateAllAudioFragments'),'',ICON_SIZE_MEDIUM).'</a>';
             }
-            $return .= '<a href="lp_controller.php?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;action=edit&amp;lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display :: return_icon('settings.png', get_lang('CourseSettings'),'','32').'</a>';
+            $return .= '<a href="lp_controller.php?cidReq=' . Security :: remove_XSS($_GET['cidReq']) . '&amp;action=edit&amp;lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display :: return_icon('settings.png', get_lang('CourseSettings'),'',ICON_SIZE_MEDIUM).'</a>';
             $return .= '</div>';
         }
 
@@ -5080,15 +5080,15 @@ class learnpath {
     public function build_action_menu() {
         $gradebook = isset($_GET['gradebook']) ? Security :: remove_XSS($_GET['gradebook']) : null;
         echo '<div class="actions">';
-        echo Display :: return_icon('build_learnpath_na.png', get_lang('Build'),'','32');
+        echo Display :: return_icon('build_learnpath_na.png', get_lang('Build'),'',ICON_SIZE_MEDIUM);
         
-        echo '<a href="' . api_get_self().'?'.api_get_cidreq().'&amp;gradebook=' . $gradebook . '&amp;action=admin_view&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="' . get_lang('BasicOverview') . '">' . Display :: return_icon('move_learnpath.png', get_lang('BasicOverview'),'','32').'</a>';
-        echo '<a href="lp_controller.php?'.api_get_cidreq().'&amp;gradebook=' . $gradebook . '&action=view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display :: return_icon('view_left_right.png', get_lang('Display'),'','32').'</a> ';
+        echo '<a href="' . api_get_self().'?'.api_get_cidreq().'&amp;gradebook=' . $gradebook . '&amp;action=admin_view&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="' . get_lang('BasicOverview') . '">' . Display :: return_icon('move_learnpath.png', get_lang('BasicOverview'),'',ICON_SIZE_MEDIUM).'</a>';
+        echo '<a href="lp_controller.php?'.api_get_cidreq().'&amp;gradebook=' . $gradebook . '&action=view&lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display :: return_icon('view_left_right.png', get_lang('Display'),'',ICON_SIZE_MEDIUM).'</a> ';
         Display :: display_icon('i.gif');
-        echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook=' . $gradebook . '&amp;action=add_item&amp;type=step&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="' . get_lang('NewStep') . '">' . Display :: return_icon('add.png', get_lang('NewStep'),'','32').'</a>';        
-//		echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook=' . $gradebook . '&amp;action=add_item&amp;type=chapter&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="' . get_lang('NewChapter') . '">' . Display :: return_icon('add_learnpath_section.png', get_lang('NewChapter'),'','32').'</a>';
-        echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=admin_view&amp;lp_id=' . $_SESSION['oLP']->lp_id . '&amp;updateaudio=true">' . Display :: return_icon('upload_audio.png', get_lang('UpdateAllAudioFragments'),'','32').'</a>';
-        echo '<a href="lp_controller.php?'.api_get_cidreq().'&amp;action=edit&amp;lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display :: return_icon('settings.png', get_lang('CourseSettings'),'','32').'</a>';
+        echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook=' . $gradebook . '&amp;action=add_item&amp;type=step&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="' . get_lang('NewStep') . '">' . Display :: return_icon('add.png', get_lang('NewStep'),'',ICON_SIZE_MEDIUM).'</a>';        
+//		echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook=' . $gradebook . '&amp;action=add_item&amp;type=chapter&amp;lp_id=' . $_SESSION['oLP']->lp_id . '" title="' . get_lang('NewChapter') . '">' . Display :: return_icon('add_learnpath_section.png', get_lang('NewChapter'),'',ICON_SIZE_MEDIUM).'</a>';
+        echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=admin_view&amp;lp_id=' . $_SESSION['oLP']->lp_id . '&amp;updateaudio=true">' . Display :: return_icon('upload_audio.png', get_lang('UpdateAllAudioFragments'),'',ICON_SIZE_MEDIUM).'</a>';
+        echo '<a href="lp_controller.php?'.api_get_cidreq().'&amp;action=edit&amp;lp_id=' . $_SESSION['oLP']->lp_id . '">' . Display :: return_icon('settings.png', get_lang('CourseSettings'),'',ICON_SIZE_MEDIUM).'</a>';
         echo '</div>';
     }
 
@@ -7425,14 +7425,14 @@ class learnpath {
         //$return .= $lang.': ';
         $url = api_get_self() . '?cidReq='.Security::remove_XSS($_GET['cidReq']).'&view=build&id='.$item_id .'&lp_id='.$this->lp_id;
          
-        $return .= Display::url(Display::return_icon('edit.png', get_lang('Edit'), array(), 22), $url.'&action=edit_item&path_item=' . $row['path']);
-        $return .= Display::url(Display::return_icon('move.png', get_lang('Move'), array(), 22), $url.'&action=move_item');
+        $return .= Display::url(Display::return_icon('edit.png', get_lang('Edit'), array(), ICON_SIZE_SMALL), $url.'&action=edit_item&path_item=' . $row['path']);
+        $return .= Display::url(Display::return_icon('move.png', get_lang('Move'), array(), ICON_SIZE_SMALL), $url.'&action=move_item');
         
         // Commented for now as prerequisites cannot be added to chapters.
         if ($item_type != 'dokeos_chapter' && $item_type != 'chapter') {
-            $return .= Display::url(Display::return_icon('accept.png', get_lang('Prerequisites'), array(), 22), $url.'&action=edit_item_prereq');
+            $return .= Display::url(Display::return_icon('accept.png', get_lang('Prerequisites'), array(), ICON_SIZE_SMALL), $url.'&action=edit_item_prereq');
         }
-        $return .= Display::url(Display::return_icon('delete.png', get_lang('Delete'), array(), 22), $url.'&action=delete_item');
+        $return .= Display::url(Display::return_icon('delete.png', get_lang('Delete'), array(), ICON_SIZE_SMALL), $url.'&action=delete_item');
 /*
         // Get the audiorecorder. Use of ob_* functions since there are echos in the file.
         ob_start();
@@ -7784,7 +7784,7 @@ class learnpath {
         $return = '<div class="lp_resource">';
         
         $return .= '<div class="lp_resource_element">';
-        //$return .= Display::return_icon('new_exercice.png', '', array(), 32); //'<img alt="" src="../img/icons/22/exercise.gif" style="margin-right:5px;" title="" />';
+        //$return .= Display::return_icon('new_exercice.png', '', array(), 32); //'<img alt="" src="../img/icons/ICON_SIZE_SMALL/exercise.gif" style="margin-right:5px;" title="" />';
         $return .= '<img alt="" src="../img/new_test_small.gif" style="margin-right:5px;" title="" />';
         $return .= '<a href="' . api_get_path(REL_CODE_PATH) . 'exercice/exercise_admin.php?lp_id=' . $this->lp_id . '">' . get_lang('NewExercise') . '</a>';
         $return .= '</div>';        

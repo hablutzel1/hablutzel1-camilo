@@ -62,10 +62,10 @@ $extra_params['autowidth'] = 'true'; //use the width of the parent
 $extra_params['height'] = 'auto'; //use the width of the parent
 //With this function we can add actions to the jgrid
 $action_links = 'function action_formatter (cellvalue, options, rowObject) {
-                    return \'<a href="add_sessions_to_promotion.php?id=\'+options.rowId+\'">'.Display::return_icon('session_to_promotion.png',get_lang('SubscribeSessionsToPromotions'),'',22).'</a>'.
-                    '&nbsp;<a href="?action=edit&id=\'+options.rowId+\'">'.Display::return_icon('edit.png',get_lang('Edit'),'',22).'</a>'.
-					'&nbsp;<a onclick="javascript:if(!confirm('."\'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES))."\'".')) return false;"  href="?action=copy&id=\'+options.rowId+\'">'.Display::return_icon('copy.png',get_lang('Copy'),'',22).'</a>'.
-                    '&nbsp;<a onclick="javascript:if(!confirm('."\'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES))."\'".')) return false;"  href="?action=delete&id=\'+options.rowId+\'">'.Display::return_icon('delete.png',get_lang('Delete'),'',22).'</a> \'; 
+                    return \'<a href="add_sessions_to_promotion.php?id=\'+options.rowId+\'">'.Display::return_icon('session_to_promotion.png',get_lang('SubscribeSessionsToPromotions'),'',ICON_SIZE_SMALL).'</a>'.
+                    '&nbsp;<a href="?action=edit&id=\'+options.rowId+\'">'.Display::return_icon('edit.png',get_lang('Edit'),'',ICON_SIZE_SMALL).'</a>'.
+					'&nbsp;<a onclick="javascript:if(!confirm('."\'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES))."\'".')) return false;"  href="?action=copy&id=\'+options.rowId+\'">'.Display::return_icon('copy.png',get_lang('Copy'),'',ICON_SIZE_SMALL).'</a>'.
+                    '&nbsp;<a onclick="javascript:if(!confirm('."\'".addslashes(api_htmlentities(get_lang("ConfirmYourChoice"),ENT_QUOTES))."\'".')) return false;"  href="?action=delete&id=\'+options.rowId+\'">'.Display::return_icon('delete.png',get_lang('Delete'),'',ICON_SIZE_SMALL).'</a> \'; 
                  }';
 
 ?>
@@ -112,7 +112,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'add') {
         $promotion->display();
     } else {
         echo '<div class="actions">';        
-        echo Display::url(Display::return_icon('back.png',get_lang('Back'),'','32'), api_get_self());
+        echo Display::url(Display::return_icon('back.png',get_lang('Back'),'',ICON_SIZE_MEDIUM), api_get_self());
         echo '</div>';
         $token = Security::get_token();
         $form->addElement('hidden', 'sec_token');
@@ -141,7 +141,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'add') {
         $promotion->display();
     } else {
         echo '<div class="actions">';        
-        echo Display::url(Display::return_icon('back.png',get_lang('Back'),'','32'), api_get_self());
+        echo Display::url(Display::return_icon('back.png',get_lang('Back'),'',ICON_SIZE_MEDIUM), api_get_self());
         echo '</div>';
         $token = Security::get_token();
         $form->addElement('hidden', 'sec_token');

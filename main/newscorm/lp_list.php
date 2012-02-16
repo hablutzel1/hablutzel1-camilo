@@ -91,12 +91,12 @@ if ($is_allowed_to_edit) {
     }
 
     echo '<div class="actions">';
-    echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=add_lp">'.Display::return_icon('add.png', get_lang('_add_learnpath'),'','32').'</a>' .
+    echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&action=add_lp">'.Display::return_icon('add.png', get_lang('_add_learnpath'),'',ICON_SIZE_MEDIUM).'</a>' .
         str_repeat('&nbsp;', 3).
-        '<a href="../upload/index.php?'.api_get_cidreq().'&curdirpath=/&tool='.TOOL_LEARNPATH.'">'.Display::return_icon('import.png', get_lang('UploadScorm'),'','32').'</a>';
+        '<a href="../upload/index.php?'.api_get_cidreq().'&curdirpath=/&tool='.TOOL_LEARNPATH.'">'.Display::return_icon('import.png', get_lang('UploadScorm'),'',ICON_SIZE_MEDIUM).'</a>';
     if (api_get_setting('service_ppt2lp', 'active') == 'true') {
         echo str_repeat('&nbsp;', 3).'<a href="../upload/upload_ppt.php?'.api_get_cidreq().'&curdirpath=/&tool='.TOOL_LEARNPATH.'">
-		'.Display::return_icon('import_powerpoint.png', get_lang('PowerPointConvert'),'','32').'</a>';
+		'.Display::return_icon('import_powerpoint.png', get_lang('PowerPointConvert'),'',ICON_SIZE_MEDIUM).'</a>';
            //echo  str_repeat('&nbsp;', 3).'<a href="../upload/upload_word.php?'.api_get_cidreq().'&curdirpath=/&tool='.TOOL_LEARNPATH.'"><img src="../img/word.gif" border="0" alt="'.get_lang('WordConvert').'" align="absmiddle">&nbsp;'.get_lang('WordConvert').'</a>';
     }
     echo '</div>';
@@ -310,20 +310,20 @@ if (!empty($flat_list)) {
   
             // EDIT LP
             if ($current_session == $details['lp_session']) {
-                $dsp_edit_lp = '<a href="lp_controller.php?'.api_get_cidreq().'&action=edit&lp_id='.$id.'">'.Display::return_icon('settings.png', get_lang('CourseSettings'),'','22').'</a>';				
+                $dsp_edit_lp = '<a href="lp_controller.php?'.api_get_cidreq().'&action=edit&lp_id='.$id.'">'.Display::return_icon('settings.png', get_lang('CourseSettings'),'',ICON_SIZE_SMALL).'</a>';				
             } else {
-                $dsp_edit_lp = Display::return_icon('settings_na.png', get_lang('CourseSettings'),'','22');
+                $dsp_edit_lp = Display::return_icon('settings_na.png', get_lang('CourseSettings'),'',ICON_SIZE_SMALL);
             }
 
             // BUILD
             if ($current_session == $details['lp_session']) {
                 if ($details['lp_type'] == 1 || $details['lp_type'] == 2) {
-                    $dsp_build = '<a href="lp_controller.php?'.api_get_cidreq().'&amp;action=build&amp;lp_id='.$id.'">'.Display::return_icon('edit.png', get_lang('_edit_learnpath'),'','22').'</a>';
+                    $dsp_build = '<a href="lp_controller.php?'.api_get_cidreq().'&amp;action=build&amp;lp_id='.$id.'">'.Display::return_icon('edit.png', get_lang('_edit_learnpath'),'',ICON_SIZE_SMALL).'</a>';
                 } else {
-                    $dsp_build = Display::return_icon('edit_na.png', get_lang('_edit_learnpath'),'','22');
+                    $dsp_build = Display::return_icon('edit_na.png', get_lang('_edit_learnpath'),'',ICON_SIZE_SMALL);
                 }
             } else {
-                $dsp_build = Display::return_icon('edit_na.png', get_lang('_edit_learnpath'),'','22');
+                $dsp_build = Display::return_icon('edit_na.png', get_lang('_edit_learnpath'),'',ICON_SIZE_SMALL);
             }
 
             /* VISIBILITY COMMAND */
@@ -331,9 +331,9 @@ if (!empty($flat_list)) {
             // Session test not necessary if we want to show base course learning paths inside the session (see http://support.chamilo.org/projects/chamilo-18/wiki/Tools_and_sessions).
             //if ($current_session == $details['lp_session']) {
             if ($details['lp_visibility'] == 0) {
-                $dsp_visible =	"<a href=\"".api_get_self()."?".api_get_cidreq()."&lp_id=$id&action=toggle_visible&new_status=1\">".Display::return_icon('invisible.png', get_lang('Show'),'','22')."</a>";                        
+                $dsp_visible =	"<a href=\"".api_get_self()."?".api_get_cidreq()."&lp_id=$id&action=toggle_visible&new_status=1\">".Display::return_icon('invisible.png', get_lang('Show'),'',ICON_SIZE_SMALL)."</a>";                        
             } else {
-                $dsp_visible =	"<a href='".api_get_self()."?".api_get_cidreq()."&lp_id=$id&action=toggle_visible&new_status=0'>" .Display::return_icon('visible.png', get_lang('Hide'),'','22')."</a>";
+                $dsp_visible =	"<a href='".api_get_self()."?".api_get_cidreq()."&lp_id=$id&action=toggle_visible&new_status=0'>" .Display::return_icon('visible.png', get_lang('Hide'),'',ICON_SIZE_SMALL)."</a>";
             }
             //} else {
             //	$dsp_visible = '<img src="../img/invisible.gif" border="0" title="'.get_lang('Show').'" />';
@@ -344,13 +344,13 @@ if (!empty($flat_list)) {
             if ($current_session == $details['lp_session']) {
                 if ($details['lp_published'] == "i") {
                     $dsp_publish =	"<a href=\"".api_get_self()."?".api_get_cidreq()."&lp_id=$id&action=toggle_publish&new_status=v\">" .
-					Display::return_icon('lp_publish_na.png', get_lang('_publish'),'','22')."</a>";
+					Display::return_icon('lp_publish_na.png', get_lang('_publish'),'',ICON_SIZE_SMALL)."</a>";
                         
                 } else {
-                    $dsp_publish =	"<a href='".api_get_self()."?".api_get_cidreq()."&lp_id=$id&action=toggle_publish&new_status=i'>" .Display::return_icon('lp_publish.png', get_lang('_no_publish'),'','22')."</a>";
+                    $dsp_publish =	"<a href='".api_get_self()."?".api_get_cidreq()."&lp_id=$id&action=toggle_publish&new_status=i'>" .Display::return_icon('lp_publish.png', get_lang('_no_publish'),'',ICON_SIZE_SMALL)."</a>";
                 }
             } else {
-                $dsp_publish = Display::return_icon('lp_publish_na.png', get_lang('_no_publish'),'','22');
+                $dsp_publish = Display::return_icon('lp_publish_na.png', get_lang('_no_publish'),'',ICON_SIZE_SMALL);
             }
 
       /*  MULTIPLE ATTEMPTS OR SERIOUS GAME MODE 
@@ -377,7 +377,7 @@ if (!empty($flat_list)) {
                   '</a>&nbsp;';
               }
             } else {
-              $dsp_reinit .= '<img src="../img/kaboodleloop_gray.gif" border="0" alt="" title="'.get_lang("AllowMultipleAttempts").'"/>';
+                $dsp_reinit = Display::return_icon('kaboodleloop_gray.png', get_lang('AllowMultipleAttempts'),'',ICON_SIZE_SMALL);
             }
 
 
@@ -388,20 +388,20 @@ if (!empty($flat_list)) {
                 /* Default view mode settings (fullscreen/embedded) */
                 if ($details['lp_view_mode'] == 'fullscreen') {
                     $dsp_default_view = '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_view_mode&lp_id='.$id.'">' .
-                        Display::return_icon('view_fullscreen.png', get_lang('ViewModeFullScreen'),'','22').'</a>';
+                        Display::return_icon('view_fullscreen.png', get_lang('ViewModeFullScreen'),'',ICON_SIZE_SMALL).'</a>';
                 } elseif ($details['lp_view_mode'] == 'embedded') {
                     $dsp_default_view = '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_view_mode&lp_id='.$id.'">' .
-                         Display::return_icon('view_left_right.png', get_lang('ViewModeEmbedded'),'','22').'</a>';
+                         Display::return_icon('view_left_right.png', get_lang('ViewModeEmbedded'),'',ICON_SIZE_SMALL).'</a>';
                 } elseif ($details['lp_view_mode'] == 'embedframe') {
                     $dsp_default_view = '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_view_mode&lp_id='.$id.'">' .
-                        Display::return_icon('view_nofullscreen.png', get_lang('ViewModeEmbedFrame'),'','22').'</a>';              	
+                        Display::return_icon('view_nofullscreen.png', get_lang('ViewModeEmbedFrame'),'',ICON_SIZE_SMALL).'</a>';              	
                 }
             } else {
                 if ($details['lp_view_mode'] == 'fullscreen'){				
-                    $dsp_default_view = Display::return_icon('view_fullscreen_na.png', get_lang('ViewModeEmbedded'),'','22');
+                    $dsp_default_view = Display::return_icon('view_fullscreen_na.png', get_lang('ViewModeEmbedded'),'',ICON_SIZE_SMALL);
 				}
 				else{
-                    $dsp_default_view = Display::return_icon('view_left_right_na.png', get_lang('ViewModeEmbedded'),'','22');
+                    $dsp_default_view = Display::return_icon('view_left_right_na.png', get_lang('ViewModeEmbedded'),'',ICON_SIZE_SMALL);
 				}
             }
 
@@ -423,10 +423,10 @@ if (!empty($flat_list)) {
             if ($test_mode == 'test' or api_is_platform_admin()) {
                 if ($details['lp_scorm_debug'] == 1) {
                     $dsp_debug = '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_scorm_debug&lp_id='.$id.'">' .
-                        Display::return_icon('bug.png', get_lang('HideDebug'),'','22').'</a>';
+                        Display::return_icon('bug.png', get_lang('HideDebug'),'',ICON_SIZE_SMALL).'</a>';
                 }else{
                     $dsp_debug = '<a href="lp_controller.php?'.api_get_cidreq().'&action=switch_scorm_debug&lp_id='.$id.'">' .
-					Display::return_icon('bug_na.png', get_lang('ShowDebug'),'','22').'</a>';
+					Display::return_icon('bug_na.png', get_lang('ShowDebug'),'',ICON_SIZE_SMALL).'</a>';
                 }
              }
 
@@ -434,16 +434,16 @@ if (!empty($flat_list)) {
              /* Export */
 
             if ($details['lp_type'] == 1) {
-                $dsp_disk = Display::url(Display::return_icon('dock.png', get_lang('Export'), array(), 22), api_get_self()."?".api_get_cidreq()."&action=export&lp_id=$id");
+                $dsp_disk = Display::url(Display::return_icon('dock.png', get_lang('Export'), array(), ICON_SIZE_SMALL), api_get_self()."?".api_get_cidreq()."&action=export&lp_id=$id");
                 
             } elseif ($details['lp_type'] == 2) {
-                $dsp_disk = Display::url(Display::return_icon('dock.png', get_lang('Export'), array(), 22), api_get_self()."?".api_get_cidreq()."&action=export&lp_id=$id&export_name=".replace_dangerous_char($name, 'strict').".zip");                
+                $dsp_disk = Display::url(Display::return_icon('dock.png', get_lang('Export'), array(), ICON_SIZE_SMALL), api_get_self()."?".api_get_cidreq()."&action=export&lp_id=$id&export_name=".replace_dangerous_char($name, 'strict').".zip");                
             } else {
-                $dsp_disk = Display::return_icon('dock_na.png', get_lang('Export'), array(), 22);                
+                $dsp_disk = Display::return_icon('dock_na.png', get_lang('Export'), array(), ICON_SIZE_SMALL);                
             }
             
             //Copy            
-            $copy = Display::url(Display::return_icon('cd.gif', get_lang('Copy'), array(), 22), api_get_self()."?".api_get_cidreq()."&action=copy&lp_id=$id");
+            $copy = Display::url(Display::return_icon('cd.gif', get_lang('Copy'), array(), ICON_SIZE_SMALL), api_get_self()."?".api_get_cidreq()."&action=copy&lp_id=$id");
             
             /* Auto Lunch LP code*/
             $lp_auto_lunch_icon = '';            
@@ -460,7 +460,7 @@ if (!empty($flat_list)) {
             
             //if (api_get_setting('pdf_export_watermark_enable') == 'true') {
             	  $export_icon = ' <a href="'.api_get_self().'?'.api_get_cidreq().'&action=export_to_pdf&lp_id='.$id.'">
-				  '.Display::return_icon('pdf.png', get_lang('ExportToPDF'),'','22').'</a>';
+				  '.Display::return_icon('pdf.png', get_lang('ExportToPDF'),'',ICON_SIZE_SMALL).'</a>';
             //}
             
             /* DELETE COMMAND */
@@ -468,9 +468,9 @@ if (!empty($flat_list)) {
             if ($current_session == $details['lp_session']) {
                 $dsp_delete = "<a href=\"lp_controller.php?".api_get_cidreq()."&action=delete&lp_id=$id\" " .
                 "onclick=\"javascript: return confirmation('".addslashes($name)."');\">" .
-				Display::return_icon('delete.png', get_lang('_delete_learnpath'),'','22').'</a>';
+				Display::return_icon('delete.png', get_lang('_delete_learnpath'),'',ICON_SIZE_SMALL).'</a>';
             } else {
-                $dsp_delete = Display::return_icon('delete_na.png', get_lang('_delete_learnpath'),'','22');
+                $dsp_delete = Display::return_icon('delete_na.png', get_lang('_delete_learnpath'),'',ICON_SIZE_SMALL);
             }           
             
                         
@@ -481,18 +481,18 @@ if (!empty($flat_list)) {
             if ($current_session == 0) {
                 if ($details['lp_display_order'] == 1 && $max != 1) {
                     $dsp_order .= '<a href="lp_controller.php?'.api_get_cidreq().'&action=move_lp_down&lp_id='.$id.'">
-                         '.Display::return_icon('down.png', get_lang('MoveDown'),'','22').'</a>					
+                         '.Display::return_icon('down.png', get_lang('MoveDown'),'',ICON_SIZE_SMALL).'</a>					
 						<img src="../img/blanco.png" border="0" alt="" title="" />';
                 } elseif ($current == $max-1 && $max != 1) {
                     $dsp_order .= '<img src="../img/blanco.png" border="0" alt="" title="" /><a href="lp_controller.php?'.api_get_cidreq().'&action=move_lp_up&lp_id='.$id.'">
-					'.Display::return_icon('up.png', get_lang('MoveUp'),'','22').'</a>';
+					'.Display::return_icon('up.png', get_lang('MoveUp'),'',ICON_SIZE_SMALL).'</a>';
                 } elseif ($max == 1) {
                     $dsp_order = '';
                 } else {
                     $dsp_order .= '<a href="lp_controller.php?'.api_get_cidreq().'&action=move_lp_down&lp_id='.$id.'">' .
-                        Display::return_icon('down.png', get_lang('MoveDown'),'','22').'</a>';
+                        Display::return_icon('down.png', get_lang('MoveDown'),'',ICON_SIZE_SMALL).'</a>';
                     $dsp_order .= '<a href="lp_controller.php?'.api_get_cidreq().'&action=move_lp_up&lp_id='.$id.'">' .
-                        Display::return_icon('up.png', get_lang('MoveUp'),'','22').'</a>';
+                        Display::return_icon('up.png', get_lang('MoveUp'),'',ICON_SIZE_SMALL).'</a>';
                 }
             }
             if ($is_allowed_to_edit) {
@@ -503,7 +503,7 @@ if (!empty($flat_list)) {
             }            
         } else { // end if ($is_allowedToEdit)
             //Student
-            $export_icon = ' <a href="'.api_get_self().'?'.api_get_cidreq().'&action=export_to_pdf&lp_id='.$id.'">'.Display::return_icon('pdf.png', get_lang('ExportToPDF'),'','22').'</a>'; 
+            $export_icon = ' <a href="'.api_get_self().'?'.api_get_cidreq().'&action=export_to_pdf&lp_id='.$id.'">'.Display::return_icon('pdf.png', get_lang('ExportToPDF'),'',ICON_SIZE_SMALL).'</a>'; 
         } 
         
         echo $dsp_line.$start_time.$end_time.$dsp_progress.$dsp_desc.$dsp_export.$dsp_edit.$dsp_build.$dsp_edit_lp.$dsp_visible.$dsp_publish.$dsp_reinit.

@@ -74,11 +74,13 @@ function showQuestion($questionId, $only_questions = false, $origin = false, $cu
 			}
 		}
 		
-		echo '<div class="question_options">';
+		
         
-        if ($answerType == FREE_ANSWER && $freeze) {
+        if (in_array($answerType, array(FREE_ANSWER, ORAL_EXPRESSION)) && $freeze) {
             return '';
         }
+        
+        echo '<div class="question_options">';
         
 		//$s .= '<table width="720" class="exercise_options" style="width: 720px;'.$option_ie.' background-color:#fff;">';
 		$s = '';
@@ -143,7 +145,43 @@ function showQuestion($questionId, $only_questions = false, $origin = false, $cu
             $s .= '<tr><td colspan="3">';
             $s .= $oFCKeditor->CreateHtml();
             $s .= '</td></tr>';
-		}  
+		} elseif ($answerType == ORAL_EXPRESSION) {
+			//Add nanog
+			if (api_get_setting('enable_nanogong') == 'true') {				
+				
+				require_once api_get_path(LIBRARY_PATH).'nanogong.lib.php';
+				
+				//@todo pass this as a parameter
+				global $exercise_stat_info, $exerciseId,$exe_id;
+				
+				if (!empty($exercise_stat_info)) {
+					$params = array(					
+						'exercise_id' 	=> $exercise_stat_info['exe_exo_id'],
+						'exe_id' 		=> $exercise_stat_info['exe_id'],
+						'question_id'   => $questionId
+					);				
+				} else {
+					$params = array(
+						'exercise_id' 	=> $exerciseId,
+						'exe_id' 		=> 'temp_exe',
+						'question_id'   => $questionId
+					);
+				}
+				
+				$nano = new Nanogong($params);
+				echo $nano->show_button();				
+			}
+			
+			$oFCKeditor = new FCKeditor("choice[".$questionId."]") ;			
+			$oFCKeditor->ToolbarSet = 'TestFreeAnswer';
+			$oFCKeditor->Width  = '100%';
+			$oFCKeditor->Height = '150';
+			$oFCKeditor->ToolbarStartExpanded = false;			
+			$oFCKeditor->Value	= '' ;
+			$s .= '<tr><td colspan="3">';
+			$s .= $oFCKeditor->CreateHtml();
+			$s .= '</td></tr>';
+		} 
     
 		// Now navigate through the possible answers, using the max number of
 		// answers for the question as a limiter
@@ -1066,7 +1104,7 @@ function get_exam_results_data($from, $number_of_items, $column, $direction, $ex
                     		$actions .= Display::return_icon('teachers.gif', get_lang('Teacher'));
                     	}
                         if ($revised) {
-                            $actions .= "<a href='exercise_show.php?".api_get_cidreq()."&action=edit&id=$id'>".Display :: return_icon('edit.png', get_lang('Edit'), array(), 22);
+                            $actions .= "<a href='exercise_show.php?".api_get_cidreq()."&action=edit&id=$id'>".Display :: return_icon('edit.png', get_lang('Edit'), array(), ICON_SIZE_SMALL);
                             $actions .= '&nbsp;';
                         } else {
                             $actions .="<a href='exercise_show.php?".api_get_cidreq()."&action=qualify&id=$id'>".Display :: return_icon('quiz.gif', get_lang('Qualify'));

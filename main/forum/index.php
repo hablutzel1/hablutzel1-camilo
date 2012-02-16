@@ -179,16 +179,16 @@ echo '<div class="actions">';
 
 //if is called from learning path
 if (!empty($_GET['lp_id']) || !empty($_POST['lp_id'])){	
-    echo "<a href=\"../newscorm/lp_controller.php?".api_get_cidreq()."&gradebook=&action=add_item&type=step&lp_id=".$lp_id."#resource_tab-5\">".Display::return_icon('back.png', get_lang("BackTo").' '.get_lang("LearningPaths"),'','32')."</a>";
+    echo "<a href=\"../newscorm/lp_controller.php?".api_get_cidreq()."&gradebook=&action=add_item&type=step&lp_id=".$lp_id."#resource_tab-5\">".Display::return_icon('back.png', get_lang("BackTo").' '.get_lang("LearningPaths"),'',ICON_SIZE_MEDIUM)."</a>";
 }
 if (!empty($forum_list)) {
     echo search_link();
 }
 
 if (api_is_allowed_to_edit(false, true)) {
-    echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=add&amp;content=forumcategory&amp;lp_id='.$lp_id.'"> '.Display::return_icon('new_folder.png', get_lang('AddForumCategory'),'','32').'</a>';
+    echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=add&amp;content=forumcategory&amp;lp_id='.$lp_id.'"> '.Display::return_icon('new_folder.png', get_lang('AddForumCategory'),'',ICON_SIZE_MEDIUM).'</a>';
     if (is_array($forum_categories_list) and !empty($forum_categories_list)) {
-        echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=add&amp;content=forum&amp;lp_id='.$lp_id.'"> '.Display::return_icon('new_forum.png', get_lang('AddForum'),'','32').'</a>';
+        echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=add&amp;content=forum&amp;lp_id='.$lp_id.'"> '.Display::return_icon('new_forum.png', get_lang('AddForum'),'',ICON_SIZE_MEDIUM).'</a>';
     }
 }
 
@@ -224,8 +224,8 @@ if (is_array($forum_categories_list)) {
 
         echo '<th style="vertical-align: top;" align="center" >';
         if (api_is_allowed_to_edit(false, true) && !($forum_category['session_id'] == 0 && intval($session_id) != 0)) {
-            echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=edit&amp;content=forumcategory&amp;id='.intval($forum_category['cat_id']).'">'.Display::return_icon('edit.png', get_lang('Edit'), array(), 22).'</a>';
-            echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=delete&amp;content=forumcategory&amp;id='.intval($forum_category['cat_id'])."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang('DeleteForumCategory'), ENT_QUOTES))."')) return false;\">".Display::return_icon('delete.png', get_lang('Delete'), array(), 22).'</a>';
+            echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=edit&amp;content=forumcategory&amp;id='.intval($forum_category['cat_id']).'">'.Display::return_icon('edit.png', get_lang('Edit'), array(), ICON_SIZE_SMALL).'</a>';
+            echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=delete&amp;content=forumcategory&amp;id='.intval($forum_category['cat_id'])."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang('DeleteForumCategory'), ENT_QUOTES))."')) return false;\">".Display::return_icon('delete.png', get_lang('Delete'), array(), ICON_SIZE_SMALL).'</a>';
             display_visible_invisible_icon('forumcategory', strval(intval($forum_category['cat_id'])), strval(intval($forum_category['visibility'])));
             display_lock_unlock_icon('forumcategory', strval(intval($forum_category['cat_id'])), strval(intval($forum_category['locked'])));
             display_up_down_icon('forumcategory', strval(intval($forum_category['cat_id'])), $forum_categories_list);
@@ -412,8 +412,8 @@ if (is_array($forum_categories_list)) {
                         echo '</td>';
                         echo '<td nowrap="nowrap" align="center">';
                         if (api_is_allowed_to_edit(false, true) && !($forum['session_id'] == 0 && intval($session_id) != 0)) {
-                            echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=edit&amp;content=forum&amp;id='.$forum['forum_id'].'">'.Display::return_icon('edit.png',get_lang('Edit'), array(), 22).'</a>';
-                            echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=delete&amp;content=forum&amp;id='.$forum['forum_id']."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang('DeleteForum'), ENT_QUOTES))."')) return false;\">".Display::return_icon('delete.png', get_lang('Delete'), array(), 22).'</a>';
+                            echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=edit&amp;content=forum&amp;id='.$forum['forum_id'].'">'.Display::return_icon('edit.png',get_lang('Edit'), array(), ICON_SIZE_SMALL).'</a>';
+                            echo '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;gradebook='.$gradebook.'&amp;action=delete&amp;content=forum&amp;id='.$forum['forum_id']."\" onclick=\"javascript:if(!confirm('".addslashes(api_htmlentities(get_lang('DeleteForum'), ENT_QUOTES))."')) return false;\">".Display::return_icon('delete.png', get_lang('Delete'), array(), ICON_SIZE_SMALL).'</a>';
                             display_visible_invisible_icon('forum', $forum['forum_id'], $forum['visibility']);
                             display_lock_unlock_icon('forum', $forum['forum_id'], $forum['locked']);
                             display_up_down_icon('forum', $forum['forum_id'], $forums_in_category);

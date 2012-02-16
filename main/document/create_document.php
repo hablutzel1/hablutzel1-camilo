@@ -265,6 +265,12 @@ $html_editor_config = array(
 	'BaseHref'             => api_get_path(WEB_COURSE_PATH).$_course['path'].'/document'.$dir
 );
 
+if ($is_certificate_mode) {
+    $html_editor_config['CreateDocumentDir']    = api_get_path(WEB_COURSE_PATH).$_course['path'].'/document/';
+    $html_editor_config['CreateDocumentWebDir'] = api_get_path(WEB_COURSE_PATH).$_course['path'].'/document/';
+    $html_editor_config['BaseHref']             = api_get_path(WEB_COURSE_PATH).$_course['path'].'/document'.$dir;
+}
+
 $filepath = api_get_path(SYS_COURSE_PATH).$_course['path'].'/document'.$dir;
         
 if (!is_dir($filepath)) {
@@ -643,9 +649,9 @@ if ($form->validate()) {
 	
 	// link back to the documents overview
 	if ($is_certificate_mode)
-		echo '<a href="document.php?certificate=true&id='.$folder_id.'&selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('back.png',get_lang('Back').' '.get_lang('To').' '.get_lang('CertificateOverview'),'','32').'</a>';
+		echo '<a href="document.php?certificate=true&id='.$folder_id.'&selectcat=' . Security::remove_XSS($_GET['selectcat']).'">'.Display::return_icon('back.png',get_lang('Back').' '.get_lang('To').' '.get_lang('CertificateOverview'),'',ICON_SIZE_MEDIUM).'</a>';
 	else
-		echo '<a href="document.php?curdirpath='.Security::remove_XSS($dir).'">'.Display::return_icon('back.png',get_lang('Back').' '.get_lang('To').' '.get_lang('DocumentsOverview'),'','32').'</a>';
+		echo '<a href="document.php?curdirpath='.Security::remove_XSS($dir).'">'.Display::return_icon('back.png',get_lang('Back').' '.get_lang('To').' '.get_lang('DocumentsOverview'),'',ICON_SIZE_MEDIUM).'</a>';
 	echo '</div>';
 	
 	if ($is_certificate_mode) {

@@ -93,21 +93,21 @@ $sql = 'SELECT name	FROM '.Database::get_course_table(TABLE_LP_MAIN).' WHERE c_i
 $rs  = Database::query($sql);
 $lp_title = Database::result($rs, 0, 0);
 echo '<div class ="actions">';
-echo '<a href="javascript:window.back();">'.Display::return_icon('back.png',get_lang('Back'),'','32').'</a>';
+echo '<a href="javascript:window.back();">'.Display::return_icon('back.png',get_lang('Back'),'',ICON_SIZE_MEDIUM).'</a>';
 echo '<a href="javascript: void(0);" onclick="javascript: window.print();">
-'.Display::return_icon('printer.png',get_lang('Print'),'','32').'</a>';
+'.Display::return_icon('printer.png',get_lang('Print'),'',ICON_SIZE_MEDIUM).'</a>';
 echo '<a href="'.api_get_self().'?export=csv&'.Security::remove_XSS($_SERVER['QUERY_STRING']).'">
-'.Display::return_icon('export_csv.png',get_lang('ExportAsCSV'),'','32').'</a>';
+'.Display::return_icon('export_csv.png',get_lang('ExportAsCSV'),'',ICON_SIZE_MEDIUM).'</a>';
 echo '</div>';
 
 echo '<div class="clear"></div>';
 
 $session_name = api_get_session_name($session_id);
-$table_title = ($session_name? Display::return_icon('session.png', get_lang('Session'), array(), 22).' '.$session_name.' ':' ').
-                Display::return_icon('course.png', get_lang('Course'), array(), 22).' '.$course_info['name'].' '.
-                Display::return_icon('user.png', get_lang('User'), array(), 22).' '.$name;
+$table_title = ($session_name? Display::return_icon('session.png', get_lang('Session'), array(), ICON_SIZE_SMALL).' '.$session_name.' ':' ').
+                Display::return_icon('course.png', get_lang('Course'), array(), ICON_SIZE_SMALL).' '.$course_info['name'].' '.
+                Display::return_icon('user.png', get_lang('User'), array(), ICON_SIZE_SMALL).' '.$name;
 echo '<h2>'.$table_title.'</h2>';
-echo '<h3>'.Display::return_icon('learnpath.png', get_lang('ToolLearnpath'), array(), 22).' '.$lp_title.'</h3>';
+echo '<h3>'.Display::return_icon('learnpath.png', get_lang('ToolLearnpath'), array(), ICON_SIZE_SMALL).' '.$lp_title.'</h3>';
     
 $list = learnpath :: get_flat_ordered_items_list($lp_id, 0, $course_info['real_id']);
 $origin = 'tracking';

@@ -1174,10 +1174,11 @@ function api_get_course_info($course_code = null) {
             
             $_course['department_name']       = $course_data['department_name'];
             $_course['department_url']        = $course_data['department_url' ];
+            $_course['legal_agreement']       = $course_data['legal_agreement' ];
 
             // The real_id is an integer. It is mandatory for future implementations.
             $_course['real_id'     ]          = $course_data['id'              ];
-            $_course['course_language']       = $course_data['course_language'];
+            $_course['activate_legal']        = $course_data['activate_legal'];
 			
 			//I know this is bad, but this reflects that it was a bad decistion to not add a flag in the DB if an image exists			
 			if (file_exists(api_get_path(SYS_COURSE_PATH).$course_data['directory'].'/course-pic85x85.png')) {
@@ -1246,6 +1247,7 @@ function api_get_course_info_by_id($id = null) {
             $_course['real_id'      ]         = $course_data['id'              ];            
             $_course['title'        ]         = $course_data['title'           ];
             $_course['course_language']       = $course_data['course_language'];
+            $_course['activate_legal']        = $course_data['activate_legal'];
 			
 			if (file_exists(api_get_path(SYS_COURSE_PATH).$course_data['directory'].'/course-pic85x85.png')) {
 				$url_image = api_get_path(WEB_COURSE_PATH).$course_data['directory'].'/course-pic85x85.png';
@@ -1799,7 +1801,7 @@ function api_get_session_image($session_id, $status_id) {
     $session_img = '';
     if ((int)$status_id != 5) { //check whether is not a student
         if ($session_id > 0) {
-            $session_img = "&nbsp;&nbsp;".Display::return_icon('star.png', get_lang('SessionSpecificResource'), array('align' => 'absmiddle'), 22);
+            $session_img = "&nbsp;&nbsp;".Display::return_icon('star.png', get_lang('SessionSpecificResource'), array('align' => 'absmiddle'), ICON_SIZE_SMALL);
         }
     }
     return $session_img;
@@ -1931,6 +1933,17 @@ function api_is_platform_admin($allow_sessions_admins = false) {
     }
     global $_user;
     return $allow_sessions_admins && $_user['status'] == SESSIONADMIN;
+}
+
+function api_is_platform_admin_by_id($user_id = null) {
+    $user_id = intval($user_id);
+    if (empty($user_id)) {
+        $user_id = api_get_user_id();
+    }
+    $admin_table = Database::get_main_table(TABLE_MAIN_ADMIN);
+    $sql = "SELECT * FROM $admin_table WHERE user_id = $user_id";
+    $res = Database::query($sql);
+    return Database::num_rows($res) === 1;
 }
 
 /**
@@ -2290,6 +2303,7 @@ function api_display_tool_view_option() {
  * @param array $info_array An array with the messages to show
  */
 function api_display_array($info_array) {
+    $message = '';
     if(is_array($info_array)) {
         foreach ($info_array as $element) {
             $message .= $element.'<br />';
@@ -2919,7 +2933,6 @@ function api_get_item_property_id($course_code, $tool, $ref) {
     return $item_property_id;
 }
 
-
 /**
  *
  * Inserts a record in the track_e_item_property table (No update)
@@ -3099,6 +3112,7 @@ function api_get_languages() {
     $tbl_language = Database::get_main_table(TABLE_MAIN_LANGUAGE);
     $sql = "SELECT * FROM $tbl_language WHERE available='1' ORDER BY original_name ASC";
     $result = Database::query($sql);
+    $language_list = array();
     while ($row = Database::fetch_array($result)) {
         $language_list['name'][] = $row['original_name'];
         $language_list['folder'][] = $row['dokeos_folder'];
@@ -3132,32 +3146,32 @@ function api_get_language_id($language) {
  * @param return language of the requested type or false if the language is not available
  **/
 function api_get_language_from_type($lang_type){
-  global $_user;
-  global $_course;
-  $toreturn = false;
-  switch ($lang_type) {
-  case 'platform_lang' : 
-    $temp_lang = api_get_setting('platformLanguage');
-    if (!empty($temp_lang))
-      $toreturn = $temp_lang;
-    break;
-  case 'user_profil_lang' : 
-    if (isset($_user['language']) && !empty($_user['language']) ) 
-      $toreturn = $_user['language'];
-    break;
-  case 'user_selected_lang' : 
-    if (isset($_SESSION['user_language_choice']) && !empty($_SESSION['user_language_choice']) ) 
-      $toreturn = ($_SESSION['user_language_choice']);
-    break;
-  case 'course_lang' : 
-    if ($_course['language'] && !empty($_course['language']) )  
-      $toreturn = $_course['language'];
-    break;
-  default : 
+    global $_user;
+    global $_course;
     $toreturn = false;
-    break;
-  }
-  return $toreturn;
+    switch ($lang_type) {
+        case 'platform_lang' : 
+            $temp_lang = api_get_setting('platformLanguage');
+            if (!empty($temp_lang))
+                $toreturn = $temp_lang;
+            break;
+        case 'user_profil_lang' : 
+            if (isset($_user['language']) && !empty($_user['language']) ) 
+                $toreturn = $_user['language'];
+            break;
+        case 'user_selected_lang' : 
+            if (isset($_SESSION['user_language_choice']) && !empty($_SESSION['user_language_choice']) ) 
+                $toreturn = ($_SESSION['user_language_choice']);
+            break;
+        case 'course_lang' : 
+            if ($_course['language'] && !empty($_course['language']) )  
+                $toreturn = $_course['language'];
+            break;
+        default : 
+            $toreturn = false;
+        break;
+    }
+    return $toreturn;
 }
 
 function api_get_language_info($language_id) {
@@ -3177,9 +3191,7 @@ function api_get_language_info($language_id) {
  * @return string   The visual theme's name, it is the name of a folder inside .../chamilo/main/css/
  */
 function api_get_visual_theme() {
-
     static $visual_theme;
-
     if (!isset($visual_theme)) {
 
         $platform_theme = api_get_setting('stylesheets');   // Plataform's theme.
@@ -3848,11 +3860,11 @@ function api_status_key($status) {
  */
 function api_get_status_langvars() {
     return array(
-        COURSEMANAGER => get_lang('Teacher', ''),
-        SESSIONADMIN => get_lang('SessionsAdmin', ''),
-        DRH => get_lang('Drh', ''),
-        STUDENT => get_lang('Student', ''),
-        ANONYMOUS => get_lang('Anonymous', '')
+        COURSEMANAGER   => get_lang('Teacher', ''),
+        SESSIONADMIN    => get_lang('SessionsAdmin', ''),
+        DRH             => get_lang('Drh', ''),
+        STUDENT         => get_lang('Student', ''),
+        ANONYMOUS       => get_lang('Anonymous', '')
     );
 }
 
@@ -3863,6 +3875,7 @@ function api_get_status_langvars() {
 */
 function api_get_settings_options($var) {
 	$table_settings_options = Database :: get_main_table(TABLE_MAIN_SETTINGS_OPTIONS);
+    $var = Database::escape_string($var);
 	$sql = "SELECT * FROM $table_settings_options WHERE variable = '$var' ORDER BY id";
 	$result = Database::query($sql);
     $settings_options_array = array();
@@ -5162,9 +5175,13 @@ function api_send_mail($to, $subject, $message, $additional_headers = null, $add
  *
  * @author Julio Montoya
  */
-function api_is_global_platform_admin() {
-    if (api_is_platform_admin()) {
-        $my_url_list = api_get_access_url_from_user(api_get_user_id());
+function api_is_global_platform_admin($user_id = null) {
+    $user_id = intval($user_id);
+    if (empty($user_id)) {
+        $user_id = api_get_user_id();
+    }
+    if (api_is_platform_admin_by_id($user_id)) {
+        $my_url_list = api_get_access_url_from_user($user_id);
         // The admin is registered in the first "main" site with access_url_id = 1
         if (in_array(1, $my_url_list)) {
             return true;
@@ -5175,6 +5192,37 @@ function api_is_global_platform_admin() {
     return false;
 }
 
+function api_global_admin_can_edit_admin($admin_id_to_check, $my_user_id = null) {
+    if (empty($my_user_id)) {
+        $my_user_id = api_get_user_id();
+    }
+    $iam_a_global_admin     = api_is_global_platform_admin($my_user_id);  
+    $user_is_global_admin   = api_is_global_platform_admin($admin_id_to_check);
+    
+    if ($iam_a_global_admin) {
+        //global admin can edit everything
+        return true;
+    } else {
+        //If i'm a simple admin
+        if (api_is_platform_admin_by_id($my_user_id)) {
+            if ($user_is_global_admin) {
+                return false;
+            } else {
+                return true;
+            }        
+        } else {
+            return false;
+        }
+    }    
+}
+
+function api_protect_super_admin($admin_id_to_check, $my_user_id = null) {
+    if (api_global_admin_can_edit_admin($admin_id_to_check, $my_user_id)) {
+        return true;
+    } else {
+        api_not_allowed();
+    }    
+}
 
 /**
  * Function used to protect a global admin script.
@@ -5398,12 +5446,16 @@ function api_check_browscap() {
     return false;	    
 }
 
-
-
+/**
+ * Returns the <script> HTML tag
+ */
 function api_get_js($file) {    
     return '<script type="text/javascript" src="'.api_get_path(WEB_LIBRARY_PATH).'javascript/'.$file.'"></script>';
 }
 
+/**
+ * Returns the <link> HTML tag
+ */
 function api_get_css($file) {
 	$media = '';
 	return '<link rel="stylesheet" href="'.$file.'" type="text/css" media="'.$media.'" />';	
@@ -5551,8 +5603,6 @@ function api_get_unique_id() {
     $id = md5(time().uniqid().api_get_user_id().api_get_course_id().api_get_session_id());    
     return $id;
 }
-
-
 
 function api_get_home_path() {
 	$home = 'home/';	

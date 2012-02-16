@@ -166,14 +166,14 @@ function handle_stylesheets() {
         if ($style_info[0]['access_url_changeable'] == 1 && $url_info['active'] == 1) {
             $is_style_changeable = true;
             echo '<div class="actions" id="stylesheetuploadlink">';
-            	Display::display_icon('upload_stylesheets.png',get_lang('UploadNewStylesheet'),'','32');
+            	Display::display_icon('upload_stylesheets.png',get_lang('UploadNewStylesheet'),'',ICON_SIZE_MEDIUM);
             	echo '<a href="" onclick="javascript: document.getElementById(\'newstylesheetform\').style.display = \'block\'; document.getElementById(\'stylesheetuploadlink\').style.display = \'none\'; return false; ">'.get_lang('UploadNewStylesheet').'</a>';
             echo '</div>';
         }
     } else {
         $is_style_changeable = true;
         echo '<div class="actions" id="stylesheetuploadlink">';
-			Display::display_icon('upload_stylesheets.png',get_lang('UploadNewStylesheet'),'','32');
+			Display::display_icon('upload_stylesheets.png',get_lang('UploadNewStylesheet'),'',ICON_SIZE_MEDIUM);
         	echo '<a href="" onclick="javascript: document.getElementById(\'newstylesheetform\').style.display = \'block\'; document.getElementById(\'stylesheetuploadlink\').style.display = \'none\'; return false; ">'.get_lang('UploadNewStylesheet').'</a>';
         echo '</div>';
     }
@@ -221,18 +221,14 @@ function handle_stylesheets() {
         }
     }
 
-    // Preview of the stylesheet.
-    echo '<div><iframe src="style_preview.php" width="100%" height="300" name="preview"></iframe></div>';
-
 ?>
     <script type="text/javascript">
-    function load_preview(selectobj){
-        var style_dir = selectobj.options[selectobj.selectedIndex].value;
-         parent.preview.location='style_preview.php?style=' + style_dir;
+    function load_preview(){
+        $('#stylesheets_id').submit();        
     }
     </script>
 <?php
-    echo '<form name="stylesheets" method="post" action="'.api_get_self().'?category='.Security::remove_XSS($_GET['category']).'">';
+    echo '<form id="stylesheets_id" name="stylesheets" method="post" action="'.api_get_self().'?category='.Security::remove_XSS($_GET['category']).'">';
     echo '<br /><select name="style" onChange="load_preview(this)" >';
 
     $list_of_styles = array();
@@ -245,12 +241,17 @@ function handle_stylesheets() {
                 continue;
             }
             $dirpath = api_get_path(SYS_PATH).'main/css/'.$style_dir;
+            
             if (is_dir($dirpath)) {
                 if ($style_dir != '.' && $style_dir != '..') {
-                    if ($currentstyle == $style_dir || ($style_dir == 'chamilo' && !$currentstyle)) {
+                    if (isset($_POST['style']) && $_POST['style'] == $style_dir) {
                         $selected = 'selected="true"';
                     } else {
-                        $selected = '';
+                        if (!isset($_POST['style'])  && ($currentstyle == $style_dir || ($style_dir == 'chamilo' && !$currentstyle))) {
+                            $selected = 'selected="true"';
+                        } else {
+                            $selected = '';
+                        }
                     }
                     $show_name = ucwords(str_replace('_', ' ', $style_dir));
 
@@ -269,6 +270,7 @@ function handle_stylesheets() {
         }
         @closedir($handle);
     }
+    
     //Sort styles in alphabetical order
     asort($list_of_names);
     foreach($list_of_names as $style_dir=>$item) {
@@ -452,16 +454,8 @@ function store_stylesheets() {
 
     // Insert the stylesheet.
     $style = Database::escape_string($_POST['style']);
+    
     if (is_style($style)) {
-        /*
-        $sql = 'UPDATE '.$table_settings_current.' SET
-                selected_value = "'.$style.'"
-                WHERE variable = "stylesheets"
-                AND category = "stylesheets"';
-
-        Database::query($sql);
-        */
-
         api_set_setting('stylesheets', $style, null, 'stylesheets', $_configuration['access_url']);
     }
 
@@ -676,7 +670,7 @@ function handle_search() {
 function handle_templates() {
     if ($_GET['action'] != 'add') {
         echo '<div class="actions" style="margin-left: 1px;">';
-        echo '<a href="settings.php?category=Templates&amp;action=add">'.Display::return_icon('new_template.png', get_lang('AddTemplate'),'','32').'</a>';
+        echo '<a href="settings.php?category=Templates&amp;action=add">'.Display::return_icon('new_template.png', get_lang('AddTemplate'),'',ICON_SIZE_MEDIUM).'</a>';
         echo '</div>';
     }
 
@@ -782,8 +776,8 @@ function get_template_data($from, $number_of_items, $column, $direction) {
  * @since Dokeos 1.8.6
  */
 function actions_filter($id) {
-    $return = '<a href="settings.php?category=Templates&amp;action=edit&amp;id='.Security::remove_XSS($id).'">'.Display::return_icon('edit.png', get_lang('Edit'),'',22).'</a>';
-    $return .= '<a href="settings.php?category=Templates&amp;action=delete&amp;id='.Security::remove_XSS($id).'" onClick="javascript:if(!confirm('."'".get_lang('ConfirmYourChoice')."'".')) return false;">'.Display::return_icon('delete.png', get_lang('Delete'),'',22).'</a>';
+    $return = '<a href="settings.php?category=Templates&amp;action=edit&amp;id='.Security::remove_XSS($id).'">'.Display::return_icon('edit.png', get_lang('Edit'),'',ICON_SIZE_SMALL).'</a>';
+    $return .= '<a href="settings.php?category=Templates&amp;action=delete&amp;id='.Security::remove_XSS($id).'" onClick="javascript:if(!confirm('."'".get_lang('ConfirmYourChoice')."'".')) return false;">'.Display::return_icon('delete.png', get_lang('Delete'),'',ICON_SIZE_SMALL).'</a>';
     return $return;
 }
 
@@ -920,7 +914,7 @@ function add_edit_template() {
 
                // Display a feedback message.
                Display::display_confirmation_message(get_lang('TemplateAdded'));
-               echo '<a href="settings.php?category=Templates&amp;action=add">'.Display::return_icon('new_template.png', get_lang('AddTemplate'),'','32').'</a>';
+               echo '<a href="settings.php?category=Templates&amp;action=add">'.Display::return_icon('new_template.png', get_lang('AddTemplate'),'',ICON_SIZE_MEDIUM).'</a>';
            } else {
                $content_template = '<head>{CSS}<style type="text/css">.text{font-weight: normal;}</style></head><body>'.Database::escape_string($values['template_text']).'</body>';
                $sql = "UPDATE $table_system_template set title = '".Database::escape_string($values['title'])."', content = '".$content_template."'";

@@ -38,26 +38,26 @@ function display_action_links($id, $cur_dir_path, $show_tool_options, $display_u
     
 	
 	if (!empty($cur_dir_path)) {		
-		$display_output .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&origin='.$origin.'&gradebook='.$gradebook.'&id='.$my_back_id.'">'.Display::return_icon('back.png', get_lang('BackToWorksList'),'','32').'</a>';
+		$display_output .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&origin='.$origin.'&gradebook='.$gradebook.'&id='.$my_back_id.'">'.Display::return_icon('back.png', get_lang('BackToWorksList'),'',ICON_SIZE_MEDIUM).'</a>';
 	}
 
 	if ($show_tool_options && api_is_allowed_to_edit(null, true) && $origin != 'learnpath') {
 		// Create dir
 		if (empty($cur_dir_path)) {
 			$display_output .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=create_dir&origin='.$origin.'&gradebook='.$gradebook.'">';
-			$display_output .= Display::return_icon('new_work.png', get_lang('CreateAssignment'),'','32').'</a>';
+			$display_output .= Display::return_icon('new_work.png', get_lang('CreateAssignment'),'',ICON_SIZE_MEDIUM).'</a>';
 		}
 		if (empty($cur_dir_path)) {
 			// Options
 			$display_output .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;action=settings&amp;origin='.$origin.'&amp;gradebook='.$gradebook.'">';
-			$display_output .= Display::return_icon('settings.png', get_lang('EditToolOptions'),'','32').'</a>';
+			$display_output .= Display::return_icon('settings.png', get_lang('EditToolOptions'),'',ICON_SIZE_MEDIUM).'</a>';
 		}
 	}
 
 
     if ($display_upload_link && api_is_allowed_to_session_edit(false, true) && (isset($cur_dir_path) && (!empty($cur_dir_path) && $cur_dir_path != '/') )) {
         $display_output .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$id.'&curdirpath='.$cur_dir_path.'&action=upload_form&origin='.$origin.'&gradebook='.$gradebook.'">';
-        $display_output .= Display::return_icon('upload_file.png', get_lang('UploadADocument'),'','32').'</a>';
+        $display_output .= Display::return_icon('upload_file.png', get_lang('UploadADocument'),'',ICON_SIZE_MEDIUM).'</a>';
     }
 
 
@@ -76,15 +76,15 @@ function display_action_links($id, $cur_dir_path, $show_tool_options, $display_u
 		if (!empty($cur_dir_path)) {
 			if (empty($_GET['list']) or Security::remove_XSS($_GET['list']) == 'with') {
 				$display_output .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;id='.$id.'&amp;curdirpath='.$cur_dir_path.'&amp;origin='.$origin.'&amp;gradebook='.$gradebook.'&amp;list=without">'.
-				Display::return_icon('exercice_uncheck.png', get_lang('ViewUsersWithoutTask'),'','32')."</a>\n";
+				Display::return_icon('exercice_uncheck.png', get_lang('ViewUsersWithoutTask'),'',ICON_SIZE_MEDIUM)."</a>\n";
 			} else {
 				$display_output .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;id='.$id.'&amp;curdirpath='.$cur_dir_path.'&amp;origin='.$origin.'&amp;gradebook='.$gradebook.'&amp;list=with">'.
-				Display::return_icon('exercice_check.png', get_lang('ViewUsersWithTask'),'','32')."</a>\n";
+				Display::return_icon('exercice_check.png', get_lang('ViewUsersWithTask'),'',ICON_SIZE_MEDIUM)."</a>\n";
                 if (!isset($_GET['action']) || (isset($_GET['action']) && $_GET['action'] != 'send_mail')) {
                     $display_output .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&amp;id='.$id.'&amp;curdirpath='.$cur_dir_path.'&amp;origin='.$origin.'&amp;gradebook='.$gradebook.'&amp;list=without&amp;action=send_mail&amp;sec_token='.$token.'">'.
-                    Display::return_icon('mail_send.png', get_lang('ReminderMessage'),'','32')."</a>";
+                    Display::return_icon('mail_send.png', get_lang('ReminderMessage'),'',ICON_SIZE_MEDIUM)."</a>";
                 } else {
-                    $display_output .= Display::return_icon('mail_send_na.png', get_lang('ReminderMessage'),'','32');
+                    $display_output .= Display::return_icon('mail_send_na.png', get_lang('ReminderMessage'),'',ICON_SIZE_MEDIUM);
                 }
 			}
 		}
@@ -774,7 +774,7 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
 				$text_file = api_strtolower(get_lang('FileUpload'));
 			}
 
-			$icon = Display::return_icon('work.png', get_lang('Assignment'), array(), 22);
+			$icon = Display::return_icon('work.png', get_lang('Assignment'), array(), ICON_SIZE_SMALL);
 				
 			if (!empty($display_edit_form) && !empty($edit_dir)  && $edit_dir == $id2) {
 				$row[] = $icon;
@@ -801,7 +801,7 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
 				//Work name							    
 				//if (api_is_allowed_to_edit()) {                    
                     if ($cant_files > 0 ) {
-                        $zip = '<a href="downloadfolder.inc.php?id='.$work_data['id'].'">'.Display::return_icon('save_pack.png', get_lang('Save'), array('style' => 'float:right;'), 22).'</a>';
+                        $zip = '<a href="downloadfolder.inc.php?id='.$work_data['id'].'">'.Display::return_icon('save_pack.png', get_lang('Save'), array('style' => 'float:right;'), ICON_SIZE_SMALL).'</a>';
                     }
 				//}         
 				$url = $zip.'<a href="'.api_get_self().'?'.api_get_cidreq().'&origin='.$origin.'&gradebook='.Security::remove_XSS($_GET['gradebook']).'&id='.$work_data['id'].'"'.$class.'>'.
@@ -823,8 +823,8 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
 
 			if ($origin != 'learnpath') {
 				if ($is_allowed_to_edit) {
-					$action .= '<a href="'.api_get_self().'?cidReq='.api_get_course_id().'&origin='.$origin.'&gradebook='.$gradebook.'&edit_dir='.$id2.'">'.Display::return_icon('edit.png', get_lang('Modify'), array(), 22).'</a>';
-					$action .= ' <a href="'.api_get_self().'?'.api_get_cidreq().'&origin='.$origin.'&gradebook='.$gradebook.'&delete_dir='.$id2.'" onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'), ENT_QUOTES))."'".')) return false;" title="'.get_lang('DirDelete').'"  >'.Display::return_icon('delete.png',get_lang('DirDelete'),'',22).'</a>';
+					$action .= '<a href="'.api_get_self().'?cidReq='.api_get_course_id().'&origin='.$origin.'&gradebook='.$gradebook.'&edit_dir='.$id2.'">'.Display::return_icon('edit.png', get_lang('Modify'), array(), ICON_SIZE_SMALL).'</a>';
+					$action .= ' <a href="'.api_get_self().'?'.api_get_cidreq().'&origin='.$origin.'&gradebook='.$gradebook.'&delete_dir='.$id2.'" onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'), ENT_QUOTES))."'".')) return false;" title="'.get_lang('DirDelete').'"  >'.Display::return_icon('delete.png',get_lang('DirDelete'),'',ICON_SIZE_SMALL).'</a>';
 					$row[] = $action;
 				} else {
 					$row[] = '';
@@ -881,7 +881,7 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
                 
 				$row[] = '<a href="download.php?id='.$work->id.'">'.build_document_icon_tag('file', substr(basename($work->url), 13)).'</a>';
 				if ($work->contains_file) {
-					$row[] = '<a href="download.php?id='.$work->id.'"'.$class.'>'.Display::return_icon('save.png', get_lang('Save'),array('style' => 'float:right;'), 22).' '.$work->title.'</a><br />'.$work->description;
+					$row[] = '<a href="download.php?id='.$work->id.'"'.$class.'>'.Display::return_icon('save.png', get_lang('Save'),array('style' => 'float:right;'), ICON_SIZE_SMALL).' '.$work->title.'</a><br />'.$work->description;
 				} else {
 					$row[] = '<a href="view.php?id='.$work->id.'"'.$class.'>'.$work->title.'</a><br />'.$work->description;
 				}
@@ -899,20 +899,20 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
 					$action = '';
 					if ($qualification_exists) {
 						$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;action=mark_work&item_id='.$work->id.'&gradebook='.Security::remove_XSS($_GET['gradebook']).'&amp;parent_id='.$work->parent_id.'" title="'.get_lang('Modify').'"  >'.
-						Display::return_icon('rate_work.png', get_lang('CorrectAndRate'),array(), 22).'</a>';
+						Display::return_icon('rate_work.png', get_lang('CorrectAndRate'),array(), ICON_SIZE_SMALL).'</a>';
 					} else {
                         $action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;action=mark_work&item_id='.$work->id.'&gradebook='.Security::remove_XSS($_GET['gradebook']).'&amp;parent_id='.$work->parent_id.'" title="'.get_lang('Modify').'"  >'.
-						Display::return_icon('edit.png', get_lang('Comment'),array(), 22).'</a>';
+						Display::return_icon('edit.png', get_lang('Comment'),array(), ICON_SIZE_SMALL).'</a>';
                     }
 					if ($work->contains_file) {
-						$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;action=move&item_id='.$work->id.'" title="'.get_lang('Move').'">'.Display::return_icon('move.png', get_lang('Move'),array(), 22).'</a>';
+						$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;action=move&item_id='.$work->id.'" title="'.get_lang('Move').'">'.Display::return_icon('move.png', get_lang('Move'),array(), ICON_SIZE_SMALL).'</a>';
 					}
 					if ($work->accepted == '1') {
-						$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;action=make_invisible&item_id='.$work->id.'&amp;'.$sort_params.'" title="'.get_lang('Invisible').'" >'.Display::return_icon('visible.png', get_lang('Invisible'),array(), 22).'</a>';
+						$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;action=make_invisible&item_id='.$work->id.'&amp;'.$sort_params.'" title="'.get_lang('Invisible').'" >'.Display::return_icon('visible.png', get_lang('Invisible'),array(), ICON_SIZE_SMALL).'</a>';
 					} else {
-						$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;action=make_visible&item_id='.$work->id.'&amp;'.$sort_params.'" title="'.get_lang('Visible').'" >'.Display::return_icon('invisible.png', get_lang('Visible'),array(), 22).'</a> ';
+						$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;action=make_visible&item_id='.$work->id.'&amp;'.$sort_params.'" title="'.get_lang('Visible').'" >'.Display::return_icon('invisible.png', get_lang('Visible'),array(), ICON_SIZE_SMALL).'</a> ';
 					}
-					$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;delete='.$work->id.'" onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES))."'".')) return false;" title="'.get_lang('WorkDelete').'" >'.Display::return_icon('delete.png', get_lang('WorkDelete'),'',22).'</a>';
+					$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;delete='.$work->id.'" onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES))."'".')) return false;" title="'.get_lang('WorkDelete').'" >'.Display::return_icon('delete.png', get_lang('WorkDelete'),'',ICON_SIZE_SMALL).'</a>';
 					$row[] = $action;
 					
 					// the user that is not course admin can only edit/delete own document
@@ -923,12 +923,12 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
 					}					
 					$action = '';
 					if (api_is_allowed_to_session_edit(false, true)) {
-					   $action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&gradebook='.Security::remove_XSS($_GET['gradebook']).'&amp;origin='.$origin.'&gradebook='.$gradebook.'&amp;action=mark_work&item_id='.$work->id.'" title="'.get_lang('Modify').'"  >'.Display::return_icon('edit.png', get_lang('Modify'),array(), 22).'</a>';
+					   $action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&gradebook='.Security::remove_XSS($_GET['gradebook']).'&amp;origin='.$origin.'&gradebook='.$gradebook.'&amp;action=mark_work&item_id='.$work->id.'" title="'.get_lang('Modify').'"  >'.Display::return_icon('edit.png', get_lang('Modify'),array(), ICON_SIZE_SMALL).'</a>';
 				    } else {
-				        $action .= Display::return_icon('edit_na.png', get_lang('Modify'),array(), 22);
+				        $action .= Display::return_icon('edit_na.png', get_lang('Modify'),array(), ICON_SIZE_SMALL);
 				    }
 					if (api_get_course_setting('student_delete_own_publication') == 1) {
-						$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&delete='.$work->id.'" onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES))."'".')) return false;" title="'.get_lang('WorkDelete').'"  >'.Display::return_icon('delete.png',get_lang('WorkDelete'),'',22).'</a>';
+						$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&delete='.$work->id.'" onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES))."'".')) return false;" title="'.get_lang('WorkDelete').'"  >'.Display::return_icon('delete.png',get_lang('WorkDelete'),'',ICON_SIZE_SMALL).'</a>';
 					}
 					$row[] = $action;
 				} else {

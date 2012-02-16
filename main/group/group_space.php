@@ -77,7 +77,7 @@ if (!empty($_GET['selfUnReg']) && GroupManager :: is_self_unregistration_allowed
 	Display::display_normal_message(get_lang('StudentDeletesHimself'));
 }
 echo '<div class="actions">';
-echo '<a href="group.php">'.Display::return_icon('back.png',get_lang('BackToGroupList'),'','32').'</a>';
+echo '<a href="group.php">'.Display::return_icon('back.png',get_lang('BackToGroupList'),'',ICON_SIZE_MEDIUM).'</a>';
 
 /*
  * Register to group
@@ -119,7 +119,7 @@ $is_course_member = CourseManager :: is_user_subscribed_in_real_or_linked_course
 $edit_url = '';
 if (api_is_allowed_to_edit(false, true) or GroupManager :: is_tutor_of_group(api_get_user_id(), api_get_group_id())) {
     $my_origin = isset($origin) ? $origin : '';
-    $edit_url =  '<a href="group_edit.php?origin='.$my_origin.'&gidReq='.api_get_group_id().'">'.Display::return_icon('edit.png', get_lang('EditGroup'),'','22').'</a>';
+    $edit_url =  '<a href="group_edit.php?origin='.$my_origin.'&gidReq='.api_get_group_id().'">'.Display::return_icon('edit.png', get_lang('EditGroup'),'',ICON_SIZE_SMALL).'</a>';
 }
 
 echo Display::tag('h2', Security::remove_XSS($current_group['name']).' '.$edit_url.' '.$subscribe_group.' '.$unsubscribe_group);
@@ -170,7 +170,7 @@ if (api_is_allowed_to_edit(false, true) OR GroupManager :: is_user_in_group(api_
 	if ($current_group['chat_state'] != TOOL_NOT_AVAILABLE) {
 		// Link to the chat area of this group
 		if (api_get_course_setting('allow_open_chat_window')) {
-			$tools .= "<li style=\"display:inline; margin:5px;\"><a href=\"javascript: void(0);\" onclick=\"window.open('../chat/chat.php?".api_get_cidreq()."&amp;toolgroup=".$current_group['id']."','window_chat_group_".$_SESSION['_cid']."_".$_SESSION['_gid']."','height=380, width=625, left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no') \" >".Display::return_icon('chat.png', get_lang('Chat'),'',32)."</a></li>";
+			$tools .= "<li style=\"display:inline; margin:5px;\"><a href=\"javascript: void(0);\" onclick=\"window.open('../chat/chat.php?".api_get_cidreq()."&amp;toolgroup=".$current_group['id']."','window_chat_group_".$_SESSION['_cid']."_".$_SESSION['_gid']."','height=380, width=625, left=2, top=2, toolbar=no, menubar=no, scrollbars=yes, resizable=yes, location=no, directories=no, status=no') \" >".Display::return_icon('chat.png', get_lang('Chat'),'',ICON_SIZE_MEDIUM)."</a></li>";
 		} else {
 			$tools .= "<li style=\"display:inline; margin:5px;\"><a href=\"../chat/chat.php?".api_get_cidreq()."&amp;toolgroup=".$current_group['id']."\">".Display::return_icon('chat.png', get_lang('Chat'), array(), 32)."</a></li>";
 		}

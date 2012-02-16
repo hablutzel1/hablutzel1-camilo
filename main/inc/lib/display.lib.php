@@ -17,6 +17,15 @@
  * Code
  */
 define('MAX_LENGTH_BREADCRUMB', 100);
+
+define('ICON_SIZE_TINY',    16);
+define('ICON_SIZE_SMALL',   22);
+define('ICON_SIZE_MEDIUM',  32);
+//define('ICON_SIZE_XXXX',  48); ??
+define('ICON_SIZE_BIG',     64);
+define('ICON_SIZE_HUGE',    128);
+
+        
 /**
  * Display class
  * contains several public functions dealing with the display of
@@ -26,10 +35,57 @@ define('MAX_LENGTH_BREADCRUMB', 100);
  */
 
 class Display {
-
+    
+    /* The main template*/
+    static $global_template;
+    static $preview_style = null;
+        
     private function __construct() {
+    }
+    
+     /**
+     * Displays the page header
+     * @param string The name of the page (will be showed in the page title)
+     * @param string Optional help file name
+     */
+    public static function display_header($tool_name ='', $help = null) {
+        $nameTools = $tool_name;
+        global $_plugins, $lp_theme_css, $mycoursetheme, $user_theme, $platform_theme;
+        global $httpHeadXtra, $htmlHeadXtra, $htmlIncHeadXtra, $_course, $_user, $text_dir, $plugins, $_user, $_cid, $interbreadcrumb, $charset, $language_file, $noPHP_SELF;
+        global $menu_navigation;        
+		global $htmlCSSXtra;        
+        self::$global_template = new Template($tool_name);      
+        self::$global_template->set_help($help);
+        if (!empty(self::$preview_style)) {                        
+            self::$global_template->preview_theme = self::$preview_style;
+            self::$global_template->set_theme();
+        }
+        echo self::$global_template->show_header_template();
 
     }
+
+    /**
+     * Displays the reduced page header (without banner)
+     */
+    public static function display_reduced_header () {
+        global $_plugins, $lp_theme_css, $mycoursetheme, $user_theme, $platform_theme;
+        global $httpHeadXtra, $htmlHeadXtra, $htmlIncHeadXtra, $_course, $_user, $text_dir, $plugins, $_user, $_cid, $interbreadcrumb, $charset, $language_file, $noPHP_SELF, $language_interface;
+        global $menu_navigation;
+        //require api_get_path(INCLUDE_PATH).'reduced_header.inc.php';
+        self::$global_template = new Template($tool_name, false);
+        self::$global_template->show_header = false;
+        echo self::$global_template ->show_header_template();        
+    }
+
+    /**
+     * Display the page footer
+     */
+    public static function display_footer () {
+        global $_plugins, $global_tpl;
+        echo self::$global_template ->show_footer_template();        
+    }
+    
+    
 
     /**
      * Displays the tool introduction of a tool.
@@ -72,86 +128,6 @@ class Display {
             include ($default_file_name);
         }
     }
-
-    /**
-     *	Display simple html header of table.
-     *  @deprecated use the HTML_table class
-     */
-    /*public static function display_table_header() {
-        $bgcolor = 'bgcolor="white"';
-        echo '<table border="0" cellspacing="0" cellpadding="4" width="85%"><tbody>';
-        return $bgcolor;
-    }*/
-
-    /**
-     *	Display html header of table with several options.
-     *
-     *	@param $properties, array with elements, all of which have defaults
-     *	"width" - the table width, e.g. "100%", default is 85%
-     *	"class"	 - the class to use for the table, e.g. "class=\"data_table\""
-     *   "cellpadding"  - the extra border in each cell, e.g. "8",default is 4
-     *   "cellspacing"  - the extra space between cells, default = 0
-     *	@param column_header, array with the header elements.
-     *	@author Roan Embrechts
-     *	@version 1.01
-     *  @todo remove this function, is only use in user.php
-     *  @deprecated use the HTML_table class
-     *	@return return type string, bgcolor
-     *//*
-    public static function display_complex_table_header($properties, $column_header) {
-        $width = $properties['width'];
-        if (!isset($width)) {
-            $width = '85%';
-        }
-        $class = $properties['class'];
-        if (!isset($class)) {
-            $class = 'class="data_table"';
-        }
-        $cellpadding = $properties['cellpadding'];
-        if (!isset($cellpadding)) {
-            $cellpadding = '4';
-        }
-        $cellspacing = $properties['cellspacing'];
-        if (!isset ($cellspacing)) {
-            $cellspacing = '0';
-        }
-        //... add more properties as you see fit
-        //api_display_debug_info("Light grey is " . DOKEOSLIGHTGREY);
-        $bgcolor = 'bgcolor="'.DOKEOSLIGHTGREY.'"';
-        echo '<table '.$class.' border="0" cellspacing="$cellspacing" cellpadding="'.$cellpadding.'" width="'.$width.'">'."\n";
-        echo '<thead><tr '.$bgcolor.'>';
-        foreach ($column_header as & $table_element) {
-            echo '<th>'.$table_element.'</th>';
-        }
-        echo "</tr></thead>\n";
-        echo "<tbody>\n";
-        $bgcolor = 'bgcolor="'.HTML_WHITE.'"';
-        return $bgcolor;
-    }*/
-
-    /**
-     *	Displays a table row.
-     *
-     *	@param $bgcolor the background colour for the table
-     *	@param $table_row an array with the row elements
-     *	@param $is_alternating true: the row colours alternate, false otherwise
-     *  @todo remove this function, is only use in user.php
-     */
-    /*public static function display_table_row($bgcolor, $table_row, $is_alternating = true) {
-        echo '<tr '.$bgcolor.'>';
-        foreach ($table_row as & $table_element) {
-            echo '<td>'.$table_element.'</td>';
-        }
-        echo "</tr>\n";
-        if ($is_alternating) {
-            if ($bgcolor == 'bgcolor="'.HTML_WHITE.'"') {
-                $bgcolor = 'bgcolor="'.DOKEOSLIGHTGREY.'"';
-            } elseif ($bgcolor == 'bgcolor="'.DOKEOSLIGHTGREY.'"') {
-                $bgcolor = 'bgcolor="'.HTML_WHITE.'"';
-            }
-        }
-        return $bgcolor;
-    }*/
 
     /**
      * Displays a table
@@ -454,37 +430,7 @@ class Display {
         return '<a href="'.api_get_path(WEB_PATH).'index.php">'.$name.'</a>';
     }
 
-    /**
-     * Displays the page header
-     * @param string The name of the page (will be showed in the page title)
-     * @param string Optional help file name
-     */
-    public static function display_header($tool_name ='', $help = null) {
-        $nameTools = $tool_name;
-        global $_plugins, $lp_theme_css, $mycoursetheme, $user_theme, $platform_theme;
-        global $httpHeadXtra, $htmlHeadXtra, $htmlIncHeadXtra, $_course, $_user, $text_dir, $plugins, $_user, $_cid, $interbreadcrumb, $charset, $language_file, $noPHP_SELF;
-        global $menu_navigation;        
-		global $htmlCSSXtra;
-        require api_get_path(INCLUDE_PATH).'header.inc.php';
-    }
-
-    /**
-     * Displays the reduced page header (without banner)
-     */
-    public static function display_reduced_header () {
-        global $_plugins, $lp_theme_css, $mycoursetheme, $user_theme, $platform_theme;
-        global $httpHeadXtra, $htmlHeadXtra, $htmlIncHeadXtra, $_course, $_user, $text_dir, $plugins, $_user, $_cid, $interbreadcrumb, $charset, $language_file, $noPHP_SELF, $language_interface;
-        global $menu_navigation;
-        require api_get_path(INCLUDE_PATH).'reduced_header.inc.php';
-    }
-
-    /**
-     * Display the page footer
-     */
-    public static function display_footer () {
-        global $_plugins;
-        require api_get_path(INCLUDE_PATH).'footer.inc.php';
-    }
+   
 
     /**
      * Prints an <option>-list with all letters (A-Z).
@@ -590,34 +536,39 @@ class Display {
      * @return string  An HTML string of the right <img> tag
      *
      * @author Patrick Cool <patrick.cool@UGent.be>, Ghent University 2006
-     * @author Julio Montoya 2010 Function improved
+     * @author Julio Montoya 2010 Function improved, adding image constants
      * @author Yannick Warnier 2011 Added size handler
      * @version Feb 2011
     */
-    public static function return_icon($image, $alt_text = '', $additional_attributes = array(), $size=null) {
+    public static function return_icon($image, $alt_text = '', $additional_attributes = array(), $size = ICON_SIZE_SMALL) {
+        
         $code_path   = api_get_path(SYS_CODE_PATH);
         $w_code_path = api_get_path(WEB_CODE_PATH);
         
         $image = trim($image);
-
         $theme = 'css/'.api_get_visual_theme().'/icons/';
         $icon = '';
         $size_extra = '';
+        
         if (isset($size)) {
             $size = intval($size);
-            if (in_array($size,array(16,22,32,48,64,128))) {
+            /*if (in_array($size,array(16, 22, 32, 48, 64,128))) {
                 $size_extra = $size.'/';
-            }
+            }*/
+            $size_extra = $size.'/';
         }
+        
+        //Checking the theme icons folder example: main/css/chamilo/icons/XXX
         if (is_file($code_path.$theme.$size_extra.$image)) {
             $icon = $w_code_path.$theme.$size_extra.$image;
         } elseif (is_file($code_path.'img/icons/'.$size_extra.$image)) {
+            //Checking the main/img/icons/XXX/ folder
             $icon = $w_code_path.'img/icons/'.$size_extra.$image;
         } else {
+            //Checking the img/ folder
             $icon = $w_code_path.'img/'.$image;
         }
-
-        return self::img($icon, $alt_text,$additional_attributes);
+        return self::img($icon, $alt_text, $additional_attributes);
     }
 
     /**
@@ -930,9 +881,9 @@ class Display {
                 $width_fix = '150';
             }
             //see BT#2020
-            $json .= "$(window).bind('resize', function() {
+            /*$json .= "$(window).bind('resize', function() {
                 $('#".$div_id."').setGridWidth($(window).width() - ".$width_fix.");
-            }).trigger('resize');";
+            }).trigger('resize');";*/
         }
 
         //Creating the jqgrid element

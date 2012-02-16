@@ -17,12 +17,12 @@ if (isset($_SESSION['gradebook'])) {
 if (!$is_locked_attendance || api_is_platform_admin()) {
 	echo '<div class="actions" style="margin-bottom:30px">';	
 	if ($action == 'calendar_add') {
-		echo '<a href="index.php?'.api_get_cidreq().'&action=calendar_list&attendance_id='.$attendance_id.$param_gradebook.'">'.Display::return_icon('back.png',get_lang('AttendanceCalendar'),'','32').'</a>';
+		echo '<a href="index.php?'.api_get_cidreq().'&action=calendar_list&attendance_id='.$attendance_id.$param_gradebook.'">'.Display::return_icon('back.png',get_lang('AttendanceCalendar'),'',ICON_SIZE_MEDIUM).'</a>';
 	} else {
-		echo '<a href="index.php?'.api_get_cidreq().'&action=attendance_sheet_list&attendance_id='.$attendance_id.$param_gradebook.'">'.Display::return_icon('back.png',get_lang('AttendanceSheet'),'','32').'</a>';
+		echo '<a href="index.php?'.api_get_cidreq().'&action=attendance_sheet_list&attendance_id='.$attendance_id.$param_gradebook.'">'.Display::return_icon('back.png',get_lang('AttendanceSheet'),'',ICON_SIZE_MEDIUM).'</a>';
 		
-		echo '<a href="index.php?'.api_get_cidreq().'&action=calendar_add&attendance_id='.$attendance_id.$param_gradebook.'">'.Display::return_icon('add.png',get_lang('AddDateAndTime'),'','32').'</a>';
-		echo '<a onclick="javascript:if(!confirm(\''.get_lang('AreYouSureToDeleteAllDates').'\')) return false;" href="index.php?'.api_get_cidreq().'&action=calendar_all_delete&attendance_id='.$attendance_id.$param_gradebook.'">'.Display::return_icon('clean.png',get_lang('CleanCalendar'),'','32').'</a>';
+		echo '<a href="index.php?'.api_get_cidreq().'&action=calendar_add&attendance_id='.$attendance_id.$param_gradebook.'">'.Display::return_icon('add.png',get_lang('AddDateAndTime'),'',ICON_SIZE_MEDIUM).'</a>';
+		echo '<a onclick="javascript:if(!confirm(\''.get_lang('AreYouSureToDeleteAllDates').'\')) return false;" href="index.php?'.api_get_cidreq().'&action=calendar_all_delete&attendance_id='.$attendance_id.$param_gradebook.'">'.Display::return_icon('clean.png',get_lang('CleanCalendar'),'',ICON_SIZE_MEDIUM).'</a>';
 	}
 	echo '</div>';
 }
@@ -107,8 +107,8 @@ if (isset($action) && $action == 'calendar_add') {
 					echo Display::return_icon('lp_calendar_event.png',get_lang('DateTime')).' '.$calendar['date_time'].'&nbsp;';
 					if (!$is_locked_attendance || api_is_platform_admin()) {
                         echo '<span style="margin-left:20px;">';
-                        echo '<a href="index.php?'.api_get_cidreq().'&action=calendar_edit&calendar_id='.intval($calendar['id']).'&attendance_id='.$attendance_id.$param_gradebook.'">'.Display::return_icon('edit.png', get_lang('Edit'), array('style'=>'vertical-align:middle'), 22).'</a>&nbsp;';
-                        echo '<a onclick="javascript:if(!confirm(\''.get_lang('AreYouSureToDelete').'\')) return false;" href="index.php?'.api_get_cidreq().$param_gradebook.'&action=calendar_delete&calendar_id='.intval($calendar['id']).'&attendance_id='.$attendance_id.'">'.Display::return_icon('delete.png', get_lang('Delete'), array('style'=>'vertical-align:middle'), 22).'</a>';
+                        echo '<a href="index.php?'.api_get_cidreq().'&action=calendar_edit&calendar_id='.intval($calendar['id']).'&attendance_id='.$attendance_id.$param_gradebook.'">'.Display::return_icon('edit.png', get_lang('Edit'), array('style'=>'vertical-align:middle'), ICON_SIZE_SMALL).'</a>&nbsp;';
+                        echo '<a onclick="javascript:if(!confirm(\''.get_lang('AreYouSureToDelete').'\')) return false;" href="index.php?'.api_get_cidreq().$param_gradebook.'&action=calendar_delete&calendar_id='.intval($calendar['id']).'&attendance_id='.$attendance_id.'">'.Display::return_icon('delete.png', get_lang('Delete'), array('style'=>'vertical-align:middle'), ICON_SIZE_SMALL).'</a>';
                         echo '</span>';
                     }
 				}	

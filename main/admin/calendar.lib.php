@@ -462,14 +462,14 @@ function store_new_agenda_item() {
 function display_student_links() {
 	if ($_SESSION['view'] <> 'month') {
 		echo '<a href="'.api_get_self().'?action=view&amp;view=month">'.
-		Display::return_icon('month_empty.png',get_lang('MonthView'),'','32').'</a>';
+		Display::return_icon('month_empty.png',get_lang('MonthView'),'',ICON_SIZE_MEDIUM).'</a>';
 		if ($_SESSION['sort'] == 'DESC') {
-			echo '<a href="'.api_get_self().'?sort=asc&amp;origin='.Security::remove_XSS($_GET['origin']).'">'.Display::return_icon('calendar_normal.png',get_lang('AgendaSortChronologicallyUp'),'','32').'</a>';
+			echo '<a href="'.api_get_self().'?sort=asc&amp;origin='.Security::remove_XSS($_GET['origin']).'">'.Display::return_icon('calendar_normal.png',get_lang('AgendaSortChronologicallyUp'),'',ICON_SIZE_MEDIUM).'</a>';
 		} else {
-			//echo '<a href="'.api_get_self().'?sort=desc&amp;origin='.Security::remove_XSS($_GET['origin']).'"> '.Display::return_icon('calendar_inverse.png',get_lang('AgendaSortChronologicallyDown'),'','32').'</a>';
+			//echo '<a href="'.api_get_self().'?sort=desc&amp;origin='.Security::remove_XSS($_GET['origin']).'"> '.Display::return_icon('calendar_inverse.png',get_lang('AgendaSortChronologicallyDown'),'',ICON_SIZE_MEDIUM).'</a>';
 		}
 	} else {		
-		echo '<a href="'.api_get_self().'?action=view&amp;view=list">'.Display::return_icon('week.png', get_lang('ListView'),'','32').'</a>';
+		echo '<a href="'.api_get_self().'?action=view&amp;view=list">'.Display::return_icon('week.png', get_lang('ListView'),'',ICON_SIZE_MEDIUM).'</a>';
 
 	}
 }
@@ -743,7 +743,7 @@ function display_agenda_items() {
     	// the icons. If the message is sent to one or more specific users/groups
     	// we add the groups icon
     	// 2do: if it is sent to groups we display the group icon, if it is sent to a user we show the user icon
-    	Display::display_icon('platform_event.png', get_lang('GlobalEvent'),'','22');
+    	Display::display_icon('platform_event.png', get_lang('GlobalEvent'),'',ICON_SIZE_SMALL);
     	/*if ($myrow['to_group_id']!=='0') {
     		echo Display::return_icon('group.gif', get_lang('AllUsersOfThePlatform'));
     	}*/

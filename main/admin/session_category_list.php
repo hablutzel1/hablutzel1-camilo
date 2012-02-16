@@ -103,8 +103,8 @@ if (isset ($_GET['search']) && $_GET['search'] == 'advanced') {
 	<div class="actions">
 	<?php
 	echo '<div style="float:right;">
-			<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_category_add.php">'.Display::return_icon('new_folder.png',get_lang('AddSessionCategory'),'','32').'</a>
-			<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_list.php">'.Display::return_icon('session.png',get_lang('ListSession'),'','32').'</a>	
+			<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_category_add.php">'.Display::return_icon('new_folder.png',get_lang('AddSessionCategory'),'',ICON_SIZE_MEDIUM).'</a>
+			<a href="'.api_get_path(WEB_CODE_PATH).'admin/session_list.php">'.Display::return_icon('session.png',get_lang('ListSession'),'',ICON_SIZE_MEDIUM).'</a>	
 	 	  </div>';
 	?>
 	<form method="POST" action="session_category_list.php">
@@ -171,10 +171,10 @@ if (isset ($_GET['search']) && $_GET['search'] == 'advanced') {
 		  <td><?php echo api_htmlentities($enreg['date_end'],ENT_QUOTES,$charset); ?></td>
 		  <td>
 			<a href="session_category_edit.php?&id=<?php echo $enreg['id']; ?>">
-                <?php Display::display_icon('edit.png', get_lang('Edit'), array(), 22); ?>
+                <?php Display::display_icon('edit.png', get_lang('Edit'), array(), ICON_SIZE_SMALL); ?>
 			</a>
 			<a href="<?php echo api_get_self(); ?>?sort=<?php echo $sort; ?>&action=delete_off_session&idChecked=<?php echo $enreg['id']; ?>" onclick="javascript:if(!confirm('<?php echo get_lang('ConfirmYourChoice'); ?>')) return false;">
-			 <?php Display::display_icon('delete.png', get_lang('Delete'), array(), 22); ?>
+			 <?php Display::display_icon('delete.png', get_lang('Delete'), array(), ICON_SIZE_SMALL); ?>
 			</a>
 		  </td>
 		</tr>
