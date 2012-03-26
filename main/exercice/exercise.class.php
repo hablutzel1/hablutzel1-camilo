@@ -49,10 +49,11 @@ class Exercise {
 	public $course;
 	public $course_id;
 	public $propagate_neg;
-	public $review_answers; //
+	public $review_answers;
 	public $randomByCat;
-	public $text_when_finished; //  
-	public $display_category_name; // 
+	public $text_when_finished;
+	public $display_category_name;
+    public $pass_percentage;
 
 	 
 	/**
@@ -79,7 +80,8 @@ class Exercise {
 		$this->review_answers	= false;
 		$this->randomByCat      = 0;	//
 		$this->text_when_finished = ""; // 
-		$this->display_category_name = 0; // 
+		$this->display_category_name = 0;
+        $this->pass_percentage  = null;        
 
 		if (!empty($course_id)) {			
 			$course_info        =  api_get_course_info_by_id($course_id);
@@ -109,23 +111,24 @@ class Exercise {
 		$result = Database::query($sql);
 
 		// if the exercise has been found
-		if ($object=Database::fetch_object($result)) {
-			$this->id				= $id;
-			$this->exercise			= $object->title;
-			$this->name             = cut($object->title, EXERCISE_MAX_NAME_SIZE);
-			$this->description		= $object->description;
-			$this->sound			= $object->sound;
-			$this->type				= $object->type;
-			$this->random			= $object->random;
-			$this->random_answers	= $object->random_answers;
-			$this->active			= $object->active;
-			$this->results_disabled = $object->results_disabled;
-			$this->attempts 		= $object->max_attempt;
-			$this->feedbacktype 	= $object->feedback_type;
-			$this->propagate_neg    = $object->propagate_neg;
-			$this->randomByCat      = $object->random_by_category; //
-			$this->text_when_finished    = $object->text_when_finished; // 
-			$this->display_category_name = $object->display_category_name; //
+		if ($object = Database::fetch_object($result)) {
+			$this->id                       = $id;
+			$this->exercise                 = $object->title;
+			$this->name                     = cut($object->title, EXERCISE_MAX_NAME_SIZE);
+			$this->description              = $object->description;
+			$this->sound                    = $object->sound;
+			$this->type                     = $object->type;
+			$this->random                   = $object->random;
+			$this->random_answers           = $object->random_answers;
+			$this->active                   = $object->active;
+			$this->results_disabled         = $object->results_disabled;
+			$this->attempts                 = $object->max_attempt;
+			$this->feedbacktype             = $object->feedback_type;
+			$this->propagate_neg            = $object->propagate_neg;
+			$this->randomByCat              = $object->random_by_category;
+			$this->text_when_finished       = $object->text_when_finished; 
+			$this->display_category_name    = $object->display_category_name;
+            $this->pass_percentage          = $object->pass_percentage;
 		
 			$this->review_answers   = (isset($object->review_answers) && $object->review_answers == 1) ? true : false;  
 			
@@ -253,6 +256,10 @@ class Exercise {
 	function selectDisplayCategoryName() {
 		return $this->display_category_name;
 	}
+    
+    function selectPassPercentage() {
+        return $this->pass_percentage;
+    }
 
 	/**
 	 * @author - hubert borderiou 30-11-11
@@ -262,7 +269,6 @@ class Exercise {
 	function updateDisplayCategoryName($in_txt) {
 		$this->display_category_name = $in_txt;
 	}
-
 
 	/**
 	 * @author - hubert borderiou 28-11-11
@@ -524,9 +530,14 @@ class Exercise {
 	function updatePropagateNegative($value) {
 		$this->propagate_neg = $value;
 	}
+    
 	function updateReviewAnswers($value) {
 		$this->review_answers = (isset($value) && $value) ? true : false;
 	}
+    
+    function updatePassPercentage($value) {
+        $this->pass_percentage = $value;
+    }
 
 	/**
 	 * changes the exercise sound file
@@ -634,27 +645,25 @@ class Exercise {
 	function save($type_e = '') {
 		global $_course;
 		$TBL_EXERCICES      = Database::get_course_table(TABLE_QUIZ_TEST);
-		$TBL_QUESTIONS      = Database::get_course_table(TABLE_QUIZ_QUESTION);
-		$TBL_QUIZ_QUESTION  = Database::get_course_table(TABLE_QUIZ_TEST_QUESTION);
-
-		$id 			= $this->id;
-		$exercise 		= $this->exercise;
-		$description 	= $this->description;
-		$sound 			= $this->sound;
-		$type 			= $this->type;
-		$attempts 		= $this->attempts;
-		$feedbacktype 	= $this->feedbacktype;
-		$random 		= $this->random;
-		$random_answers = $this->random_answers;
-		$active 		= $this->active;
-		$propagate_neg  = $this->propagate_neg;
-		$review_answers = (isset($this->review_answers) && $this->review_answers) ? 1 : 0;
-		$randomByCat    = $this->randomByCat;
-        
-		$text_when_finished = $this->text_when_finished; 
-		$display_category_name = intval($this->display_category_name); // 
 		
-		$session_id 	= api_get_session_id();
+		$id                     = $this->id;
+		$exercise               = $this->exercise;
+		$description            = $this->description;
+		$sound                  = $this->sound;
+		$type                   = $this->type;
+		$attempts               = $this->attempts;
+		$feedbacktype           = $this->feedbacktype;
+		$random                 = $this->random;
+		$random_answers         = $this->random_answers;
+		$active                 = $this->active;
+		$propagate_neg          = $this->propagate_neg;
+		$review_answers         = (isset($this->review_answers) && $this->review_answers) ? 1 : 0;
+		$randomByCat            = $this->randomByCat;        
+		$text_when_finished     = $this->text_when_finished; 
+		$display_category_name  = intval($this->display_category_name);
+        $pass_percentage        = intval($this->pass_percentage);
+		
+		$session_id             = api_get_session_id();
 		 
 		//If direct we do not show results
 		if ($feedbacktype == EXERCISE_FEEDBACK_TYPE_DIRECT) {
@@ -698,6 +707,7 @@ class Exercise {
         	        random_by_category='".Database::escape_string($randomByCat)."',
         	        text_when_finished = '".Database::escape_string($text_when_finished)."',
         	        display_category_name = '".Database::escape_string($display_category_name)."',
+                    pass_percentage = '".Database::escape_string($pass_percentage)."',
 					results_disabled='".Database::escape_string($results_disabled)."'";
 			}			
 			$sql .= " WHERE c_id = ".$this->course_id." AND id='".Database::escape_string($id)."'";			
@@ -711,7 +721,9 @@ class Exercise {
 			}
 		} else {
 			// creates a new exercise
-			$sql = "INSERT INTO $TBL_EXERCICES (c_id, start_time, end_time, title, description, sound, type, random, random_answers, active, results_disabled, max_attempt, feedback_type, expired_time, session_id, review_answers, random_by_category, text_when_finished, display_category_name)
+			$sql = "INSERT INTO $TBL_EXERCICES (c_id, start_time, end_time, title, description, sound, type, random, random_answers, active, 
+                                                results_disabled, max_attempt, feedback_type, expired_time, session_id, review_answers, random_by_category, 
+                                                text_when_finished, display_category_name, pass_percentage)
 					VALUES(
 						".$this->course_id.",
 						'$start_time','$end_time',
@@ -730,12 +742,13 @@ class Exercise {
 						'".Database::escape_string($review_answers)."',
 						'".Database::escape_string($randomByCat)."',
 						'".Database::escape_string($text_when_finished)."',
-						'".Database::escape_string($display_category_name)."'
+						'".Database::escape_string($display_category_name)."',
+                        '".Database::escape_string($pass_percentage)."'
 						)";			
 			Database::query($sql);
 			$this->id = Database::insert_id();
+            
 			// insert into the item_property table
-
 			api_item_property_update($this->course, TOOL_QUIZ, $this->id,'QuizAdded',api_get_user_id());
 			if (api_get_setting('search_enabled')=='true' && extension_loaded('xapian')) {
 				$this->search_engine_save();
@@ -853,16 +866,13 @@ class Exercise {
 		$form->addElement('text', 'exerciseTitle', get_lang('ExerciseName'), array('class' => 'span6','id'=>'exercise_title'));
 		//$form->applyFilter('exerciseTitle','html_filter');
 
-		$form->addElement('html','<div class="row">
-		<div class="label"></div>
-		<div class="formw" style="height:50px">
+		$form->addElement('advanced_settings','
 			<a href="javascript://" onclick=" return show_media()"> 
 				<span id="media_icon">
 					<img style="vertical-align: middle;" src="../img/looknfeel.png" alt="" /> '.addslashes(api_htmlentities(get_lang('ExerciseDescription'))).'
 					</span>
-			</a>
-		</div>
-		</div>');
+			</a>		
+		');
 
 		$editor_config = array('ToolbarSet' => 'TestQuestionDescription', 'Width' => '100%', 'Height' => '150');
 		if(is_array($type)){
@@ -873,13 +883,8 @@ class Exercise {
 		$form->add_html_editor('exerciseDescription', get_lang('langExerciseDescription'), false, false, $editor_config);
 		$form->addElement ('html','</div>');
 
-		$form->addElement('html','<div class="row">
-			<div class="label">&nbsp;</div>
-			<div class="formw">
-				<a href="javascript://" onclick=" return advanced_parameters()"><span id="img_plus_and_minus"><div style="vertical-align:top;" >
-				<img style="vertical-align:middle;" src="../img/div_show.gif" alt="" /> '.addslashes(api_htmlentities(get_lang('AdvancedParameters'))).'</div></span></a>
-			</div>
-			</div>');
+		$form->addElement('advanced_settings','<a href="javascript://" onclick=" return advanced_parameters()"><span id="img_plus_and_minus"><div style="vertical-align:top;" >
+                            <img style="vertical-align:middle;" src="../img/div_show.gif" alt="" /> '.addslashes(api_htmlentities(get_lang('AdvancedParameters'))).'</div></span></a>');
 
 		// Random questions
 		// style="" and not "display:none" to avoid #4029 Random and number of attempt menu empty
@@ -1008,20 +1013,22 @@ class Exercise {
 			$form->addElement('checkbox', 'activate_start_date_check',null, get_lang('EnableStartTime'), array('onclick' => 'activate_start_date()'));
 				
 			$var = Exercise::selectTimeLimit();
+            
 			if (($this->start_time!='0000-00-00 00:00:00'))
-			$form->addElement('html','<div id="start_date_div" style="display:block;">');
+                $form->addElement('html','<div id="start_date_div" style="display:block;">');
 			else
-			$form->addElement('html','<div id="start_date_div" style="display:none;">');
+                $form->addElement('html','<div id="start_date_div" style="display:none;">');
 
 			$form->addElement('datepicker', 'start_time', '', array('form_name'=>'exercise_admin'), 5);
 
 			$form->addElement('html','</div>');
 
 			$form->addElement('checkbox', 'activate_end_date_check', null , get_lang('EnableEndTime'), array('onclick' => 'activate_end_date()'));
+            
 			if (($this->end_time!='0000-00-00 00:00:00'))
-			$form->addElement('html','<div id="end_date_div" style="display:block;">');
+                $form->addElement('html','<div id="end_date_div" style="display:block;">');
 			else
-			$form->addElement('html','<div id="end_date_div" style="display:none;">');
+                $form->addElement('html','<div id="end_date_div" style="display:none;">');
 
 			$form->addElement('datepicker', 'end_time', '', array('form_name'=>'exercise_admin'), 5);
 			$form->addElement('html','</div>');
@@ -1035,22 +1042,27 @@ class Exercise {
 			$form->addElement('html','<div id="divtimecontrol"  style="display:'.$diplay.';">');
 
 			//Timer control
-			$time_hours_option = range(0,12);
-			$time_minutes_option = range(0,59);
+			//$time_hours_option = range(0,12);
+			//$time_minutes_option = range(0,59);
 			$form->addElement('checkbox', 'enabletimercontrol', null, get_lang('EnableTimerControl'), array('onclick' =>'option_time_expired()','id'=>'enabletimercontrol','onload'=>'check_load_time()'));
 			$expired_date = (int)$this->selectExpiredTime();
 
-			if(($expired_date!='0')) {
-				
-				$form->addElement('html','<div id="timercontrol" style="display:block;">');
+			if (($expired_date!='0')) {				
+                $form->addElement('html','<div id="timercontrol" style="display:block;">');
 			} else {
 				$form->addElement('html','<div id="timercontrol" style="display:none;">');
 			}
-
 			$form->addElement('text', 'enabletimercontroltotalminutes',get_lang('ExerciseTotalDurationInMinutes'),array('style' => 'width : 35px','id' => 'enabletimercontroltotalminutes'));
-			
-
 			$form->addElement('html','</div>');
+            
+            
+            //Pass percentage
+            $options = array('' => '-');
+            for ($i = 0; $i <= 20 ; $i++) {
+                $options[$i*5] = $i*5;
+            }
+            $form->addElement('select', 'pass_percentage', array(get_lang('PassPercentage'), null, '%'), $options, array('id' => 'pass_percentage', 'class' => 'chzn-select'));
+            
 			//$form->addElement('text', 'exerciseAttempts', get_lang('ExerciseAttempts').' : ',array('size'=>'2'));
 						
 			// add the text_when_finished textbox 
@@ -1094,7 +1106,8 @@ class Exercise {
 		$form->addElement('style_submit_button', 'submitExercise', $text, 'class="save"');
 
 		$form->addRule('exerciseTitle', get_lang('GiveExerciseName'), 'required');
-		if($type=='full') {
+        
+		if ($type=='full') {
 			// rules
 			$form->addRule('exerciseAttempts', get_lang('Numeric'), 'numeric');
 			$form->addRule('start_time', get_lang('InvalidDate'), 'date');
@@ -1111,7 +1124,7 @@ class Exercise {
 					$defaults['randomQuestions'] = $this->random;
 				}
                 
-				$defaults['randomAnswers']          = $this ->selectRandomAnswers();
+				$defaults['randomAnswers']          = $this->selectRandomAnswers();
 				$defaults['exerciseType']           = $this->selectType();
 				$defaults['exerciseTitle']          = $this->selectTitle();
 				$defaults['exerciseDescription']    = $this->selectDescription();
@@ -1122,7 +1135,8 @@ class Exercise {
 				$defaults['review_answers']         = $this->review_answers;
 				$defaults['randomByCat']            = $this->selectRandomByCat(); //
                 $defaults['text_when_finished']     = $this->selectTextWhenFinished(); // 
-                $defaults['display_category_name'] = $this->selectDisplayCategoryName(); // 
+                $defaults['display_category_name']  = $this->selectDisplayCategoryName(); //                 
+                $defaults['pass_percentage']        = $this->selectPassPercentage();               
                 
 				if (($this->start_time!='0000-00-00 00:00:00'))
                     $defaults['activate_start_date_check'] = 1;
@@ -1152,6 +1166,7 @@ class Exercise {
 				$defaults['start_time'] = date('Y-m-d 12:00:00');
     			$defaults['display_category_name'] = 1; // 
 				$defaults['end_time']   = date('Y-m-d 12:00:00',time()+84600);
+                $defaults['pass_percentage'] = '';
 			}
 		} else {
 			$defaults['exerciseTitle'] = $this->selectTitle();
@@ -1179,10 +1194,11 @@ class Exercise {
 		$this->updateResultsDisabled($form->getSubmitValue('results_disabled'));
 		$this->updateExpiredTime($form->getSubmitValue('enabletimercontroltotalminutes'));
 		$this->updatePropagateNegative($form->getSubmitValue('propagate_neg'));
-		$this->updateRandomByCat($form->getSubmitValue('randomByCat'));			//
-		$this->updateTextWhenFinished($form->getSubmitValue('text_when_finished')); // 
-		$this->updateDisplayCategoryName($form->getSubmitValue('display_category_name')); // 
-		$this->updateReviewAnswers($form->getSubmitValue('review_answers'));
+		$this->updateRandomByCat($form->getSubmitValue('randomByCat'));
+		$this->updateTextWhenFinished($form->getSubmitValue('text_when_finished'));
+		$this->updateDisplayCategoryName($form->getSubmitValue('display_category_name'));
+		$this->updateReviewAnswers($form->getSubmitValue('review_answers'));        
+        $this->updatePassPercentage($form->getSubmitValue('pass_percentage'));
 
 		if ($form->getSubmitValue('activate_start_date_check') == 1) {
 			$start_time = $form->getSubmitValue('start_time');
@@ -1570,65 +1586,50 @@ class Exercise {
 		$all_button = '';
 	
 		if ($this->selectFeedbackType() == EXERCISE_FEEDBACK_TYPE_DIRECT && $this->type == ONE_PER_PAGE) {			
-			$html .='<script>
-	            $(function() {
-	                $(".button").button();
-	            });
-	            </script>';	
 			$html .='<a href="exercise_submit_modal.php?learnpath_id='.$safe_lp_id.'&learnpath_item_id='.$safe_lp_item_id.'&learnpath_item_view_id='.$safe_lp_item_view_id.'&origin='.$origin.'&hotspot='.$hotspot_get.'&nbrQuestions='.$nbrQuestions.'&questionnum='.$questionNum.'&exerciseType='.$this->type.'&exerciseId='.$this->id.'&placeValuesBeforeTB_=savedValues&TB_iframe=true&height=480&width=640&modal=true" title="" class="thickbox button" id="validationButton">';
 			$html .= get_lang('ValidateAnswer').'</a>';
-			$html .='<br />';
-			 
+			$html .='<br />';			 
 		} else {
 			//User
 			if (api_is_allowed_to_session_edit()) {
 				if ($this->type == ALL_ON_ONE_PAGE || $nbrQuestions == $questionNum) {
 					if ($this->review_answers) {
 						$label = get_lang('ReviewQuestions');
-						$class = 'a_button blue medium';
+						$class = 'btn btn-primary';
 					} else {
 						$label = get_lang('ValidateAnswers');
-						$class = 'a_button green';
+						$class = 'btn btn-sucess';
 					}
 				} else {
 					$label = get_lang('NextQuestion');
-					$class = 'a_button blue medium';
+					$class = 'btn btn-primary';
 				}
 				if ($this->type == ONE_PER_PAGE) {	
 
 					if ($questionNum != 1) {
 						$prev_question = $questionNum - 2;
-						$all_button .= '<a href="javascript://" class="a_button white medium" onclick="previous_question('.$prev_question.'); ">'.get_lang('PreviousQuestion').'</a>';
+						$all_button .= '<a href="javascript://" class="btn" onclick="previous_question('.$prev_question.'); ">'.get_lang('PreviousQuestion').'</a>';
 					}
 					
 					//Next question
-					$all_button .= '<a href="javascript://" class="'.$class.'" onclick="save_now('.$question_id.'); ">'.$label.'</a>';
-					
-					//$all_button .= '&nbsp;<span id="save_all_reponse"></span>';
+					$all_button .= '&nbsp;<a href="javascript://" class="'.$class.'" onclick="save_now('.$question_id.'); ">'.$label.'</a>';					
 					$all_button .= '<span id="save_for_now_'.$question_id.'"></span>&nbsp;';
-					
-					
 					$html .= $all_button;
 				} else {					
 					if ($this->review_answers) {
 						$all_label = get_lang('ReviewQuestions');
-						$class = 'a_button blue medium';
+						$class = 'btn btn-primary';
 					} else {
 						$all_label = get_lang('ValidateAnswers');
-						$class = 'a_button green';
+						$class = 'btn btn-sucess';
 					}
-					$all_button = '<a href="javascript://" class="'.$class.'" onclick="validate_all(); ">'.$all_label.'</a>';
-					$all_button .= '&nbsp;<span id="save_all_reponse"></span>';
-					
+					$all_button = '&nbsp;<a href="javascript://" class="'.$class.'" onclick="validate_all(); ">'.$all_label.'</a>';
+					$all_button .= '&nbsp;<span id="save_all_reponse"></span>';					
 					$html .= $all_button;
-				}
-	
+				}	
 			}
 		}		
-		
-		$html =  Display::span($html, array('class'=>'exercise_button'));
-		return $html;
-		
+		return $html;		
 	}
 
 	/**
@@ -3370,7 +3371,7 @@ class Exercise {
 		
 		//2. If the exercise is not active 
 		if ($this->active == 0) {
-			return array('value' => false, 'message' => Display::return_message(get_lang('ExerciseNotAvailable'), 'warning', false));            
+			return array('value' => false, 'message' => Display::return_message(get_lang('ExerciseNotFound'), 'warning', false));            
 		}        
 		
 		//3. We check if the time limits are on

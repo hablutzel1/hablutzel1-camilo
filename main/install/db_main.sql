@@ -861,9 +861,10 @@ VALUES
 ('languagePriority2', NULL, 'radio', 'Languages','user_profil_lang', 'LanguagePriority2Title', 'LanguagePriority2Comment', NULL, NULL, 0),
 ('languagePriority3', NULL, 'radio', 'Languages','user_selected_lang', 'LanguagePriority3Title', 'LanguagePriority3Comment', NULL, NULL, 0),
 ('languagePriority4', NULL, 'radio', 'Languages', 'platform_lang','LanguagePriority4Title', 'LanguagePriority4Comment', NULL, NULL, 0),
-('login_is_email', NULL, 'radio', 'Platform', 'false', 'LoginIsEmailTitle', 'LoginIsemailComment', NULL, NULL, 0),
+('login_is_email', NULL, 'radio', 'Platform', 'false', 'LoginIsEmailTitle', 'LoginIsEmailComment', NULL, NULL, 0),
 ('courses_default_creation_visibility', NULL, 'radio', 'Course', '2', 'CoursesDefaultCreationVisibilityTitle', 'CoursesDefaultCreationVisibilityComment', NULL, NULL, 1),
-('chamilo_database_version',NULL,'textfield',NULL, '1.9.0.17051','DokeosDatabaseVersion','', NULL, NULL, 0);
+('allow_browser_sniffer', NULL, 'radio', 'Tuning', 'false', 'AllowBrowserSnifferTitle', 'AllowBrowserSnifferComment', NULL, NULL, 0),
+('chamilo_database_version',NULL,'textfield',NULL, '1.9.0.17052','DokeosDatabaseVersion','', NULL, NULL, 0);
 
 /*
 ('show_tabs', 'custom_tab_1', 'checkbox', 'Platform', 'true', 'ShowTabsTitle', 'ShowTabsComment', NULL, 'TabsCustom1', 1),
@@ -1198,7 +1199,9 @@ VALUES
 ('courses_default_creation_visibility', '3', 'OpenToTheWorld'),
 ('courses_default_creation_visibility', '2', 'OpenToThePlatform'),
 ('courses_default_creation_visibility', '1', 'Private'),
-('courses_default_creation_visibility', '0', 'CourseVisibilityClosed');
+('courses_default_creation_visibility', '0', 'CourseVisibilityClosed'),
+('allow_browser_sniffer', 'true', 'Yes'),
+('allow_browser_sniffer', 'false', 'No');
 
 UNLOCK TABLES;
 /*
@@ -2865,38 +2868,6 @@ CREATE TABLE IF NOT EXISTS skill_rel_profile (
   skill_id INTEGER  NOT NULL,
   profile_id INTEGER  NOT NULL,
   PRIMARY KEY (id)
-);
-
--- Custom reports
-
-DROP TABLE IF EXISTS reports_keys;
-CREATE TABLE IF NOT EXISTS reports_keys (
-  id int unsigned NOT NULL AUTO_INCREMENT,
-  course_id int DEFAULT NULL,
-  tool_id int DEFAULT NULL,
-  child_id int DEFAULT NULL,
-  child_name varchar(64) DEFAULT NULL,
-  subchild_id int unsigned DEFAULT NULL,
-  subchild_name varchar(64) DEFAULT NULL,
-  subsubchild_id int unsigned DEFAULT NULL,
-  subsubchild_name varchar(64) DEFAULT NULL,
-  link varchar(256) DEFAULT NULL,
-  PRIMARY KEY (id),
-  KEY course_id (course_id),
-  KEY course_id_2 (course_id,tool_id,child_id,subchild_id,subsubchild_id)
-);
-
-DROP TABLE IF EXISTS reports_values;
-CREATE TABLE IF NOT EXISTS reports_values (
-  key_id int unsigned NOT NULL,
-  uid int DEFAULT NULL,
-  session_id int unsigned DEFAULT NULL,
-  attempt int DEFAULT NULL,
-  score decimal(5,3) DEFAULT NULL,
-  progress int DEFAULT NULL,
-  `time` int DEFAULT NULL,
-  KEY uid (uid),
-  PRIMARY KEY (key_id,uid,session_id,attempt)
 );
 
 --

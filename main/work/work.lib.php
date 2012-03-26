@@ -113,7 +113,7 @@ function display_tool_options($uploadvisibledisabled, $origin) {
 	if (!$is_allowed_to_edit) {
 		return;
 	}
-	echo '<form method="post" action="'.api_get_self().'?origin='.$origin.'&gradebook='.$gradebook.'&action=settings">';
+	echo '<form class="form-horizontal" method="post" action="'.api_get_self().'?origin='.$origin.'&gradebook='.$gradebook.'&action=settings">';
 	echo '<legend>'.get_lang('EditToolOptions').'</legend>';
 	display_default_visibility_form($uploadvisibledisabled);
 	display_studentsdelete_form();
@@ -135,19 +135,19 @@ function display_tool_options($uploadvisibledisabled, $origin) {
  */
 function display_default_visibility_form($uploadvisibledisabled) {
 	?>
-	<div class="row">
-		<div class="label">
+	<div class="control-group">
+		<label class="control-label">
 		<?php echo get_lang('_default_upload'); ?>
-		</div>
-		<div class="formw">
-		<input id="uploadvisibledisabled_1" class="checkbox" type="radio" name="uploadvisibledisabled" value="0"   <?php if ($uploadvisibledisabled == 0) echo 'checked'; ?> />
-<label for="uploadvisibledisabled_1">
-				<?php echo get_lang('_new_visible'); ?></label>
-
-		<input id="uploadvisibledisabled_2" class="checkbox" type="radio" name="uploadvisibledisabled" value="1" <?php if ($uploadvisibledisabled == 1) echo 'checked'; ?> />
-<label for="uploadvisibledisabled_2">
-				<?php echo get_lang('_new_unvisible'); ?>
-</label>
+		</label>
+		<div class="controls">
+            <label class="radio" for="uploadvisibledisabled_1">
+                <input id="uploadvisibledisabled_1" class="checkbox" type="radio" name="uploadvisibledisabled" value="0"   <?php if ($uploadvisibledisabled == 0) echo 'checked'; ?> />
+				<?php echo get_lang('_new_visible'); ?>
+            </label>
+        <label class="radio" for="uploadvisibledisabled_2">
+            <input id="uploadvisibledisabled_2" class="checkbox" type="radio" name="uploadvisibledisabled" value="1" <?php if ($uploadvisibledisabled == 1) echo 'checked'; ?> />
+            <?php echo get_lang('_new_unvisible'); ?>
+        </label>
 		</div>
 	</div>
 	<?php
@@ -169,17 +169,16 @@ function display_studentsdelete_form() {
 		$current_course_setting_value = 0;
 	}
 	?>
-	<div class="row">
-	<div class="label"><?php echo get_lang('StudentAllowedToDeleteOwnPublication'); ?></div>
-	<div class="formw">
-<input id="student_delete_own_publication_2" class="checkbox" type="radio" name="student_delete_own_publication" value="1" <?php if ($current_course_setting_value == 1) echo 'checked'; ?> />
-<label for="student_delete_own_publication_2">
-				<?php echo get_lang('Yes'); ?>
-</label>
-<div></div>
+	<div class="control-group">
+        <label class="control-label"><?php echo get_lang('StudentAllowedToDeleteOwnPublication'); ?></label>
+	<div class="controls">
+    <label class="radio" for="student_delete_own_publication_2">
+        <input id="student_delete_own_publication_2" class="checkbox" type="radio" name="student_delete_own_publication" value="1" <?php if ($current_course_setting_value == 1) echo 'checked'; ?> />
+                    <?php echo get_lang('Yes'); ?>
+    </label>
+        <label class="radio" for="student_delete_own_publication_1">
 		<input id="student_delete_own_publication_1" class="checkbox" type="radio" name="student_delete_own_publication" value="0"		
 			<?php if ($current_course_setting_value == 0) echo 'checked'; ?> />
-<label for="student_delete_own_publication_1">
 				<?php echo get_lang('No'); ?>
 </label>
 
@@ -333,6 +332,8 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
     $course_id          = api_get_course_int_id();
     $group_id           = api_get_group_id();
     
+    $course_info        = api_get_course_info();
+    
 	$sort_params = array();
 
 	if (isset($_GET['column'])) {
@@ -352,8 +353,7 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
 	$origin         = Security::remove_XSS($origin);
 
 	// Getting the work data	
-	$my_folder_data = get_work_data_by_id($id);
-   
+	$my_folder_data = get_work_data_by_id($id);   
     
     $qualification_exists = false;
     if (!empty($my_folder_data['qualification']) && intval($my_folder_data['qualification']) > 0) {
@@ -412,17 +412,19 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
         if (!empty($group_id)) {
             $group_query = " WHERE c_id = $course_id AND post_group_id = '".intval($group_id)."' "; // set to select only messages posted by the user's group            
         } else {
-            $group_query = " WHERE c_id = $course_id AND  post_group_id = '0' ";            
+            $group_query = " WHERE c_id = $course_id AND post_group_id = '0' ";            
         }
         
         $subdirs_query = "AND parent_id = $parent_id  ";
         
         if ($is_allowed_to_edit) {
-            //$subdirs_query .= " AND user_id = ".api_get_user_id()." ";
         } else {
-            $subdirs_query .= " AND user_id = ".api_get_user_id()." ";
-        }
-                
+            if (isset($course_info['show_score']) &&  $course_info['show_score'] == 1) {            
+                $subdirs_query .= " AND user_id = ".api_get_user_id()." ";
+            } else {
+                $subdirs_query .= '';
+            }
+        }                
         $active_condition = ' AND active IN (1)';        
           
         $sql_get_publications_list = "SELECT * FROM  $work_table $group_query $subdirs_query $add_in_where_query  $active_condition $condition_session ORDER BY title";
@@ -749,13 +751,17 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
 			if (api_is_allowed_to_edit()) {
 				$sql_document = "SELECT count(*) FROM $work_table WHERE c_id = $course_id AND parent_id = ".$work_data['id']." AND active IN (0, 1) ";
 			} else {
+                $user_filter = "user_id = ".api_get_user_id()." AND ";
+                if ($course_info['show_score'] == 0) {
+                    $user_filter  = null;
+                }
                 $sql_document = "SELECT count(*) FROM $work_table s, $iprop_table p
                                   WHERE s.c_id = $course_id  AND 
                                         p.c_id = $course_id AND
                                         s.id = p.ref AND 
                                         p.tool='work' AND 
                                         s.accepted='1' AND 
-                                        user_id = ".api_get_user_id()." AND
+                                        $user_filter
                                         parent_id = ".$work_data['id']." AND  
                                         active = 1 AND
                                         parent_id = ".$work_parent->id."";
@@ -842,16 +848,20 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
 		    
 			//Get the author ID for that document from the item_property table
 			$is_author = false;
+            $can_read = false;
 			$item_property_data = api_get_item_property_info(api_get_course_int_id(), 'work', $work->id, api_get_session_id());
             
 			if (!$is_allowed_to_edit && $item_property_data['insert_user_id'] == api_get_user_id()) {
 				$is_author = true;
 			}			
+            if ($course_info['show_score'] == 0 ) {
+                $can_read = true;
+            }
             
 			$user_info = api_get_user_info($item_property_data['insert_user_id']);
 				
 			//display info depending on the permissions
-			if ($is_author && $work->accepted == '1' || $is_allowed_to_edit || CourseManager::is_course_teacher($item_property_data['insert_user_id'], $_course['code'])) {
+			if (($can_read && $work->accepted == '1') || ($is_author && $work->accepted == '1') || $is_allowed_to_edit || CourseManager::is_course_teacher($item_property_data['insert_user_id'], $_course['code'])) {
 					
 				$row = array();
 				if ($work->accepted == '0') {
@@ -874,8 +884,6 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
                 if (!empty($my_assignment['expires_on']) && $my_assignment['expires_on'] != '0000-00-00 00:00:00' && $time_expires < api_strtotime($work->sent_date, 'UTC')) {
                     $add_string = ' <b style="color:red">'.get_lang('Expired').'</b>';
                 }
-                
-//				}
                 
 				$row[] = '<a href="download.php?id='.$work->id.'">'.build_document_icon_tag('file', substr(basename($work->url), 13)).'</a>';
 				if ($work->contains_file) {
@@ -911,10 +919,9 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
 						$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;action=make_visible&item_id='.$work->id.'&amp;'.$sort_params.'" title="'.get_lang('Visible').'" >'.Display::return_icon('invisible.png', get_lang('Visible'),array(), ICON_SIZE_SMALL).'</a> ';
 					}
 					$action .= '<a href="'.api_get_self().'?'.api_get_cidreq().'&id='.$my_folder_data['id'].'&origin='.$origin.'&gradebook='.$gradebook.'&amp;delete='.$work->id.'" onclick="javascript:if(!confirm('."'".addslashes(api_htmlentities(get_lang('ConfirmYourChoice'),ENT_QUOTES))."'".')) return false;" title="'.get_lang('WorkDelete').'" >'.Display::return_icon('delete.png', get_lang('WorkDelete'),'',ICON_SIZE_SMALL).'</a>';
-					$row[] = $action;
-					
+					$row[] = $action;					
 					// the user that is not course admin can only edit/delete own document
-				} elseif ($is_author && empty($work->qualificator_id)) {					
+				} elseif ($is_author && empty($work->qualificator_id)) {
 					if (!$table_has_actions_column) {
 						$table_header[] = array(get_lang('Actions'), false, 'style="width:90px"');
 						$table_has_actions_column = true;
@@ -932,8 +939,7 @@ function display_student_publications_list($id, $link_target_parameter, $dateFor
 				} else {
 					$row[] = ' ';
 				}
-				$row[] = $work_sent_date_local;
-                
+				$row[] = $work_sent_date_local;                
 				$table_data[] = $row;
 			}
 		}
@@ -1685,6 +1691,7 @@ function display_list_users_without_publication($task_id) {
 	$table_header[] = array(get_lang('Email'), true);
 	// table_data
 	$table_data = get_list_users_without_publication($task_id);
+    
 
 	$sorting_options = array();
 	$sorting_options['column'] = 1;

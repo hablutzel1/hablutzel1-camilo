@@ -4,12 +4,13 @@
 
 @import url('bootstrap.css');
 
-/* some changes to the bootstrap.min.css */
+/* some changes to the bootstrap.css */
 
+/* when doing a var_dump*/
 pre {
     margin-top:40px;
 }
-
+/* chzn-select fix */
 select {
     width : auto;
 }
@@ -19,13 +20,13 @@ select {
 }
 
 .label {
-  padding: 1px 3px 2px;
-  font-size: 100%;
-  font-weight: normal;
-  color: #ffffff;
-  text-transform: none;
-  background: none;  
-  border-radius: none;
+    padding: 1px 3px 2px;
+    font-size: 100%;
+    font-weight: normal;
+    color: #ffffff;
+    text-transform: none;
+    background: none;  
+    border-radius: none;
 }
 
 .secondary-nav {
@@ -49,28 +50,28 @@ legend {
     margin-bottom:0px;
 }
 
-#header2 {    
-    
+/* menu dropdown fixes */
+#header3 .nav .open > .dropdown-toggle, #header3 .nav .active > .dropdown-toggle, #header3 .nav .open.active > .dropdown-toggle {
+    background-color: transparent;
+}
+#header3 .dropdown-menu li a {
+    color:#333;
 }
 
-#header2 .nav {
-    float:right;
+#header3 .dropdown-toggle {
+    height: 15px;
 }
 
 #header3 li a {
     margin:0px;
 }
 
-/* Fixing old chamilo forms */
-#header4 {
-	height:26px;
-    padding:0px;
-    background:none;                    
-    width: 100%;	
-    /*margin-top:35px;*/
-    margin-bottom:5px;    
-    background-repeat:repeat-x;        
+/* To fix the increase/decrease buttons */
+label, input, button, select, textarea, p {
+    font-size: inherit;
 }
+
+/* Fixing old chamilo forms */
 
 form .label {
     color: #404040;
@@ -95,6 +96,8 @@ form .formw input {
 }
 
 /* end chamilo forms fixes */
+
+
 
 /* New changes Chamilo 1.9 */
 
@@ -127,8 +130,8 @@ form .formw input {
 }
 
 html, body {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 #topbar {
@@ -1146,39 +1149,10 @@ button.next.disabled, .a_button.disabled {
     border:1pt solid #ccc;
 }
 
-#categories-content-first {
-    width:290px;
-    float:left;
-}
-
 #categories-search {
     text-align:center;
     /*height:55px; */
     float: left;
-}
-
-#categories-list {
-    -moz-border-radius-topleft:8px;
-    -moz-border-radius-topright:8px;
-    -webkit-border-top-left-radius: 8px;
-    -webkit-border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    -moz-box-shadow:0 -1px 10px 2px #CCCCCC;
-    -Webkit-box-shadow: 0 -1px 10px 2px  #CCCCCC;
-    box-shadow: 0 -1px 10px 2px #CCCCCC;
-    border:1px solid #CCCCCC;
-    float:left;
-    margin:8px;
-    width:240px;
-    min-height:132px;
-    padding:18px;
-    font-size:11pt;
-}
-
-#categories-content-second {
-    margin-left: 308px;    
-    margin-top:5px;
 }
 
 .course-block-main-item {    
@@ -1186,86 +1160,10 @@ button.next.disabled, .a_button.disabled {
     padding: 5px 0px;    
 }
 
-.categories-block-course {
-    -moz-border-radius-topleft:8px;
-    -moz-border-radius-topright:8px;
-    -webkit-border-top-left-radius: 8px;
-    -webkit-border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    -moz-box-shadow:0 -1px 10px 2px #CCCCCC;
-    -Webkit-box-shadow: 0 -1px 10px 2px  #CCCCCC;
-    box-shadow: 0 -1px 10px 2px #CCCCCC;
-    border:1px solid #CCCCCC;
-    float:left;
-    margin:10px 0px 10px 0px;
-    padding:12px;
-    width:95%;    
-    color: #bbb; 
-}
-
-.categories-content-course {
-    float:left;
-    width:100%;
-}
-
-.categories-course-picture {
-    width:95px;
-    height:95px;
-    float:left;
-    overflow:hidden;
-    
-    border-radius:4px;
-    -moz-border-radius:4px;
-    -webkit-border-radius:4px;
-    
-    box-shadow:0 -1px 5px 2px #CCCCCC;
-    -moz-box-shadow:0 -1px 5px 2px #CCCCCC;
-    -Webkit-box-shadow: 0 -1px 5px 2px  #CCCCCC;
-    box-shadow: 0 -1px 5px 2px #CCCCCC;
-    margin-left: 8px;
-}
-
-.categories-course-picture img {    
-    height: 95px;       
-    background-color: #eeeeee;
-}
-
 .categories-course-description {
-    margin-left:18px;
-    font-family:arial;
-    font-size:11px;
-    margin-bottom: 10px;
-	float:left;
+    padding-bottom: 10px;
 }
 
-.categories-course-links div {
-	padding-left:10px;
-}
-
-.categories-course-description .course-block-title {
-    font-family: arial;
-    font-size: medium;
-    margin-bottom: 10px;
-    color: #222222;
-}
-
-.categories-course-description .course-block-teacher {
-    font-size: large;
-    font-style: italic;
-    text-align: right;
-    color: #444444;    
-    float: right;
-    text-align: right;
-    width: 197px;    
-}
-.categories-course-description .course-block-date {
-    font-size: large;
-    font-style: italic;
-    text-align: right;
-    color: #444444;
-    line-height: 10px;
-}
 .course-block-popularity {
     width: 90px;
     float: right;
@@ -1274,8 +1172,7 @@ button.next.disabled, .a_button.disabled {
     text-align: right;
     background-color: #eeeeee;
     min-height:95px;
-    padding-right: 5px;
-    
+    padding-right: 5px;    
     -moz-border-radius-topleft:4px;
     -moz-border-radius-topright:4px;
     -webkit-border-top-left-radius: 4px;    
@@ -1294,18 +1191,6 @@ button.next.disabled, .a_button.disabled {
     color: #000000;
     padding-top: 10px;
     text-shadow: gray 3px 3px 2px;
-}
-
-.categories-course-links {
-    float:left;
-    margin-top:0px;
-    height:16px;
-    padding:2px;
-    width:100%;
-}
-
-.course-link-desc {    
-    float:left;
 }
 
 /* THEMATIC ADVANCE */
@@ -1961,8 +1846,7 @@ div.image-social-content center.friend {
 }
 
 #social_widget_image {
-    float:left;
-    width:150px;
+    float:left;    
     margin-bottom:10px;
     padding:2px;
 }
@@ -2778,12 +2662,8 @@ div.admin_section h4 {
 
 .question_no_answer {
     background-color: #FFF7C0;
-    padding: 5px 0px 5px 0px;
-    margin: 5px 0px 5px 0px;
-}
-
-.exercise_reminder_container {
-    
+   /* padding: 5px 0px 5px 0px; */
+    margin: 10px 0px 5px 0px;
 }
 
 .question_answer {
@@ -2803,26 +2683,16 @@ div.admin_section h4 {
     width: 88%;
 }
 
-.exercise_actions {
-    background: #f5f5f5;
-    margin-top: 18px;
-    margin-bottom: 18px;
-    padding: 17px 20px 18px 50px;
-    border-top: 1px solid #ddd;
-    -webkit-border-radius: 0 0 3px 3px;
-    -moz-border-radius: 0 0 3px 3px;
-    border-radius: 0 0 3px 3px;
-}
-
 .exercise_save_now_button img {
    position: relative;
-    top: 4px;
+   top: 4px;
 }
-.exercise_actions a,   .exercise_actions div  {
-    margin-right:10px;
+
+.exercise_save_now_button {
+    margin-top:10px;
 }
 .exercise_save_now_button, .exercise_button{
-    /* padding:10px; */
+    /* padding:5px; */
 }
 
 .red_alert {
@@ -2830,7 +2700,6 @@ div.admin_section h4 {
     font-weight: bold;
     color:red;
 }
-
 
 #question_feedback {
     -webkit-border-radius: 10px;
@@ -3760,4 +3629,8 @@ a.forum_group_link {
 
 #online_grid_container li img {
     height: 100px;
+}
+
+#online_grid_container .thumbnail .caption {
+    height: 30px;
 }

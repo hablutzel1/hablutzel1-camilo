@@ -475,8 +475,8 @@ $RandomQuestionByCategory = "Preguntas al azar por categoría";
 $QuestionDisplayCategoryName = "Mostrar la categoría de pregunta";
 $ReviewAnswers = "Revisar mis respuestas";
 $TextWhenFinished = "Texto apareciendo al finalizar la prueba";
-$Validated = "Validado";
-$NotValidated = "No validado";
+$Validated = "Corregido";
+$NotValidated = "Sin corregir";
 $Revised = "Revisado";
 $SelectAQuestionToReview = "Seleccione una pregunta por revisar";
 $ReviewQuestionLater = "Revisar pregunta más tarde";
@@ -490,4 +490,6 @@ $UseTheMessageBelowToAddSomeComments = "Utilizar el siguiente campo de texto par
 $SendRecord = "Enviar grabación";
 $DownloadLatestRecord = "Descargar grabación";
 $OralExpression = "Expresión Oral";
+$CongratulationsYouPassedTheTest = "Felicitaciones ha aprobado el ejercicio.";
+$YouDidNotReachTheMinimumScore = "No ha alcanzado el puntaje mínimo.";
 ?>

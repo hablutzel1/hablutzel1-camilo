@@ -1131,9 +1131,11 @@ class Display {
         $retvalue = '&nbsp;';
         while (list($key, $notification) = each($notifications)) {
             $lastDate = date('d/m/Y H:i', convert_sql_date($notification['lastedit_date']));
-            $type = $notification['lastedit_type'];
+            $type = $notification['lastedit_type'];            
             if (empty($course_info['id_session'])) {
                 $my_course['id_session'] = 0;
+            } else {
+                $my_course['id_session'] = $course_info['id_session'];
             }
             $retvalue .= '<a href="'.api_get_path(WEB_CODE_PATH).$notification['link'].'?cidReq='.$course_code.'&amp;ref='.$notification['ref'].'&amp;gidReq='.$notification['to_group_id'].'&amp;id_session='.$my_course['id_session'].'">'.
                          '<img title="-- '.get_lang(ucfirst($notification['tool'])).' -- '.get_lang('_title_notification').": ".get_lang($type)." ($lastDate).\"".' src="'.api_get_path(WEB_CODE_PATH).'img/'.$notification['image'].'" border="0" align="absbottom" />
@@ -1352,6 +1354,21 @@ class Display {
     
     function page_subheader($title) {
         return '<div class="page-header"><h2>'.Security::remove_XSS($title).'</h2></div>';
+    }
+    
+    function bar_progress($percentage, $show_percentage = true, $extra_info = null) {
+        $percentage = intval($percentage);
+        $div = '<div class="progress progress-striped">                                    
+                    <div class="bar" style="width: '.$percentage.'%;"></div>                                            
+                </div>';        
+        if ($show_percentage) {
+            $div .= '<div class="progresstext">'.$percentage.'%</div>';
+        } else {
+            if (!empty($extra_info)) {
+                $div .= '<div class="progresstext">'.$extra_info.'</div>';
+            }                
+        }
+        return $div;
     }
     
 } //end class Display

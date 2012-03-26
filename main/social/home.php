@@ -81,7 +81,7 @@ $social_right_content .= '<div>
     </div>
     <div class="box_description_group_actions">
     <a href="'.api_get_path(WEB_PATH).'main/auth/profile.php">
-        '.Display::return_icon('profile_edit.png', null, array('hspace'=>'6')).get_lang('EditProfile').'
+        '.Display::return_icon('profile_edit.png', get_lang('EditProfile'), array('hspace'=>'6')).get_lang('EditProfile').'
     </a>
     </div>';
                   
@@ -162,7 +162,7 @@ $social_right_content .= '<div>
     			}
 $social_right_content .= '</div>';            
             
-$tpl = new Template(get_lang('Social'));
+$tpl = new Template(get_lang('SocialNetwork'));
 $tpl->assign('social_left_content', $social_left_content);
 $tpl->assign('social_left_menu', $social_left_menu);
 $tpl->assign('social_right_content', $social_right_content);

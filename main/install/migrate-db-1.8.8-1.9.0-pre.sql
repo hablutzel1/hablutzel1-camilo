@@ -74,7 +74,7 @@ INSERT INTO settings_current (variable, subkey, type, category, selected_value, 
 INSERT INTO settings_current (variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url_changeable) VALUES ('languagePriority4', NULL, 'radio', 'Languages', 'platform_lang', 'LanguagePriority4Title', 'LanguagePriority4Comment', NULL, NULL, 0);
 INSERT INTO settings_options (variable, value, display_text) VALUES ('languagePriority1','platform_lang','PlatformLanguage'), ('languagePriority1','user_profil_lang','UserLanguage'), ('languagePriority1','user_selected_lang','UserSelectedLanguage'), ('languagePriority1','course_lang','CourseLanguage'), ('languagePriority2','platform_lang','PlatformLanguage'), ('languagePriority2','user_profil_lang','UserLanguage'), ('languagePriority2','user_selected_lang','UserSelectedLanguage'), ('languagePriority2','course_lang','CourseLanguage'), ('languagePriority3','platform_lang','PlatformLanguage'), ('languagePriority3','user_profil_lang','UserLanguage'), ('languagePriority3','user_selected_lang','UserSelectedLanguage'), ('languagePriority3','course_lang','CourseLanguage'), ('languagePriority4','platform_lang','PlatformLanguage'), ('languagePriority4','user_profil_lang','UserLanguage'), ('languagePriority4','user_selected_lang','UserSelectedLanguage'), ('languagePriority4','course_lang','CourseLanguage');
 -- Email is login 
-INSERT INTO settings_current (variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url_changeable) VALUES ('login_is_email', NULL, 'radio', 'Platform', 'false', 'LoginIsEmailTitle', 'LoginIsemailComment', NULL, NULL, 0);
+INSERT INTO settings_current (variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url_changeable) VALUES ('login_is_email', NULL, 'radio', 'Platform', 'false', 'LoginIsEmailTitle', 'LoginIsEmailComment', NULL, NULL, 0);
 INSERT INTO settings_options (variable, value, display_text) VALUES ('login_is_email','true','Yes'),('login_is_email','false','No') ;
 -- INSERT INTO settings_current (variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url_changeable) VALUES ('activate_send_event_by_mail', NULL, 'radio', 'Platform', 'false', 'ActivateSendEventByMailTitle', 'ActivateSendEventByMailComment', NULL, NULL, 0);
 -- INSERT INTO settings_options (variable, value, display_text) VALUES ('activate_send_event_by_mail', 'true', 'Yes'),('activate_send_event_by_mail', 'false', 'No');
@@ -144,6 +144,9 @@ INSERT INTO settings_options (variable, value, display_text) VALUES ('courses_de
 INSERT INTO settings_options (variable, value, display_text) VALUES ('courses_default_creation_visibility', '1', 'Private');
 INSERT INTO settings_options (variable, value, display_text) VALUES ('courses_default_creation_visibility', '0', 'CourseVisibilityClosed');
 
+INSERT INTO settings_current (variable, subkey, type, category, selected_value, title, comment, scope, subkeytext, access_url_changeable) VALUES ('allow_browser_sniffer', NULL, 'radio', 'Tuning', 'false', 'AllowBrowserSnifferTitle', 'AllowBrowserSnifferComment', NULL, NULL, 0);
+INSERT INTO settings_options (variable, value, display_text) VALUES ('allow_browser_sniffer', 'true', 'Yes');
+INSERT INTO settings_options (variable, value, display_text) VALUES ('allow_browser_sniffer', 'false', 'No');
 
 -- Course ranking
 
@@ -164,6 +167,7 @@ ALTER TABLE track_e_default  MODIFY COLUMN default_value TEXT;
 
 --User chat status
 INSERT INTO user_field (field_type, field_variable, field_display_text, field_visible, field_changeable) VALUES (1, 'user_chat_status','User chat status', 0, 0);
+UPDATE settings_current SET selected_value = 'true' WHERE variable = 'more_buttons_maximized_mode';
 
 -- Do not move this query
 UPDATE settings_current SET selected_value = '1.9.0.17051' WHERE variable = 'chamilo_database_version';
@@ -171,8 +175,6 @@ UPDATE settings_current SET selected_value = '1.9.0.17051' WHERE variable = 'cha
 -- xxSTATSxx
 ALTER TABLE track_e_exercices ADD COLUMN questions_to_check TEXT NOT NULL DEFAULT '';
 --CREATE TABLE track_filtered_terms (id int, user_id int, course_id int, session_id int, tool_id char(12), filtered_term varchar(255), created_at datetime);
-CREATE TABLE reports_keys ( id int unsigned NOT NULL AUTO_INCREMENT, course_id int unsigned DEFAULT NULL, tool_id int DEFAULT NULL, child_id int DEFAULT NULL, child_name varchar(64) DEFAULT NULL, subchild_id int DEFAULT NULL, subchild_name varchar(64) DEFAULT NULL, subsubchild_id int DEFAULT NULL, subsubchild_name varchar(64) DEFAULT NULL, link varchar(256) DEFAULT NULL, PRIMARY KEY (id), KEY course_id (course_id), KEY course_id_2 (course_id,tool_id,child_id,subchild_id,subsubchild_id));
-CREATE TABLE reports_values ( key_id int unsigned NOT NULL, user_id int unsigned DEFAULT NULL, session_id int DEFAULT NULL, attempt int DEFAULT NULL, score decimal(5,3) DEFAULT NULL, progress int DEFAULT NULL, report_time int DEFAULT NULL, KEY user_id (user_id), PRIMARY KEY (key_id,user_id,session_id,attempt));
 CREATE TABLE stored_values (user_id INT NOT NULL, sco_id INT NOT NULL, course_id CHAR(40) NOT NULL, sv_key CHAR(64) NOT NULL, sv_value TEXT NOT NULL );
 ALTER TABLE stored_values ADD KEY (user_id, sco_id, course_id, sv_key);
 ALTER TABLE stored_values ADD UNIQUE (user_id, sco_id, course_id, sv_key);
@@ -185,13 +187,14 @@ ALTER TABLE track_e_attempt ADD COLUMN filename VARCHAR(255) DEFAULT NULL;
 -- xxUSERxx
 
 -- xxCOURSExx
-ALTER TABLE lp ADD COLUMN hide_toc_frame TINYINT NOT NULL DEFAULT 0;
-ALTER TABLE lp ADD COLUMN seriousgame_mode TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE lp ADD COLUMN hide_toc_frame INT NOT NULL DEFAULT 0;
+ALTER TABLE lp ADD COLUMN seriousgame_mode INT NOT NULL DEFAULT 0;
 ALTER TABLE lp_item_view modify column suspend_data longtext;
-INSERT INTO course_setting(variable,value,category) VALUES ('course_grading_model','','gradebook');
+INSERT INTO course_setting(variable, value, category) VALUES ('course_grading_model','','gradebook');
 ALTER TABLE quiz ADD COLUMN review_answers INT NOT NULL DEFAULT 0;
 ALTER TABLE student_publication ADD COLUMN contains_file INTEGER NOT NULL DEFAULT 1;
 ALTER TABLE student_publication ADD COLUMN allow_text_assignment INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE quiz ADD COLUMN random_by_category INT NOT NULL DEFAULT 0;
-ALTER TABLE quiz ADD text_when_finished TEXT default NULL;
-ALTER TABLE quiz ADD display_category_name TINYINT NOT NULL DEFAULT 1;
+ALTER TABLE quiz ADD COLUMN text_when_finished TEXT DEFAULT NULL;
+ALTER TABLE quiz ADD COLUMN display_category_name INT NOT NULL DEFAULT 1;
+ALTER TABLE quiz ADD COLUMN pass_percentage INT DEFAULT NULL;

@@ -41,7 +41,7 @@
                     {/if}
                 </div>
                 
-                <div id="header_center" class="span4">                
+                <div id="header_center" class="span3">                
                     {* plugin_header *}        
                     {if !empty($plugin_header_center)}
                         <div id="plugin_header_center">
@@ -50,10 +50,10 @@
                     {/if}
                     &nbsp;
                 </div>                                
-                <div id="header_right" class="span4">   
+                <div id="header_right" class="span5">   
                      {* header right (notifications) *}    
                     <ul id="notifications" class="nav nav-pills pull-right">        
-                        {$header2}
+                        {$notification_menu}
                     </ul>
 
                     {* plugin_header *}        
@@ -77,14 +77,15 @@
             {/if}
         </header>
         {* header 3 - menu *}
-        {if $header3}
+        {if $menu}
             <div id="header3" class="subnav">        
-                {$header3}    
+                {$menu} 
             </div>        
         {/if}
 
         {* breadcrumb *}
         {$breadcrumb}
+        
         <div class="row">
             {if !empty($show_course_shortcut) }
                 <div class="span12">

@@ -74,20 +74,29 @@ class AppPlugin {
         return $installed_plugins;
     }
     
-    function install($plugin_name, $access_url_id) {
-        $access_url_id = api_get_current_access_url_id();
+    function install($plugin_name, $access_url_id = null) {
+        if (empty($access_url_id)) {
+            $access_url_id = api_get_current_access_url_id();
+        } else {
+            $access_url_id = intval($access_url_id);
+        }
         api_add_setting('installed', 'status', $plugin_name, 'setting', 'Plugins', $plugin_name, null, null, null, $access_url_id, 1);
         
         //api_add_setting($plugin, $area, $plugin, null, 'Plugins', $plugin, null, null, null, $_configuration['access_url'], 1);
         $pluginpath = api_get_path(SYS_PLUGIN_PATH).$plugin_name.'/install.php';
+        
         if (is_file($pluginpath) && is_readable($pluginpath)) {
             //execute the install procedure
             require $pluginpath;
         }    
     }
     
-    function uninstall($plugin_name) {
-        $access_url_id = api_get_current_access_url_id();
+    function uninstall($plugin_name, $access_url_id = null) {
+        if (empty($access_url_id)) {
+            $access_url_id = api_get_current_access_url_id();
+        } else {
+            $access_url_id = intval($access_url_id);
+        }
         api_delete_settings_params(array('category = ? AND access_url = ? AND subkey = ? ' =>
                                    array('Plugins', $access_url_id, $plugin_name)));
         $pluginpath = api_get_path(SYS_PLUGIN_PATH).$plugin_name.'/uninstall.php';
@@ -144,40 +153,46 @@ class AppPlugin {
     function get_all_plugin_contents_by_block($block, $template) {
         global $_plugins;
         if (isset($_plugins[$block]) && is_array($_plugins[$block])) {
+        //if (1) {
             foreach ($_plugins[$block] as $plugin_name) {
                 //Load the plugin information
                 
-                //The plugin_info variable is available inside the plugin index
-                
+                //The plugin_info variable is available inside the plugin index                
                 $plugin_info = $this->get_plugin_info($plugin_name);
                 
                 //We also where the plugin is
                 $plugin_info['current_region'] = $block;    
                 
                 // Loading the plugin/XXX/index.php file                
-                require api_get_path(SYS_PLUGIN_PATH)."$plugin_name/index.php";
-                
-                //We set the $template variable in order to use smarty
-                if (isset($_template) && !empty($_template)) {                        
-                    foreach($_template as $key =>$value) {
-                        $template->assign($key, $value);                          
-                    }
-                }                
-                
-                //Loading the smarty template files if exists
-                $template_list = array();
-                if (isset($plugin_info) && isset($plugin_info['templates'])) {
-                    $template_list = $plugin_info['templates'];
-                }           
-               
-                if (!empty($template_list)) {
-                    foreach($template_list as $plugin_tpl) {
-                        if (!empty($plugin_tpl)) {
-                            $template_plugin_file = api_get_path(SYS_PLUGIN_PATH)."$plugin_name/$plugin_tpl";                            
-                            $template->display($template_plugin_file);                                                
+                $plugin_file = api_get_path(SYS_PLUGIN_PATH)."$plugin_name/index.php";                
+                if (file_exists($plugin_file)) {
+                    require $plugin_file;
+
+                    //We set the $template variable in order to use smarty                    
+                    if (isset($_template) && !empty($_template)) {   
+                        /*
+                        foreach ($_template as $key =>$value) {                            
+                            $template->assign($plugin_name[$key], $value);                          
                         }
+                        */
+                        $template->assign($plugin_name, $_template);
                     }                
-                }               
+
+                    //Loading the smarty template files if exists
+                    $template_list = array();
+                    if (isset($plugin_info) && isset($plugin_info['templates'])) {
+                        $template_list = $plugin_info['templates'];
+                    }           
+
+                    if (!empty($template_list)) {
+                        foreach ($template_list as $plugin_tpl) {
+                            if (!empty($plugin_tpl)) {
+                                $template_plugin_file = api_get_path(SYS_PLUGIN_PATH)."$plugin_name/$plugin_tpl";                            
+                                $template->display($template_plugin_file);                                                
+                            }
+                        }                
+                    }
+                }      
             }
         }
         return true;

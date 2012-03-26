@@ -164,7 +164,7 @@ function show_header_1($language_file, $nameTools, $theme) {
     return $html;
 }
 
-function show_header_2() {
+function return_notification_menu() {
 
     $_course    = api_get_course_info(); 
     $course_id  = api_get_course_id();
@@ -324,12 +324,11 @@ function return_navigation_array() {
     }
     return array('menu_navigation' => $menu_navigation, 'navigation' => $navigation, 'possible_tabs' => $possible_tabs);    
 }
-function show_header_3() {
+
+function return_menu() {
     $navigation         = return_navigation_array();    
-    //$menu_navigation    = $navigation['menu_navigation'];
     $navigation         = $navigation['navigation'];
-    //$possible_tabs      = $navigation['possible_tabs'];    
-    
+   
     // Displaying the tabs
     
     $lang = ''; //el for "Edit Language"
@@ -364,6 +363,7 @@ function show_header_3() {
     $ext      = '.html';
     $menutabs = 'home_tabs';
     $home_top = '';
+    
     if (is_file($homep.$menutabs.'_'.$lang.$ext) && is_readable($homep.$menutabs.'_'.$lang.$ext)) {
         $home_top = @(string)file_get_contents($homep.$menutabs.'_'.$lang.$ext);    
     } elseif (is_file($homep.$menutabs.$lang.$ext) && is_readable($homep.$menutabs.$lang.$ext)) {
@@ -373,8 +373,7 @@ function show_header_3() {
     }
         
     $home_top = api_to_system_encoding($home_top, api_detect_encoding(strip_tags($home_top)));
-    
-    //if (api_get_self() != '/main/admin/configure_homepage.php') {        
+   
     $open = str_replace('{rel_path}',api_get_path(REL_PATH), $home_top);
     $open = api_to_system_encoding($open, api_detect_encoding(strip_tags($open)));
     
@@ -408,40 +407,56 @@ function show_header_3() {
         $show_bar = true;
     }
         
-    $header3 = '';
+    $menu = '';
     
     // Logout    
     if ($show_bar) {
-        
- 
         if (api_get_user_id()) {
             $login = '';
             if (api_is_anonymous()) {
                 $login = get_lang('Anonymous');
             } else {
-                $uinfo = api_get_user_info(api_get_user_id());
-                $login = $uinfo['username'];
+                $user_info = api_get_user_info(api_get_user_id());                
             }            
+            $logout_link = api_get_path(WEB_PATH).'index.php?logout=logout&uid='.api_get_user_id();
+            
+            $message_link  = null;
+            if (api_get_setting('allow_message_tool') == 'true') {
+                $message_link = '<a href="'.api_get_path(WEB_CODE_PATH).'messages/inbox.php">'.get_lang('Inbox').'</a>';
+            }
+            
             //start user section line with name, my course, my profile, scorm info, etc            
-            $header3 .= '<ul class="nav nav-pills pull-right">';
+            $menu .= '<ul class="nav nav-pills pull-right">';
                 //echo '<li><span>'.get_lang('LoggedInAsX').' '.$login.'</span></li>';
                 //echo '<li><a href="'.api_get_path(WEB_PATH).'main/auth/profile.php" target="_top"><span>'.get_lang('Profile').'</span></a></li>';
-                $header3 .= '<li><a href="'.api_get_path(WEB_PATH).'index.php?logout=logout&uid='.api_get_user_id().'" target="_top"><span>'.get_lang('Logout').' ('.$login.')</span></a></li>';
-            $header3 .= '</ul>';    
+                
+                //$header3 .= '<li><a href="'.api_get_path(WEB_PATH).'index.php?logout=logout&uid='.api_get_user_id().'" target="_top"><span>'.get_lang('Logout').' ('.$login.')</span></a></li>';
+                //$menu .= '<li><a href=""><img src="'.$user_info['avatar_small'].'"/></a></li>';
+            
+                //<a href="'.$logout_link.'">'.get_lang('Logout').'</a>
+                $menu .= '<li class="dropdown">';                
+                $menu .= '<a class="dropdown-toggle" data-toggle="dropdown" href="#"><img src="'.$user_info['avatar_small'].'"/> '.$user_info['complete_name'].'<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="'.api_get_path(WEB_CODE_PATH).'social/home.php">'.get_lang('Profile').'</a>
+                                        '.$message_link.'                                        
+                                    </li>
+                                </ul>';
+                $menu .= '</li>';
+                $menu .= '<li><a class="close" title="'.get_lang('Logout').'" href="'.$logout_link.'">&times;</a></li>'; 
+            $menu .= '</ul>';    
         }      
         
-               if (!empty($lis)) {
-            $header3 .= '<ul class="nav nav-pills">';
-            $header3 .= $lis;
-            $header3 .= '</ul>';
+        if (!empty($lis)) {
+            $menu .= '<ul class="nav nav-pills">';
+            $menu .= $lis;
+            $menu .= '</ul>';
         }
-        
-        
     }
-    return $header3;
+    return $menu;
 }
 
-function show_breadcrumb($interbreadcrumb, $language_file, $nameTools) {  
+function return_breadcrumb($interbreadcrumb, $language_file, $nameTools) {  
 	 
     $session_id     = api_get_session_id();
     $session_name   = api_get_session_name($session_id);

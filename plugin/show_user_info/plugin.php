@@ -10,7 +10,8 @@
  */
 
 //the plugin title
-$plugin_info['title']       = 'Show user information';
+$plugin_info['title']      = 'Show user information';
+
 //the comments that go with the plugin
 $plugin_info['comment']     = "Shows a welcome message, (this is an example to uses smarty)";
 //the plugin version

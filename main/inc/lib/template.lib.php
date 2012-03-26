@@ -23,14 +23,16 @@ class Template extends Smarty {
 	var $show_footer;
     var $help;
     var $menu_navigation = array();
-    var $show_learnpath = false;    
+    var $show_learnpath = false; // This is a learnpath section or not?
     var $plugin = null;
     var $course_id = null;
+    var $user_is_logged_in = false;
 	
 	function __construct($title = '', $show_header = true, $show_footer = true, $show_learnpath = false) {
         parent::__construct();
-		$this->title = $title;
-        //$this->assign('header', $title);
+        
+        //Page title
+		$this->title = $title;        
 		$this->show_learnpath = $show_learnpath;
         
 		//Smarty 3 configuration
@@ -51,6 +53,10 @@ class Template extends Smarty {
 		
 		//Setting user variables 
 		$this->set_user_parameters();
+                        
+        //Setting course id
+        $course_id = api_get_course_int_id();
+        $this->course_id = $course_id;
 		
 		//header and footer are showed by default
 		$this->set_footer($show_footer);        
@@ -71,10 +77,6 @@ class Template extends Smarty {
         
 		$this->set_header_parameters();
 		$this->set_footer_parameters();
-        
-        //Setting course id
-        $course_id = api_get_course_int_id();
-        $this->course_id = $course_id;
         
 		$this->assign('style', $this->style);
         
@@ -169,8 +171,7 @@ class Template extends Smarty {
 		$this->show_header = $status;
 		$this->assign('show_header', $status);
         
-        //Tool bar
-        
+        //Toolbar                
         $show_admin_toolbar = api_get_setting('show_admin_toolbar');
         $show_toolbar = 0;
         
@@ -194,10 +195,11 @@ class Template extends Smarty {
         $this->assign('show_toolbar', $show_toolbar);
         
         //Only if course is available        
-        if (!empty($this->course_id)) {        
+        if (!empty($this->course_id) && $this->user_is_logged_in) {        
+            
             if (api_get_setting('show_toolshortcuts') != 'false') {
                 //Course toolbar
-                $course_tool = CourseHome::show_navigation_tool_shortcuts();
+                $course_tool = CourseHome::show_navigation_tool_shortcuts();                
                 $this->assign('show_course_shortcut', $course_tool);
             }
 
@@ -206,8 +208,7 @@ class Template extends Smarty {
                 $course_tool = CourseHome::show_navigation_menu();
                 $this->assign('show_course_navigation_menu', $course_tool);
             }
-        }
-        
+        }        
 	}
 		
 	function get_template($name) {
@@ -217,6 +218,7 @@ class Template extends Smarty {
 	private function set_user_parameters() {
 		$user_info = array();
 		$user_info['logged'] = 0;
+        $this->user_is_logged_in = false;
 		if (api_get_user_id() && !api_is_anonymous()) {
 			$user_info = api_get_user_info();			
 			$user_info['logged'] = 1;
@@ -227,9 +229,10 @@ class Template extends Smarty {
             }
             
 			$user_info['messages_count'] = MessageManager::get_new_messages();
+            $this->user_is_logged_in = true;
 		}		
         //Setting the $_u array that could be use in any template 
-		$this->assign('_u', $user_info);
+		$this->assign('_u', $user_info); 
 	}	
 	
 	private function set_system_parameters() {
@@ -240,8 +243,7 @@ class Template extends Smarty {
 					'web_course'	=> api_get_path(WEB_COURSE_PATH),
 					'web_main' 		=> api_get_path(WEB_CODE_PATH),
 					'web_ajax' 		=> api_get_path(WEB_AJAX_PATH),
-                    'web_img' 		=> api_get_path(WEB_IMG_PATH),
-					
+                    'web_img' 		=> api_get_path(WEB_IMG_PATH)					
 					);
 		$this->assign('_p', $_p);
 		
@@ -250,7 +252,7 @@ class Template extends Smarty {
 				'software_name' 	=> $_configuration['software_name'],
 				'system_version' 	=> $_configuration['system_version'],
 				'site_name'			=> api_get_setting('siteName'),
-				'institution'		=> api_get_setting('Institution'),		
+				'institution'		=> api_get_setting('Institution')
 		);
 		$this->assign('_s', $_s);	
 	}
@@ -464,12 +466,12 @@ class Template extends Smarty {
 		
 		$this->assign('bug_notification_link', $bug_notification_link);
 		
-		$header2 = show_header_2();
-		$header3 = show_header_3();
-		$breadcrumb = show_breadcrumb($interbreadcrumb, $language_file, $nameTools);
+		$notification   = return_notification_menu();
+		$menu           = return_menu();
+		$breadcrumb     = return_breadcrumb($interbreadcrumb, $language_file, $nameTools);
 		
-		$this->assign('header2', $header2);
-		$this->assign('header3', $header3);        
+		$this->assign('notification_menu', $notification);
+		$this->assign('menu', $menu);        
 		$this->assign('breadcrumb', $breadcrumb);
 		
 		if (!api_is_platform_admin()) {

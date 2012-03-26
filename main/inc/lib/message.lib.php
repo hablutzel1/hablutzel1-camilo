@@ -712,8 +712,7 @@ class MessageManager
 	 * @return string html with the message content
 	 */
 	public static function show_message_box($message_id, $source = 'inbox') {
-		$table_message 		= Database::get_main_table(TABLE_MESSAGE);
-		$tbl_message_attach = Database::get_main_table(TABLE_MESSAGE_ATTACHMENT);
+		$table_message 		= Database::get_main_table(TABLE_MESSAGE);		
 		$message_id 		= intval($message_id);
 
 		if ($source == 'outbox') {
@@ -739,8 +738,7 @@ class MessageManager
 		$files_attachments = self::get_links_message_attachment_files($message_id,$source);
 
 		$user_con = self::users_connected_by_id();
-		$band=0;
-		$reply='';
+		$band= 0;		
 		for ($i=0;$i<count($user_con);$i++)
 			if ($user_sender_id == $user_con[$i])
 				$band=1;
@@ -760,7 +758,7 @@ class MessageManager
 		      	<table>
 		            <tr>
 		              <td valign="top" width="100%">
-		               <h1>'.str_replace("\\","",$title).'</h1>
+		               '.Display::page_subheader(str_replace("\\","",$title)).'
 		              </td>';
 		if (api_get_setting('allow_social_tool') == 'true') {
             $message_content .='<td width="100%">'.$user_image.'</td>';
@@ -1002,11 +1000,8 @@ class MessageManager
         $rows 			= self::calculate_children($rows, $topic_id);                
         $current_user_id  = api_get_user_id();
         
-        //$topics_per_page  = 5;
         $items_per_page   = 50;
         
-        //$count_items = 0;
-        //$html_messages = '';
         $query_vars = array('id' => $group_id, 'topic_id' => $topic_id , 'topics_page_nr' => 0);        
         
         // Main message        
@@ -1015,7 +1010,6 @@ class MessageManager
         $links = '';
         $main_content  = '';
         
-        //$items_page_nr = intval($_GET['items_'.$topic['id'].'_page_nr']);
         $items_page_nr = null;
         
         $html = '';
@@ -1064,7 +1058,7 @@ class MessageManager
         
         if (is_array($rows) && count($rows)> 0) {
             $topics = $rows;            
-                    
+            $array_html_items = array();
             foreach ($topics as $index => $topic) {
                 if (empty($topic['id'])) {
                     continue;
@@ -1127,8 +1121,7 @@ class MessageManager
             if (!empty($array_html_items)) {
                 $html .= Display::return_sortable_grid('items_'.$topic['id'], array(), $array_html_items, $options, $query_vars, null, $visibility, false, $style_class);
             }
-        }
-        $html .= '</div>';                
+        }                    
         $html = Display::div($html, array('class'=>'', 'style'=>'width:638px'));
         return $html;
     }	

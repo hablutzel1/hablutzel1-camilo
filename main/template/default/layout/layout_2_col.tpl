@@ -13,10 +13,10 @@
 	{if $show_sniff == 1 }
 	 	{include file="default/layout/sniff.tpl"}
 	{/if}
-    	
-	<div class="span9">		
-        {* Content bottom *}
-
+   
+	<div class="span9">
+        
+        {* Plugin bottom *}
         {if !empty($plugin_content_top)}         
             <div id="plugin_content_top">
                 {$plugin_content_top}
@@ -31,12 +31,18 @@
         {/if}
 		
 		{* ?? *}
-		{$sniff_notification}
+		{$sniff_notification}        
 		
-        {include file="default/layout/page_body.tpl"}	
+        {include file="default/layout/page_body.tpl"}
+        
+        {if !empty($content)}
+        <section id="main_content">
+        {$content}        
+        </section>
+        {/if}
 		
 		{* Announcements *}
-        {if !empty($announcements_page_block)}
+        {if !empty($announcements_block)}
             <section id="announcements_page">
             {$announcements_block}
             </section>
@@ -51,6 +57,7 @@
                 {$plugin_content_bottom}
             </div>
         {/if}
+        &nbsp;
 	</div>
 		
 	{* Right column *}

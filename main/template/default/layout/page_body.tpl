@@ -1,7 +1,7 @@
 {* Actions *}
 {if (!empty($actions)) }
     <div class="actions">
-    {$actions}	
+        {$actions}	
     </div>
 {/if}
 
@@ -15,12 +15,6 @@
 {* Show messages*}
 {if !empty($message) }
     <section id="messages">
-    {$message}
+        {$message}
     </section>
 {/if}
-
-{* Main content*}
-<section id="main_content">
-{$content}
-</section>
-
