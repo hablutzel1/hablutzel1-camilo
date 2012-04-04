@@ -23,9 +23,9 @@ body {
 var url             = '{{url}}';
 var skills          = []; //current window divs
 var parents         = []; //list of parents normally there should be only 2
-var hidden_parent   = '';
-var duration_value  = 500;
+var first_parent   = '';
 
+var duration_value  = 500;
 
 //Block settings see the SkillVisualizer Class
 var offset_x                = {{skill_visualizer.offset_x}};
@@ -38,7 +38,64 @@ var block_size              = {{skill_visualizer.block_size}};
 //Setting the parent by default 
 var parents = ['block_1'];
 
+
+
+
+
+function clean_values() {    
+    skills          = []; //current window divs
+    parents = ['block_1'];
+    first_parent   = '';
+    
+    //Reseting jsplumb
+    jsPlumb.reset();                            
+    //Deletes all windows
+    $('.skill_root').remove();
+    $('.skill_child').remove();
+    
+    open_block('block_1', 0, 1);
+}
+
+
+$(window).resize(function() {
+    // Top bar scroll effect
+    //console.log($('body').width());
+    jsPlumb.repaintEverything();
+});
+
 jsPlumb.ready(function() {
+    var loading = $( "#dialog-loading" );
+    
+    loading.dialog( "destroy" );
+    loading.dialog({
+        autoOpen:false,
+        height: 120,
+        modal: true,
+        zIndex: 10000,
+        resizable :false,        
+        closeOnEscape : false,
+        disabled: true,            
+        open: function(event, ui) { $(this).parent().children().children('.ui-dialog-titlebar-close').hide(); }
+    });
+    
+    jQuery.ajaxSetup({
+        beforeSend: function() {
+            loading.dialog( "open" );
+            console.log('before------------------->>');
+        },
+        complete: function(){
+            loading.dialog( "close" );                    
+            console.log('complete------------------->>');
+        },
+        success: function() {}
+    });
+        
+    $('#return_to_root').live('click', function(){
+        clean_values();
+        console.log('Clean values');        
+        
+        console.log('Reopen the root ');
+    });
     
     //Open dialog
     $("#dialog-form").dialog({
@@ -116,13 +173,40 @@ jsPlumb.ready(function() {
                     var params = $("#add_item").serialize();
                           
                     $.ajax({
+                        async: false,
                         url: url+'&a=add&'+params,
-                        success:function(data) {                            
+                        success:function(my_id) {                            
                             //new window
                             parent_id = $("#parent_id option:selected").attr('value');                            
-                        
+                            
+                            //Reseting jsplumb
+                            jsPlumb.reset();                            
+                            //Deletes all windows
+                            $('.skill_root').remove();
+                            $('.skill_child').remove();
+                            
+                            //cleaning skills
+                            skills = [];
+                            
+                            //cleaninig parents
+                            /*parents         = ['block_'+parent_id]; //list of parents normally there should be only 2
+                            
+                            //cleaning 
+                            first_parent   = '';*/
+        
+                            first_parent = parents[0];
+                            
+                            //Deleting the first parent
+                            console.log('beofr '+parents);
+                            parents.splice(0,1);     
+                            console.log('now '+parents);
+                            
+                            
+                            //Remove parent                            
+                            $('#block_'+parent_id).remove();
+                            
                             //Great stuff                         
-                            open_block('block_'+parent_id, 0);
+                            open_block('block_'+parent_id, 0, 1);                            
                                                                      
                             $("#dialog-form").dialog("close");                                      
                         }                           
@@ -140,39 +224,52 @@ jsPlumb.ready(function() {
     $(".open_block").live('click', function() {      
         var id = $(this).attr('id');
         
+        console.log('click.open_block id: ' + id);
+        console.log('parents: ' + parents);
+        
         //if is root
         if (parents[0] == id) {
             parents = [id];
         }     
         
-        if (parents[1] != id) {            
+        if (parents[1] != id) {
+            console.log('parents.length ' +parents.length);
+            
             if (parents.length == 2 ) {
-                hidden_parent = parents[0];   
+                first_parent = parents[0];   
                 //console.log('deleting: '+parents[0]);        
                 //removing father
-                for (var i = 0; i < skills.length; i++) {                               
-                    if ( skills[i].element == parents[0] ) {
-                         //console.log('deleting :'+ skills[i].element + ' here ');                             
-                         jsPlumb.deleteEndpoint(skills[i].endp);
-                         $("#"+skills[i].element).remove();
+                console.log("first_parent " + first_parent);
+                
+                for (var i = 0; i < skills.length; i++) {  
+                    console.log('looping '+skills[i].element + ' ');
+                    if (skills[i].element == parents[0] ) {
+                        console.log('deleting parent:'+ skills[i].element + ' here ');                             
+                        jsPlumb.deleteEndpoint(skills[i].element);
+                        jsPlumb.detachAllConnections(skills[i].element);
+                        jsPlumb.removeAllEndpoints(skills[i].element);  
+                        $("#"+skills[i].element).remove();
                     }
                 }                                
                 parents.splice(0,1);                
                 parents.push(id);
+                console.log('parents after slice/push: ' + parents);
             }     
                 
-            if ($(this).hasClass('first_window')) {                
-                 //show the hidden_parent
-                //if (hidden_parent != '') {
-                   parents = [hidden_parent, id];
-                   //    console.log(parents);
-                   open_parent(hidden_parent, id);
+            if ($(this).hasClass('first_window')) {  
+                console.log('im in a first_window (root)');
+                //show the first_parent
+                //if (first_parent != '') {
+                   parents = [first_parent, id];
+                   console.log(parents);
+                   open_parent(first_parent, id);
                 //}
             }
             if (jQuery.inArray(id, parents) == -1) {                              
                 parents.push(id);
+                console.log('parents  push' + parents);
             }
-            open_block(id, 0);
+            open_block(id, 0, 0);
         }
         
         //Setting class       
@@ -189,7 +286,10 @@ jsPlumb.ready(function() {
        
         console.log(parents);
        // console.log(skills);        
-        console.log('hidden_parent : ' + hidden_parent);         
+        console.log('first_parent : ' + first_parent);     
+        
+        //redraw
+        jsPlumb.repaintEverything();
     });
     
     //Skill title click  
@@ -261,7 +361,7 @@ jsPlumb.ready(function() {
             console.log('Import defaults');
             
             jsPlumb.Defaults.Anchors = [ "BottomCenter", "TopCenter" ];
-          //  jsPlumb.DefaultDragOptions = { cursor: "pointer", zIndex:2000 };
+            //jsPlumb.DefaultDragOptions = { cursor: "crosshair", zIndex:2000 };
             jsPlumb.Defaults.Container = "skill_tree";
                 
             
@@ -361,7 +461,7 @@ jsPlumb.ready(function() {
 */
             //jsPlumb.setMouseEventsEnabled(true);
             
-            open_block('block_1', 0);
+            open_block('block_1', 0, 1);
             
             
             
@@ -369,8 +469,8 @@ jsPlumb.ready(function() {
                 
             // listen for clicks on connections, and offer to delete connections on click.			
 			jsPlumb.bind("click", function(conn, originalEvent) {
-				if (confirm("Delete connection from " + conn.sourceId + " to " + conn.targetId + "?"))
-					jsPlumb.detach(conn); 
+				/*if (confirm("Delete connection from " + conn.sourceId + " to " + conn.targetId + "?"))
+					jsPlumb.detach(conn); */
 			});            
         }
     };
@@ -429,11 +529,21 @@ $(document).ready(function() {
 })();
 
 </script>
+<div id="dialog-loading">
+    <div class="modal-body">
+        <p style="text-align:center">
+            {{ "Loading"|get_lang }}
+        <img src="{{ _p.web_img}}loadingAnimation.gif"/>
+        </p>
+    </div>    
+</div>
 <div id="menu" class="well" style="top:20px; left:20px; width:300px; z-index: 9000; opacity: 0.9;">
     <h3>{{'Skills'|get_lang}}</h3>
     <div class="btn-group">
         <a style="z-index: 1000" class="btn" id="add_item_link" href="#">{{'AddSkill'|get_lang}}</a>
+        <a style="z-index: 1000" class="btn" id="return_to_root" href="#">{{'Root'|get_lang}}</a>
         <a style="z-index: 1000" class="btn" id="return_to_admin" href="{{_p.web_main}}admin">{{'BackToAdmin'|get_lang}}</a>
+        
     </div>
 </div>
            
