@@ -13,6 +13,7 @@ var connectorPaintStyle = {
     strokeStyle:"#deea18",
     joinstyle:"round"
 };
+
 // .. and this is the hover style. 
 var connectorHoverStyle = {
     lineWidth:7,
@@ -22,26 +23,11 @@ var connectorHoverStyle = {
 //Admin arrows
 var edit_arrow_color = '#ccc';        
 
-var editEndpoint = {  
-    //connectorStyle:connectorPaintStyle,
-    connector:[ "Flowchart", { stub:28 } ],
-    hoverPaintStyle:connectorHoverStyle,
-    connectorHoverStyle:connectorHoverStyle,
-    anchors: ['BottomCenter','TopCenter'],                
-    endpoint:"Rectangle",
-    paintStyle:{ width:10, height:10, fillStyle:edit_arrow_color },
-    isSource:true,
-    scope:'blue rectangle',
-    maxConnections:10,
-    connectorStyle : {
-        gradient:{
-            stops:[[0, edit_arrow_color], [0.5, edit_arrow_color], [1, edit_arrow_color]]
-        }, //gradient stuff
-        lineWidth:2,
-        strokeStyle: edit_arrow_color
-    },
-    isTarget:true,
-    dropOptions : exampleDropOptions
+var editEndpointOptions = {  
+    isTarget:true, 
+    maxConnections:100,
+    endpoint:"Rectangle", 
+    paintStyle:{ fillStyle:"yellow" },    
 };
 
 
@@ -68,7 +54,7 @@ var defaultEndpoint = {
 
 // If user completed the skill 
 var done_arrow_color = '#73982C'; //green   
-var doneEndpoint = {                
+var doneEndpointOptions = {                
     connector:[ "Flowchart", { stub:28 } ],
     anchors: ['BottomCenter','TopCenter'],    
     endpoint:"Rectangle",
@@ -109,21 +95,21 @@ function open_parent(parent_id, id) {
     @param  int load user data or not
     
 */
-
 function open_block(id, load_user_data) {
     if (debug) console.log("open_block id : " + id+" load_user_data: " +load_user_data);      
+    
     var numeric_id = id.split('_')[1];    
     
     for (var i = 0; i < skills.length; i++) {
         //Remove everything except parents
         if (jQuery.inArray(skills[i].element, parents) == -1) {
             if (debug) console.log('deleting this skill '+ skills[i].element + " id: " + i);
-            jsPlumb.deleteEndpoint(skills[i].endp);
+            jsPlumb.removeEveryEndpoint(skills[i].endp);
             $("#"+skills[i].element).remove();                 
         }
     }        
 
-    //Modifying current block position
+    /*/Modifying current block position
     pos = $('#'+id).position();        
     left_value  = center_x; 
 
@@ -137,10 +123,9 @@ function open_block(id, load_user_data) {
 
     //Modifying root block position
     pos_parent = $('#'+parents[0]).position();
-    jsPlumb.animate(parents[0], { left: center_x, top:offset_y }, { duration:duration_value });       
-
-    top_value = 2*space_between_blocks_y +offset_y ; 
-    load_children(numeric_id, top_value, load_user_data);   
+    jsPlumb.animate(parents[0], { left: center_x, top:offset_y }, { duration:duration_value });
+    top_value = 2*space_between_blocks_y +offset_y ; */
+    load_children(numeric_id, 0, load_user_data);   
 }
 
 function open_block_student(id) {
@@ -153,52 +138,93 @@ function load_children(my_id, top_value, load_user_data) {
     //Loading children
     var ix = 0;
     
+    $('#skill_tree').append('<div id="block_'+my_id+ '" class=" skill_root " >Root </div>');
+    
+ //   jsPlumb.animate('block_'+my_id, { left: 500, top:50 }, { duration: 100 });       
+    
+     
+    var root_end_point_options = {  
+//        anchor:"Continuous",
+        maxConnections:100,
+        endpoint:"Dot", 
+        paintStyle:{ fillStyle:"gray" },        
+    };
+    
+    //The root is the source
+    
+    jsPlumb.makeSource("block_" + my_id, root_end_point_options);
+    
+    /*$('#block_'+my_id).css({ 
+                    position: 'absolute',
+                    zIndex: 5000,
+                    left: '100px', 
+                    top: '100px'
+                });*/
+    
     $.getJSON(url+'&a=load_children&load_user_data='+load_user_data+'&id='+my_id, {},         
-        function(json) {                
+        function(json) {             
             console.log('getJSON reponse: ' + json)
             $.each(json,function(i, item) {
                 if (debug) console.log('Loading children: #' + item.id + " " +item.name);
                 left_value  = ix*space_between_blocks_x +  center_x/2 - block_size / 2;
                 //top_value   = 300;
                 //Display::url($skill['name'], '#', array('id'=>'edit_block_'.$block_id, 'class'=>'edit_block'))
+                //item.name = '<a href="#" class="edit_block" id="edit_block_'+item.id+'">'+item.name+'</a>';                    
                 item.name = '<a href="#" class="edit_block" id="edit_block_'+item.id+'">'+item.name+'</a>';                    
 
                 var status_class = ' ';
-                my_edit_point = editEndpoint;
+                my_edit_point_options = editEndpointOptions;
 
                 if (item.passed == 1) {
-                    my_edit_point = doneEndpoint;
+                    my_edit_point_options = doneEndpointOptions;
                     status_class = 'done_window';
                 }
 
-                $('body').append('<div id="block_'+item.id+ '" class="third_window open_block window '+status_class+'" >'+item.name+'</div>');
+                $('#skill_tree').append('<div id="block_'+item.id+ '" class="skill_child  open_block  '+status_class+'" >'+item.name+'</div>');
                 if (debug) console.log('Append block: '+item.id);
 
-                $('#block_'+item.id).css({ 
+                /*$('#block_'+item.id).css({ 
                     position: 'absolute',
                     zIndex: 5000,
                     left: '10', 
                     top: '10'
+                });*/
+
+
+                //var es = prepare("block_" + item.id,  my_edit_point_options);
+                //var e2 = prepare("block_" + my_id,  my_edit_point_options);
+                
+                endpoint = jsPlumb.makeTarget("block_" + item.id, my_edit_point_options);                
+   
+                jsPlumb.connect({source: "block_" + my_id, target:"block_" + item.id});
+                
+                skills.push({
+                    element: "block_" + item.id, endp:endpoint
                 });
-
-
-                //console.log('append div id = block_'+item.id);                    
-                //console.log('preparing = '+item.id);          
-
-                var es = prepare("block_" + item.id,  my_edit_point);
-
-                //console.log('preparing = '+my_id);
-
-                var e2 = prepare("block_" + my_id,  my_edit_point);
-
-                jsPlumb.connect({source: es, target:e2});
+                
+                console.log('added to array skills' + item.id);
+                
                 //console.log('connect sources');
 
-                jsPlumb.animate("block_" + item.id, { 
+                /*jsPlumb.animate("block_" + item.id, { 
                     left: left_value, top : top_value
                 }, { duration : duration_value });
-                ix++;   
+                ix++;   */
             });
+            jsPlumb.draggable(jsPlumb.getSelector(".skill_child"));
+            
+            //Creating the organigram
+            var sum=0;
+            var normal_weight = 0;
+            $('.skill_child').each( function(){ 
+                //sum += $(this).width();                 
+                sum += $(this).outerWidth(true);                          
+                normal_weight = $(this).width();
+                q = $(this).css('margin-left').replace("px", "");                
+            });       
+            sum = sum / 2 - normal_weight/2 + q/2;
+            //console.log(sum);
+            jsPlumb.animate('block_'+my_id, { left: sum, top:10 }, { duration: 100 });       
         }
     );
 }
