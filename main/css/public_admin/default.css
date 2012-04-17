@@ -38,13 +38,6 @@ body {
 }
 /* End hide from IE5-mac */
 
-#main {
-	margin: 0p;
-	width: 100%;
-	padding: 0px;
-	min-height: 320px;
-}
-
 /*
 -----------------------------------------------------------------------------
 Side-Menu Slider (JQuery) see banner.inc.php
@@ -281,15 +274,14 @@ h5, h6 {
     font-family: verdana, arial, helvetica, sans-serif;
 }
 /* the following for regular <a> elements */
-a:link {
+a {
     text-decoration: none;
     font-weight : bold;
     color : #333;
 }
 a:visited {
     text-decoration: none;
-    font-weight : bold;
-    color : #333;
+    font-weight : bold; 
 }
 a:hover {
     text-decoration: none;
@@ -407,93 +399,28 @@ a:active {
 /*****************************************************
  *  HEADER 3: TABS OF THE HEADER			     	 *
  *****************************************************/
-.subnav {
-    font-size: 1.0em;
-    padding: 4px 0px 4px 0px;
-    background: #fff;
-    color: #006;
-    border-bottom: 1px solid #aeaeae;
-    height:25px;
-    margin-bottom: 1px;
-    background-image: url(images/fondoHeader3.jpg);	
-    width:100%;
+.subnav {    
+    background-image: url(images/fondoHeader3.jpg);	    
 }
-.subnav A {
-    PADDING-RIGHT: 15px;
-    DISPLAY: block;
-    PADDING-LEFT: 6px;
-    /* BACKGROUND:  url(images/tab_right.gif) no-repeat right top; */
-    PADDING-BOTTOM: 0px;
-    COLOR: #fff;
-    PADDING-TOP: 5px;
-    TEXT-DECORATION: none;
+
+.subnav a {
+    COLOR: #fff;    
 }
-.subnav A:hover {
+.subnav a:hover {
     COLOR: #9ba408;
     background: none;
 }
-.subnav UL {
-    PADDING-BOTTOM: 0px;
-    MARGIN: 0px;
-    LIST-STYLE-TYPE: none;    
-}
-.subnav LI {
-    PADDING-RIGHT: 0px;
-    PADDING-LEFT: 9px;
-    FLOAT: left;
-    PADDING-BOTTOM: 0px;
-    MARGIN: 0px;
-    PADDING-TOP: 0px;/*border-bottom: 1px solid #dcdcdc;*/
-}
-.subnav LI:hover {
-    PADDING-RIGHT: 0px;
-    PADDING-LEFT: 9px;
-    PADDING-BOTTOM: 0px;
-    MARGIN: 0px;
-    PADDING-TOP: 0px
-}
-.subnav #current {
-}
+
 .subnav #current A {
     COLOR: #999
 }
-.subnav .banner_links {
-    margin: 0;
+
+.subnav .nav > li > a {
+    border-left: none;
+    border-radius: 0 0 0 0;
+    border-right: none;
 }
-.subnav input.logout {
-    /* makes an input appear like a link in this header */
-    margin: 0 0 0 0;
-    padding: 0 30px 0 0;
-    background-color: transparent;
-    border: none;
-    COLOR: #fff;
-    font-size: 1.0em;
-    font-weight:bold;
-    font-family: verdana, arial, helvetica, sans-serif;
-    display: inline;
-    PADDING-RIGHT: 0px;
-    PADDING-TOP: 3px;
-}
-.subnav input:hover {
-    COLOR: #999;
-}
-.subnav input {
-    PADDING-RIGHT: 15px;
-    DISPLAY: block;
-    PADDING-LEFT: 6px;
-}
-.subnav #logout {
-    margin-top: 0px;
-}
-.subnav input.logout:hover {
-}
-#logout {
-    display: inline;
-    float: right;
-    width: auto;
-    text-align: right;
-    font-size: 1.0em;
-}
+
 /*****************************************************
  *  HEADER 4
  *****************************************************/
@@ -543,30 +470,8 @@ footer a:link, footer a:visited {
     NAVIGATION MENU
 ==============================================================================
 */
-
 .menu {    
     background: #f0f0f0 url(images/fondoNav.jpg) no-repeat top center;
-}
-.menucaption {
-    font-size: 12px;
-    font-weight: bold;
-    padding-left: 12px;
-}
-.menusection {
-    margin: 20px 0px 0 6px;
-    padding-left: 3px;
-    width: auto;
-}
-.menusectioncaption {
-    font-weight:bold;
-    font-size: 12px;
-    position: relative;
-    top: -5px;
-}
-.menulist {
-    list-style: none;
-    margin: 0 0 12px 0;
-    padding: 0;
 }
 #centerwrap {
     float: left;
@@ -2151,37 +2056,12 @@ button.upload {
   background-color: #fff;
   border: 1px solid #ccc;
 }
+
 #expire_session div {
     float:left;
     padding-left:15px;
 }
-/* Fake buttons: links that look like buttons */
 
-.fake_button_back {
-    border: 2px outset;
-    padding: 2px;
-    text-decoration: none;
-    background-color:#E5EDF9;
-    border-color: #D4E2F6;
-    background-image:url(images/button_back.gif);
-    padding-left:30px;
-    background-position:10px;
-    background-repeat:no-repeat;
-}
-.fake_button_back:active {
-    border: 2px inset;
-}
-.fake_button_back:link {
-    border-style: solid;
-    border-width : 1px 2px 2px 1px;
-    text-decoration : none;
-    padding : 4px;
-    border-color : #69f #00f #00f #69f;
-}
-.fake_button_back:hover {
-    border-color: #ccc;
-    color: #111;
-}
 .question_menu {
     list-style:none;
     float:left;
@@ -2236,91 +2116,14 @@ div.image_friend_network center.friend {
     float:left;
     margin: 0 0 4px 12px;
 }
-/* button >> */
-button.arrowr {
-    -moz-border-radius-topleft : 5px;
-    -moz-border-radius-bottomright : 5px;
-    -moz-border-radius-bottomleft : 5px;
-    -moz-border-radius-topright : 5px;
-    padding-left:20px;
-    padding-top:20px;
-    background-position:10px;
-    background-color:#E5EDF9;
-    border-color: #D4E2F6;
-    border-width: 1px;
-    display:block;
-    font-size: 100%;
-    line-height :130%;
-    vertical-align:middle;
+button.arrowr, input.arrowr {
+	background-image:url(images/2rightarrow.gif);	
 }
-/*including "arrowr" image*/
-button.arrowr {
-    background-image:url(images/2rightarrow.gif);
-    background-repeat:no-repeat;
-}
-/* button << */
-button.arrowl {
-    margin:0px;
-    -moz-border-radius-topleft : 5px;
-    -moz-border-radius-bottomright : 5px;
-    -moz-border-radius-bottomleft : 5px;
-    -moz-border-radius-topright : 5px;
-    padding-left:20px;
-    padding-top:20px;
-    background-position:10px;
-    background-color:#E5EDF9;
-    border-color: #D4E2F6;
-    border-width: 1px;
-    display:block;
-    font-size: 100%;
-    line-height :130%;
-    vertical-align:middle;
-}
-/*including "arrowl" image*/
-button.arrowl {
-    background-image:url(images/2leftarrow.gif);
-    background-repeat:no-repeat;
-}
-/* input >> */
-input.arrowr {
-    -moz-border-radius-topleft : 5px;
-    -moz-border-radius-bottomright : 5px;
-    -moz-border-radius-bottomleft : 5px;
-    -moz-border-radius-topright : 5px;
-    padding-left:25px;
-    padding-top:20px;
-    background-position:10px;
-    background-color:#E5EDF9;
-    border-color: #D4E2F6;
-    border-width: 1px;
-    display:block;
-    font-size: 100%;
-    line-height :130%;
-    vertical-align:middle;
-    background-image:url(images/2rightarrow.gif);
-    background-repeat:no-repeat;
+button.arrowl, input.arrowl {
+    background-image:url(images/2leftarrow.gif);	
 }
 
-/* input << */
-input.arrowl {
-    margin:0px;
-    -moz-border-radius-topleft : 5px;
-    -moz-border-radius-bottomright : 5px;
-    -moz-border-radius-bottomleft : 5px;
-    -moz-border-radius-topright : 5px;
-    padding-right:25px;
-    padding-top:20px;
-    background-position:10px;
-    background-color:#E5EDF9;
-    border-color: #D4E2F6;
-    border-width: 1px;
-    display:block;
-    font-size: 100%;
-    line-height :130%;
-    vertical-align:middle;
-    background-image:url(images/2leftarrow.gif);
-    background-repeat:no-repeat;
-}
+
 .u-m-answer {
     width:100%;
 }

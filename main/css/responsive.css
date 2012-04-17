@@ -1,4 +1,3 @@
-
 /* media queries responsive */
 
 /* Responsive Docs */
@@ -10,7 +9,11 @@
         display:none;
     }
     
-    #footer_right #admin_name, #footer_right #software_name {
+    header #header_center, header #header_right {
+        display:none;
+    }    
+    
+    #footer_left , #footer_right #admin_name, #footer_right #software_name {
         text-align: center !important;
     }    
     
@@ -33,7 +36,7 @@
         
     .notification-panel {
         display:none;
-    }   
+    }
 }
 
 @media (max-width: 767px) {
@@ -93,6 +96,36 @@
             -moz-border-radius: 4px 4px 0 0;
                 border-radius: 4px 4px 0 0;
     }
+    
+    
+     /* .new_actions */
+    .new_actions {           
+        border:1px solid #fff;
+        position: static;
+        top: auto;
+        z-index: auto;
+        width: 100%;
+        height: auto;    
+        -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+                box-shadow: none;
+                text-align: center;
+    }
+    .new_actions .nav > li {
+        float: none;    
+    }
+    .new_actions .nav > li > a {
+        border: 0;
+    }
+    .new_actions .nav > li + li > a {
+        border-top: 1px solid #e5e5e5;
+    }
+    .new_actions .nav > li:first-child > a,
+    .new_actions .nav > li:first-child > a:hover {
+        -webkit-border-radius: 4px 4px 0 0;
+            -moz-border-radius: 4px 4px 0 0;
+                border-radius: 4px 4px 0 0;
+    }
 
 
     /* Unfloat the back to top link in footer */
@@ -102,18 +135,14 @@
     .footer p {
         margin-bottom: 9px;
     }
-    
-
 }
 
-@media (min-width: 768px) and (max-width: 979px) {
+@media (min-width: 768px) and (max-width: 978px) {
     /* fixes tabs */
     .subnav .nav-tabs > li > a, .subnav .nav-pills > li > a {
         padding-left: 6px;
         padding-right: 6px;
     }
-    
-
 }
 
 @media (max-width: 979px) {

@@ -78,28 +78,6 @@ if (isset($_GET['delete_watermark'])) {
     $watermark_deleted = PDF::delete_watermark();    
 }
 
-if (isset($_POST['new_model']) && isset($_POST['number_evaluations']) && !empty($_POST['new_model'])) {
-	$count = intval($_POST['number_evaluations']);
-	$string_to_save = '';
-	for ($i = 1; $i<=$count;$i++) {
-		$sum = "+";
-		if ($i == $count) {
-			$sum = "";
-		}
-		//Note: We use rand here because there is a unique index in the settings_options table. The 'variable' and 'value' fields must be unique 
-		$string_to_save .= rand(1, 3).'*X'.$sum;
-	}
-	$string_to_save .= "/".$count;
-	$array_to_save = array();
-	
-	$array_to_save['variable'] 		= 'grading_model';
-	$array_to_save['display_text'] 	= $_POST['new_model'];
-	$array_to_save['value']		 	= $string_to_save;
-	
-	$result = api_set_setting_option($array_to_save);
-    $_POST['new_model'] = null;
-}
-
 if (isset($_GET['action']) &&  $_GET['action'] == 'delete_grading') {
 	$id = intval($_GET['id']);
 	api_delete_setting_option($id);
@@ -243,38 +221,21 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
                     }
                     if ($old_value != $value) $keys[] = $key;
                     $result = api_set_setting($key, $value, null, null, $_configuration['access_url']);
-                } else {
-                	if ($key == 'grading_model') {            		
-                		foreach ($value as $my_key => $option) {
-                			$array_to_save = array();               			
-                			//build this: 1*X+2*X+3*X/4
-                			$string_to_save = '';
-                			foreach ($option['items'] as $item) {
-                				$string_to_save .= $item.'*X+';
-                			}
-                			$string_to_save = substr($string_to_save, 0, strlen($string_to_save)- 1) . '/'.$option['denominator'];
-                			
-                			$array_to_save['display_text'] 	= $option['display_text'];
-                			$array_to_save['value'] 		= $string_to_save;
-                			$array_to_save['id'] 			= $my_key;               			
-                			
-                			$result = api_set_setting_option($array_to_save);
-                		}
-                	} else {
-	                    $sql = "SELECT subkey FROM $table_settings_current WHERE variable = '$key'";
-	                    $res = Database::query($sql);	                    
-	                    while ($row_subkeys = Database::fetch_array($res)) {
-	                        // If subkey is changed:
-	                        if ((isset($value[$row_subkeys['subkey']]) && api_get_setting($key, $row_subkeys['subkey']) == 'false') ||
-	                            (!isset($value[$row_subkeys['subkey']]) && api_get_setting($key, $row_subkeys['subkey']) == 'true')) {
-	                            $keys[] = $key;
-	                            break;
-	                        }
-	                    }
-	                    foreach ($value as $subkey => $subvalue) {	             
-	                        $result = api_set_setting($key, 'true', $subkey, null, $_configuration['access_url']);	
-	                    }
-                	}
+                } else {                
+                    $sql = "SELECT subkey FROM $table_settings_current WHERE variable = '$key'";
+                    $res = Database::query($sql);	                    
+                    while ($row_subkeys = Database::fetch_array($res)) {
+                        // If subkey is changed:
+                        if ((isset($value[$row_subkeys['subkey']]) && api_get_setting($key, $row_subkeys['subkey']) == 'false') ||
+                            (!isset($value[$row_subkeys['subkey']]) && api_get_setting($key, $row_subkeys['subkey']) == 'true')) {
+                            $keys[] = $key;
+                            break;
+                        }
+                    }
+                    foreach ($value as $subkey => $subvalue) {	             
+                        $result = api_set_setting($key, 'true', $subkey, null, $_configuration['access_url']);	
+                    }
+                	
                 }
         }
 
@@ -292,37 +253,9 @@ if (!empty($_GET['category']) && !in_array($_GET['category'], array('Plugins', '
         }
     }
 }
-$htmlHeadXtra[] = '<script language="javascript">
-
-function delete_grading_model(id) {
-	window.location = "settings.php?category=Gradebook&action=delete_grading&id=" + id;
-}
-
-$(document).ready(function() {
-    var elements = ["B","C","D","E","F","G","H","I", "J", "K", "L","M","N","O","P","Q","R"];		
-    var i = 0;		
-    $(".controls").each(function(index) {
-            $(this).find("*").each(function(index2) {			 		
-            if ($(this).hasClass("first_number")) {
-                $(this).before("<b>( A * </b>");	
-            }
-            if ($(this).hasClass("denominator")) {
-                $(this).before("<b> \) /  </b>");						
-            }
-            if ($(this).hasClass("number")) {
-                $(this).before("<b> + " + elements[i] + " * </b>");
-                i++;
-            }					
-        });
-        i = 0;
-    });
-});
-</script>';
 
 // Including the header (banner).
 Display :: display_header($tool_name);
-
-
 
 // The action images.
 $action_images['platform']      = 'platform.png';
@@ -345,18 +278,30 @@ $action_images['extra']     	= 'wizard.png';
 $action_images['tracking']     	= 'statistics.png';
 $action_images['gradebook2']    = 'gradebook.png';
 
+$action_images['search']        = 'search.png';
+$action_images['stylesheets']   = 'stylesheets.png';
+$action_images['templates']     = 'template.png';
+$action_images['plugins']       = 'plugins.png';
+
 // Grabbing the categories.
 $resultcategories = api_get_settings_categories(array('stylesheets', 'Plugins', 'Templates', 'Search'));
 
-echo "<div class=\"actions\">";
+$action_array = array();
+
+$resultcategories[] = array('category' => 'search');
+$resultcategories[] = array('category' => 'stylesheets');
+$resultcategories[] = array('category' => 'templates');
+$resultcategories[] = array('category' => 'plugins');
 foreach ($resultcategories as $row) {
-    echo "<a href=\"".api_get_self()."?category=".$row['category']."\">".Display::return_icon($action_images[strtolower($row['category'])], api_ucfirst(get_lang($row['category'])),'',ICON_SIZE_MEDIUM)."</a>";
+    $url = array();    
+    $url['url'] = api_get_self()."?category=".$row['category'];
+    $url['content'] = Display::return_icon($action_images[strtolower($row['category'])], api_ucfirst(get_lang($row['category'])),'',ICON_SIZE_MEDIUM);    
+    if (strtolower($row['category']) == strtolower($_GET['category'])) {
+        $url['active'] = true;
+    }
+    $action_array[] = $url;
 }
-echo "<a href=\"".api_get_self()."?category=Search\">".Display::return_icon($action_images['search'], api_ucfirst(get_lang('Search')),'',ICON_SIZE_MEDIUM)."</a>";
-echo "<a href=\"".api_get_self()."?category=stylesheets\">".Display::return_icon($action_images['stylesheets'], api_ucfirst(get_lang('Stylesheets')),'',ICON_SIZE_MEDIUM)."</a>";
-echo "<a href=\"".api_get_self()."?category=Templates\">".Display::return_icon($action_images['templates'], api_ucfirst(get_lang('Templates')),'',ICON_SIZE_MEDIUM)."</a>";
-echo "<a href=\"".api_get_self()."?category=Plugins\">".Display::return_icon($action_images['plugins'], api_ucfirst(get_lang('Plugins')),'',ICON_SIZE_MEDIUM)."</a>";
-echo "</div>";
+echo Display::actions($action_array);
 
 $form_search = new FormValidator('search_settings', 'get', api_get_self() , null, array('class'=>'vertical'));
 $form_search->addElement('text', 'search_field');

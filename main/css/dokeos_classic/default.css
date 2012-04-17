@@ -39,15 +39,6 @@ input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
 }
 /* End hide from IE5-mac */
 
-#main {
-	float: left;
-	margin: 0px auto;
-	margin-top: 5x;
-	width: 96%;
-	padding: 0px 10px 10px 10px;
-	min-height: 320px;
-}
-
 /*
 -----------------------------------------------------------------------------
 Side-Menu Slider (JQuery) see banner.inc.php
@@ -297,15 +288,14 @@ h5, h6 {
 	font-family: verdana, arial, helvetica, sans-serif;
 }
 /* the following for regular <a> elements */
-a:link {
+a {
 	text-decoration: none;
-	font-weight : bold;
-	color : #4171b5;
+	font-weight : bold;	
+    color : #4171b5;
 }
 a:visited {
 	text-decoration: none;
 	font-weight : bold;
-	color : #4171b5;
 }
 a:hover {
 	text-decoration: none;
@@ -474,7 +464,7 @@ input[text] {
 }
 .subnav li {
 	PADDING-RIGHT: 0px;
-	PADDING-LEFT: 9px;
+	PADDING-LEFT: 4px;
 	BACKGROUND:  url(../../img/tab_left.gif) no-repeat left top;
 	FLOAT: left;
 	PADDING-BOTTOM: 0px;
@@ -484,7 +474,7 @@ input[text] {
 }
 .subnav li:hover {
 	PADDING-RIGHT: 0px;
-	PADDING-LEFT: 9px;
+	PADDING-LEFT: 4px;
 	BACKGROUND: url(../../img/tab_left_hover.gif) no-repeat left top;
 	PADDING-BOTTOM: 0px;
 	MARGIN: 0px;
@@ -586,40 +576,6 @@ footer {
 	height: 4em; /* Very important */
 }
 
-/*****************************************************
- *  NAVIGATION MENU                                  *
- *****************************************************/
-.menu {
-	float: right;
-	width: 20%;
-	padding: 0 0 6px 0;
-	background-color: #E5EDF9;
-	border: 1px solid #4171B5;
-}
-.menucaption {
-	font-size: 12px;
-	font-weight: bold;
-	padding-left: 12px;
-}
-.menusection {
-	width: auto;
-	margin: 24px 6px 0 6px;
-	padding-left: 10px;
-	/* border: 1px solid #4171B5; */
-}
-.menusectioncaption {
-	position: relative;
-	top: -9px;
-	background-color: #E5EDF9;
-	font-size: 12px;
-	font-weight:bold;
-	padding: 0 8px 0 4px;
-}
-.menulist {
-	list-style: none;
-	margin: 0 0 12px 0;
-	padding: 0;
-}
 #centerwrap {
 	float: left;
 	width: 100%;
@@ -2322,91 +2278,13 @@ div.image_friend_network center.friend {
 	float:left;
 	margin: 0 0 4px 12px;
 }
-/* button >> */
-button.arrowr {
-	-moz-border-radius-topleft : 5px;
-	-moz-border-radius-bottomright : 5px;
-	-moz-border-radius-bottomleft : 5px;
-	-moz-border-radius-topright : 5px;
-	padding-left:20px;
-	padding-top:20px;
-	background-position:10px;
-	background-color:#E5EDF9;
-	border-color: #D4E2F6;
-	border-width: 1px;
-	display:block;
-	font-size: 100%;
-	line-height :130%;
-	vertical-align:middle;
+button.arrowr, input.arrowr {
+	background-image:url(images/2rightarrow.gif);	
 }
-/*including "arrowr" image*/
-button.arrowr {
-	background-image:url(images/2rightarrow.gif);
-	background-repeat:no-repeat;
-}
-/* button << */
-button.arrowl {
-	margin:0px;
-	-moz-border-radius-topleft : 5px;
-	-moz-border-radius-bottomright : 5px;
-	-moz-border-radius-bottomleft : 5px;
-	-moz-border-radius-topright : 5px;
-	padding-left:20px;
-	padding-top:20px;
-	background-position:10px;
-	background-color:#E5EDF9;
-	border-color: #D4E2F6;
-	border-width: 1px;
-	display:block;
-	font-size: 100%;
-	line-height :130%;
-	vertical-align:middle;
-}
-/*including "arrowl" image*/
-button.arrowl {
-	background-image:url(images/2leftarrow.gif);
-	background-repeat:no-repeat;
-}
-/* input >> */
-input.arrowr {
-	-moz-border-radius-topleft : 5px;
-	-moz-border-radius-bottomright : 5px;
-	-moz-border-radius-bottomleft : 5px;
-	-moz-border-radius-topright : 5px;
-	padding-left:25px;
-	padding-top:20px;
-	background-position:10px;
-	background-color:#E5EDF9;
-	border-color: #D4E2F6;
-	border-width: 1px;
-	display:block;
-	font-size: 100%;
-	line-height :130%;
-	vertical-align:middle;
-	background-image:url(images/2rightarrow.gif);
-	background-repeat:no-repeat;
+button.arrowl, input.arrowl {
+    background-image:url(images/2leftarrow.gif);	
 }
 
-/* input << */
-input.arrowl {
-	margin:0px;
-	-moz-border-radius-topleft : 5px;
-	-moz-border-radius-bottomright : 5px;
-	-moz-border-radius-bottomleft : 5px;
-	-moz-border-radius-topright : 5px;
-	padding-right:25px;
-	padding-top:20px;
-	background-position:10px;
-	background-color:#E5EDF9;
-	border-color: #D4E2F6;
-	border-width: 1px;
-	display:block;
-	font-size: 100%;
-	line-height :130%;
-	vertical-align:middle;
-	background-image:url(images/2leftarrow.gif);
-	background-repeat:no-repeat;
-}
 .u-m-answer {
 	width:100%;
 }
