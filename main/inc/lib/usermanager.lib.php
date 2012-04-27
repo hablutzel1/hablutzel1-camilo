@@ -306,7 +306,82 @@ class UserManager {
         event_system(LOG_USER_DELETE, LOG_USER_OBJECT, $user_info, api_get_utc_datetime(), $user_id_manager, null, $user_info);
 		return true;
 	}
+    
+    /**
+     * Deactivate users. Can be called either as:
+     * 
+     * - UserManager :: delete_users(1, 2, 3);
+     * - UserManager :: delete_users(array(1, 2, 3));
+     * 
+     * @param array|int $ids
+     * @return boolean  True if at least one user was successfuly deleted. False otherwise.
+     * @author Laurent Opprecht
+     */
+    static function delete_users($ids = array())
+    {
+        $result = false;
+        $ids = is_array($ids) ? $ids : func_get_args();        
+        $ids = array_map('intval', $ids);
+        foreach($ids as $id)
+        {
+            $deleted = self::delete_user($id);
+            $result = $deleted || $result;
+        }
+        return $result;
+    }
 
+    /**
+     * Deactivate users. Can be called either as:
+     * 
+     * - UserManager :: deactivate_users(1, 2, 3);
+     * - UserManager :: deactivate_users(array(1, 2, 3));
+     * 
+     * @param array|int $ids
+     * @return boolean 
+     * @author Laurent Opprecht
+     */
+    static function deactivate_users($ids = array())
+    {
+        if (empty($ids)) {
+            return false;
+        }
+
+        $table_user = Database :: get_main_table(TABLE_MAIN_USER);
+
+        $ids = is_array($ids) ? $ids : func_get_args();
+        $ids = array_map('intval', $ids);
+        $ids = implode(',', $ids);
+        
+        $sql = "UPDATE $table_user SET active = 0 WHERE user_id IN ($ids)";
+        return Database::query($sql);
+    }
+
+    /**
+     * Activate users. Can be called either as:
+     * 
+     * - UserManager :: activate_users(1, 2, 3);
+     * - UserManager :: activate_users(array(1, 2, 3));
+     * 
+     * @param array|int $ids
+     * @return boolean 
+     * @author Laurent Opprecht
+     */
+    static function activate_users($ids = array())
+    {
+        if (empty($ids)) {
+            return false;
+        }
+
+        $table_user = Database :: get_main_table(TABLE_MAIN_USER);
+
+        $ids = is_array($ids) ? $ids : func_get_args();
+        $ids = array_map('intval', $ids);
+        $ids = implode(',', $ids);
+        
+        $sql = "UPDATE $table_user SET active = 1 WHERE user_id IN ($ids)";
+        return Database::query($sql);
+    }
+    
 	/**
 	 * Update user information with new openid
 	 * @param int $user_id
@@ -1964,7 +2039,7 @@ class UserManager {
 		if (api_is_allowed_to_create_course()) {
 			foreach($sessions as $enreg) {
 				$id_session = $enreg['id'];
-				$personal_course_list_sql = "SELECT DISTINCT course.code,
+				$personal_course_list_sql = "SELECT DISTINCT course.code k, course.title i, 
 				                            ".(api_is_western_name_order() ? "CONCAT(user.firstname,' ',user.lastname)" : "CONCAT(user.lastname,' ',user.firstname)")." t, email, course.course_language l, 1 sort, 
 				                               category_code user_course_cat, date_start, date_end, session.id as id_session, session.name as session_name
 					FROM $tbl_session_course_user as session_course_user
@@ -1991,7 +2066,7 @@ class UserManager {
 		foreach ($sessions as $enreg) {
 			$id_session = $enreg['id'];
 			// this query is very similar to the above query, but it will check the session_rel_course_user table if there are courses registered to our user or not
-			$personal_course_list_sql = "SELECT DISTINCT course.code CONCAT(user.lastname,' ',user.firstname) t, email, 
+			$personal_course_list_sql = "SELECT DISTINCT course.code k, course.title i, CONCAT(user.lastname,' ',user.firstname) t, email, 
 			                             course.course_language l, 1 sort, category_code user_course_cat, date_start, date_end, session.id as id_session, session.name as session_name, " .
                                         "IF((session_course_user.id_user = 3 AND session_course_user.status=2),'2', '5')
 										FROM $tbl_session_course_user as session_course_user
