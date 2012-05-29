@@ -137,6 +137,8 @@
 //	require_once api_get_path(LIBRARY_PATH).'legal.lib.php';
 //}
 
+use \ChamiloSession as Session;
+
 //Conditional login
 if (isset($_SESSION['conditional_login']['uid']) && $_SESSION['conditional_login']['can_login']=== true){	
 	$uData = UserManager::get_user_info_by_id($_SESSION['conditional_login']['uid']);
@@ -979,6 +981,7 @@ if ((isset($uidReset) && $uidReset) || (isset($cidReset) && $cidReset)) {
                                 $is_courseMember     = true;
                                 $is_courseTutor      = false;
                                 $is_courseAdmin      = false;
+                                $is_courseCoach      = false;
                                 $is_sessionAdmin     = false;
                                 Session::write('_courseUser',$_courseUser);
                                 break;
@@ -988,6 +991,7 @@ if ((isset($uidReset) && $uidReset) || (isset($cidReset) && $cidReset)) {
                                 $is_courseTutor      = false;
                                 $is_courseAdmin      = false;
                                 $is_sessionAdmin     = false;
+                                $is_courseCoach      = false;
                                 Session::erase('_courseUser');                                
                                 break;
                         }						
@@ -997,6 +1001,7 @@ if ((isset($uidReset) && $uidReset) || (isset($cidReset) && $cidReset)) {
                         $is_courseTutor      = false;
                         $is_courseAdmin      = false;
                         $is_sessionAdmin     = false;
+                        $is_courseCoach      = false;
                         Session::erase('_courseUser');
 					}
 				}

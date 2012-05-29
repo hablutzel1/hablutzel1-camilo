@@ -1,6 +1,15 @@
 <?php
 
 /**
+ *
+ * @return ChamiloSession
+ */
+function session()
+{
+    return Chamilo::session();
+}
+
+/**
  * Description of chamilo
  *
  * @license see /license.txt
@@ -24,7 +33,7 @@ class Chamilo
     {
         return api_get_setting('server_type') == 'production';
     }
-    
+
     /**
      *
      * @return ChamiloSession
@@ -32,6 +41,15 @@ class Chamilo
     static function session()
     {
         return ChamiloSession::instance();
+    }
+    
+    /**
+     *
+     * @return CurrentUser
+     */
+    static function user()
+    {
+        return ChamiloSession::instance()->user();
     }
 
     /**

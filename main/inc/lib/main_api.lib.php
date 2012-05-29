@@ -16,6 +16,9 @@
 // PHP version requirement.
 define('REQUIRED_PHP_VERSION', '5.3');
 
+use \ChamiloSession as Session;
+
+
 // USER STATUS CONSTANTS
 /** global status of a user: student */
 define('STUDENT', 5);

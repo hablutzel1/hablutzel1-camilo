@@ -1,6 +1,9 @@
 <?php 
 /* For licensing terms, see /license.txt */
 
+use \ChamiloSession as Session;
+
+
 class IndexManager {
 	var $tpl 	= false; //An instance of the template engine
 	var $name 	= '';
